@@ -106,6 +106,11 @@ public class VentPrincipal extends javax.swing.JFrame {
         jCategoria.setForeground(new java.awt.Color(255, 255, 204));
         jCategoria.setText("Categoría");
         jCategoria.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(204, 153, 0)));
+        jCategoria.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCategoriaActionPerformed(evt);
+            }
+        });
         jProductos.add(jCategoria);
 
         jMenu.add(jProductos);
@@ -153,6 +158,15 @@ public class VentPrincipal extends javax.swing.JFrame {
         
    
     }//GEN-LAST:event_jSalirMouseClicked
+
+    private void jCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCategoriaActionPerformed
+        escritorio.removeAll();
+        escritorio.repaint();
+        VProducto v = new VProducto();
+        v.setVisible(true);
+        escritorio.add(v);
+        escritorio.moveToFront(v);
+    }//GEN-LAST:event_jCategoriaActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

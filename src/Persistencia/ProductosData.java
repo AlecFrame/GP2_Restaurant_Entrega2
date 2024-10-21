@@ -81,6 +81,26 @@ public class ProductosData {
         return producto;
     }
     
+    public ArrayList<Producto> buscarPorNombre(String nombre) throws SQLException {
+        ArrayList<Producto> lista = new ArrayList<>();
+        String sql = "Select * From productos Where nombre LIKE CONCAT(\"%\",?,\"%\")";
+        
+        PreparedStatement s = con.prepareStatement(sql);
+        s.setString(1, nombre);
+        ResultSet r = s.executeQuery();
+        
+        while (r.next()) {
+            lista.add(new Producto(
+                    r.getInt("codigo"),r.getString("nombre"),
+                    r.getDouble("precio"),
+                    r.getBoolean("estado"),
+                    r.getInt("stock"),
+                    r.getString("categoria")));
+        }
+        
+        return lista;
+    }
+    
     public void CambiarEstado(boolean estado, int numero) throws SQLException {
         String sql = "Update productos set estado = ? where codigo = ?";
         
@@ -107,6 +127,29 @@ public class ProductosData {
         while (r.next()) {
             lista.add(new Producto(
                     r.getInt("codigo"),r.getString("nombre"),
+                    r.getDouble("precio"),
+                    r.getBoolean("estado"),
+                    r.getInt("stock"),
+                    r.getString("categoria")));
+        }
+        
+        return lista;
+    }
+    
+    public ArrayList<Producto> filtrarCategoriaYNombre(String filtro,String nombre) throws SQLException {
+        ArrayList<Producto> lista = new ArrayList<>();
+        
+        String sql = "SELECT * FROM productos WHERE categoria = ? AND nombre LIKE CONCAT(\"%\",?,\"%\")";
+        
+        PreparedStatement s = con.prepareStatement(sql);
+        s.setString(1, filtro);
+        s.setString(2,nombre);
+        ResultSet r = s.executeQuery();
+        
+        while (r.next()) {
+            lista.add(new Producto(
+                    r.getInt("codigo"),
+                    r.getString("nombre"),
                     r.getDouble("precio"),
                     r.getBoolean("estado"),
                     r.getInt("stock"),

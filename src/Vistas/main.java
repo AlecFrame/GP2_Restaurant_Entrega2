@@ -61,7 +61,9 @@ public class main {
         Scanner leerInt = new Scanner(System.in);
         Scanner leerString = new Scanner(System.in);
         boolean seguir = true;
+        int entidad = 1;
         
+        if (entidad==1) {
         do {
             try {
             Thread.sleep(20); // 50 milisegundos para que poder cargar los prints a continuacion correctamente y no se sobrepongan
@@ -414,6 +416,8 @@ public class main {
         
         System.out.println("\nFin de la ejecucion\n");
         
-    }
+    }}
+    
+    
     
 }
