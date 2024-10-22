@@ -1,8 +1,9 @@
-
 package Vistas;
 
 import Modelo.Producto;
+import Modelo.Mesero;
 import Persistencia.ProductosData;
+import Persistencia.MeseroData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -15,17 +16,61 @@ public class main {
     public static void main(String[] args) {
         VentPrincipal ventana = new VentPrincipal();
         ventana.setVisible(true);
-        
-        
+
         System.out.println("/////   Trabajo Práctico Restaurante, Grupo 2, 2024, Comision 2 /////");
         System.out.println("////\n///// por: Walter Alexander Vertacnik,");
         System.out.println("////       Soto Vela Luciano Ezequiel, ");
         System.out.println("////       Ferro Julieta, ");
         System.out.println("////       Pagnone Patricia, ");
         System.out.println("////       Muñoz Maycol\n//");
-        
+
         Set<String> accionesValidas = new HashSet<>();
         ProductosData pdata = new ProductosData();
+        MeseroData meseroData = new MeseroData();
+        accionesValidas.add("1");
+        accionesValidas.add("2"); 
+        accionesValidas.add("3");
+        
+        String accion = "";
+        Scanner leerInt = new Scanner(System.in);
+        Scanner leerString = new Scanner(System.in);
+        boolean seguir = true;
+
+        do {
+            try {
+                Thread.sleep(20); // Breve pausa para cargar los prints
+            } catch (InterruptedException e) {}
+            System.out.println("/// Bienvenido al sistema de gestión del Restaurante Entre Amigos ///");
+            System.out.println("// 1 - Gestión de productos");
+            System.out.println("// 2 - Gestión de meseros");
+            System.out.println("// 3 - Salir del sistema\n//");
+            System.out.print("//// Ingrese una opción: ");
+            accion = leerString.nextLine().toLowerCase();
+
+            if (!accionesValidas.contains(accion)) {
+                System.err.println("//// Opción inválida, inténtelo de nuevo");
+            }
+
+            switch (accion) {
+                case "1": 
+                    gestionarProductos(pdata, leerInt, leerString);
+                    break;
+
+                case "2": 
+                    gestionarMeseros(meseroData, leerInt, leerString);
+                    break;
+
+                case "3":
+                    seguir = false;
+                    System.out.println("//// Saliendo del sistema...");
+                    break;
+            }
+
+        } while (seguir);
+    }
+
+    private static void gestionarProductos(ProductosData pdata, Scanner leerInt, Scanner leerString) {
+        Set<String> accionesValidas = new HashSet<>();
         accionesValidas.add("1");
         accionesValidas.add("2");
         accionesValidas.add("3");
@@ -58,8 +103,6 @@ public class main {
         categorias.add("bebidas gaseosas");
         
         String accion = "";
-        Scanner leerInt = new Scanner(System.in);
-        Scanner leerString = new Scanner(System.in);
         boolean seguir = true;
         int entidad = 1;
         
@@ -75,7 +118,7 @@ public class main {
             System.out.println("//                 (4/inhabilitar) Cambia el Estado de un producto de la base de datos para deshabilitarlo");
             System.out.println("//                 (5/actualizar) Actualiza los datos de un producto por codigo del producto");
             System.out.println("//                 (6/filtrar) filtra los productos que quieras ver por categoria");
-            System.out.println("//                 (7/salir) filtra los productos que quieras ver por categoria\n//");
+            System.out.println("//                 (7/salir) Volver\n//");
 
             accion = "";
 
@@ -416,8 +459,109 @@ public class main {
         
         System.out.println("\nFin de la ejecucion\n");
         
-    }}
+    }
+    }
+
     
     
-    
+    private static void gestionarMeseros(MeseroData meseroData, Scanner leerInt, Scanner leerString) {
+        Set<String> accionesMesero = new HashSet<>();
+        accionesMesero.add("1");
+        accionesMesero.add("2");
+        accionesMesero.add("3");
+        accionesMesero.add("4");
+        accionesMesero.add("5");
+
+        String accionMesero = "";
+
+        do {
+            System.out.println("/// Gestión de Meseros ///");
+            System.out.println("// 1 - Listar meseros");
+            System.out.println("// 2 - Buscar mesero por ID");
+            System.out.println("// 3 - Agregar nuevo mesero");
+            System.out.println("// 4 - Actualizar datos de un mesero");
+            System.out.println("// 5 - Volver al menú principal\n//");
+            System.out.print("//// Ingrese una opción: ");
+            accionMesero = leerString.nextLine().toLowerCase();
+
+            if (!accionesMesero.contains(accionMesero)) {
+                System.err.println("//// Opción inválida, inténtelo de nuevo");
+            }
+
+            switch (accionMesero) {
+                case "1": 
+                    try {
+                        ArrayList<Mesero> listaMeseros = meseroData.listarMeseros();
+                        System.out.println("\n///// Lista de meseros /////");
+                        for (Mesero m : listaMeseros) {
+                            System.out.println(" - " + m);
+                        }
+                        System.out.println("");
+                    } catch (SQLException ex) {
+                        System.err.println("Error al listar meseros: " + ex.getMessage());
+                    }
+                    break;
+
+                case "2": 
+                    try {
+                        System.out.print("//// Ingrese el ID del mesero: ");
+                        int idMesero = leerInt.nextInt();
+                        Mesero mesero = meseroData.buscarMesero(idMesero);
+                        if (mesero != null) {
+                            System.out.println("Mesero encontrado: " + mesero);
+                        } else {
+                            System.out.println("Mesero no encontrado.");
+                        }
+                    } catch (SQLException ex) {
+                        System.err.println("Error de SQL al buscar mesero: " + ex.getMessage());
+                    } catch (InputMismatchException ex) {
+                        System.err.println("El valor ingresado es inválido.");
+                        leerInt.next(); 
+                    }
+                    break;
+
+                case "3":
+                    Mesero nuevoMesero = new Mesero();
+                    System.out.print("//// Ingrese el nombre del nuevo mesero: ");
+                    nuevoMesero.setNombre(leerString.nextLine());
+
+                    try {
+                        meseroData.guardarMesero(nuevoMesero);
+                        System.out.println("Mesero agregado exitosamente.");
+                    } catch (SQLException ex) {
+                        System.err.println("Error al agregar mesero: " + ex.getMessage());
+                    }
+                    break;
+
+                case "4":
+                    try {
+                        System.out.print("//// Ingrese el ID del mesero a actualizar: ");
+                        int idMesero = leerInt.nextInt();
+                        Mesero mesero = meseroData.buscarMesero(idMesero);
+
+                        if (mesero != null) {
+                            System.out.println("Mesero encontrado: " + mesero);
+                            System.out.print("//// Ingrese el nuevo nombre del mesero: ");
+                            mesero.setNombre(leerString.nextLine());
+
+                            meseroData.actualizarMesero(mesero);
+                            System.out.println("Mesero actualizado exitosamente.");
+                        } else {
+                            System.out.println("Mesero no encontrado.");
+                        }
+                    } catch (SQLException ex) {
+                        System.err.println("Error al actualizar mesero: " + ex.getMessage());
+                    } catch (InputMismatchException ex) {
+                        System.err.println("El valor ingresado es inválido.");
+                        leerInt.next(); 
+                    }
+                    break;
+
+                case "5":
+                    System.out.println("Volviendo al menú principal...");
+                    break;
+            }
+
+        } while (!accionMesero.equals("5"));
+    }
 }
