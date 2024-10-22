@@ -18,7 +18,13 @@ public class VProducto extends javax.swing.JInternalFrame {
     
     private DefaultTableModel modelo = new DefaultTableModel() {
         public boolean isCellEditable(int fila, int col) { 
-            return fila == modelo.getRowCount() - 1;
+            return false;
+        }
+    };
+    
+    private DefaultTableModel modelo2 = new DefaultTableModel() {
+        public boolean isCellEditable(int fila, int col) { 
+            return fila == modelo2.getRowCount() - 1;
         }
     };
     
@@ -30,6 +36,7 @@ public class VProducto extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(this, "Error de SQL al cargar la tabla: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
         }
         
+        jbGuardar.setEnabled(false);
         Botones(false);
         cargarCabecera();
         cargarTabla();
@@ -49,6 +56,7 @@ public class VProducto extends javax.swing.JInternalFrame {
         jbActualizar = new javax.swing.JButton();
         jbEliminar = new javax.swing.JButton();
         jtfBuscar = new javax.swing.JTextField();
+        jbGuardar = new javax.swing.JButton();
 
         jLabel1.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         jLabel1.setText("Buscar por codigo/nombre:  ");
@@ -77,7 +85,7 @@ public class VProducto extends javax.swing.JInternalFrame {
 
         jTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-
+                { new Integer(1), "Hola", "50",  new Integer(10), "pizzas",  new Boolean(true)}
             },
             new String [] {
                 "Código", "Nombre", "Precio", "Stock", "Categoria", "Estado"
@@ -103,6 +111,13 @@ public class VProducto extends javax.swing.JInternalFrame {
         jbActualizar.setText("Actualizar");
 
         jbEliminar.setText("Eliminar");
+
+        jbGuardar.setText("Guardar");
+        jbGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbGuardarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -131,6 +146,8 @@ public class VProducto extends javax.swing.JInternalFrame {
                         .addGap(0, 48, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jbCargar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jbGuardar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jbActualizar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -155,7 +172,8 @@ public class VProducto extends javax.swing.JInternalFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jbActualizar)
                     .addComponent(jbEliminar)
-                    .addComponent(jbCargar))
+                    .addComponent(jbCargar)
+                    .addComponent(jbGuardar))
                 .addGap(14, 14, 14))
         );
 
@@ -224,8 +242,10 @@ public class VProducto extends javax.swing.JInternalFrame {
     private void jbCargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCargarActionPerformed
         if (!cargando) {
             cargando = true;
+            jbCargar.setEnabled(false);
+            jbGuardar.setEnabled(true);
             try {
-                modelo.addRow(new Object[] {
+                modelo2.addRow(new Object[] {
                     Enumerar(),
                     "",
                     "",
@@ -233,13 +253,18 @@ public class VProducto extends javax.swing.JInternalFrame {
                     "",
                     ""
                 });
-                int row = modelo.getRowCount()-1;
+                int row = modelo2.getRowCount()-1;
+                jTable.setModel(modelo2);
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Error de SQL al cargar el producto: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
             }
             
         }
     }//GEN-LAST:event_jbCargarActionPerformed
+    
+    private void jbGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbGuardarActionPerformed
+        
+    }//GEN-LAST:event_jbGuardarActionPerformed
     
     public void cargarCabecera() {
         modelo.addColumn("Código");
@@ -249,11 +274,21 @@ public class VProducto extends javax.swing.JInternalFrame {
         modelo.addColumn("Categoria");
         modelo.addColumn("Estado");
         jTable.setModel(modelo);
+        modelo2.addColumn("Código");
+        modelo2.addColumn("Nombre");
+        modelo2.addColumn("Precio");
+        modelo2.addColumn("Stock");
+        modelo2.addColumn("Categoria");
+        modelo2.addColumn("Estado");
     }
     
     private void cargarTabla() {
         cargando = false;
+        jTable.setModel(modelo);
+        jbCargar.setEnabled(true);
+        jbGuardar.setEnabled(false);
         modelo.setRowCount(0);
+        modelo2.setRowCount(0);
         for (Producto p: lista) {
             agregarFila(p);
         }
@@ -261,6 +296,14 @@ public class VProducto extends javax.swing.JInternalFrame {
     
     private void agregarFila(Producto p) {
         modelo.addRow(new Object[] {
+            p.getCodigo(),
+            p.getNombre(),
+            p.getPrecio(),
+            p.getStock(),
+            p.getCategoria(),
+            p.isEstado()
+        });
+        modelo2.addRow(new Object[] {
             p.getCodigo(),
             p.getNombre(),
             p.getPrecio(),
@@ -296,6 +339,7 @@ public class VProducto extends javax.swing.JInternalFrame {
     private javax.swing.JButton jbBuscar;
     private javax.swing.JButton jbCargar;
     private javax.swing.JButton jbEliminar;
+    private javax.swing.JButton jbGuardar;
     private javax.swing.JComboBox<String> jcCategoria;
     private javax.swing.JTextField jtfBuscar;
     // End of variables declaration//GEN-END:variables

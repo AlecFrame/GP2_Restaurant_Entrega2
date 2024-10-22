@@ -48,6 +48,8 @@
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jbCargar" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jbGuardar" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                       <Component id="jbActualizar" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -79,6 +81,7 @@
                   <Component id="jbActualizar" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jbEliminar" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jbCargar" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jbGuardar" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
           </Group>
@@ -143,13 +146,25 @@
         <Component class="javax.swing.JTable" name="jTable">
           <Properties>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="6" rowCount="0">
-                <Column editable="true" title="C&#xf3;digo" type="java.lang.Integer"/>
-                <Column editable="true" title="Nombre" type="java.lang.String"/>
-                <Column editable="true" title="Precio" type="java.lang.Object"/>
-                <Column editable="true" title="Stock" type="java.lang.Integer"/>
-                <Column editable="true" title="Categoria" type="java.lang.String"/>
-                <Column editable="true" title="Estado" type="java.lang.Boolean"/>
+              <Table columnCount="6" rowCount="1">
+                <Column editable="true" title="C&#xf3;digo" type="java.lang.Integer">
+                  <Data value="1"/>
+                </Column>
+                <Column editable="true" title="Nombre" type="java.lang.String">
+                  <Data value="Hola"/>
+                </Column>
+                <Column editable="true" title="Precio" type="java.lang.Object">
+                  <Data value="50"/>
+                </Column>
+                <Column editable="true" title="Stock" type="java.lang.Integer">
+                  <Data value="10"/>
+                </Column>
+                <Column editable="true" title="Categoria" type="java.lang.String">
+                  <Data value="pizzas"/>
+                </Column>
+                <Column editable="true" title="Estado" type="java.lang.Boolean">
+                  <Data value="true"/>
+                </Column>
               </Table>
             </Property>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
@@ -212,6 +227,14 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jtfBuscar">
+    </Component>
+    <Component class="javax.swing.JButton" name="jbGuardar">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Guardar"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbGuardarActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>
