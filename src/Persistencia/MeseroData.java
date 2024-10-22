@@ -88,6 +88,7 @@ public class MeseroData {
    
     public ArrayList<Pedido> listarPedidosPorMesero(int dniMesero, Date fecha) throws SQLException {
         ArrayList<Pedido> pedidos = new ArrayList<>();
+        MesaData mdata = new MesaData();
         String sql = "SELECT * FROM pedido WHERE dni_mesero = ? AND DATE(fecha_hora) = ?";
         
         PreparedStatement ps = con.prepareStatement(sql);
@@ -98,9 +99,11 @@ public class MeseroData {
         while (rs.next()) {
             pedidos.add(new Pedido(
                 rs.getInt("id_pedido"),
-                rs.getInt("numero_mesa"),
-                rs.getDouble("monto_total"),
-                rs.getString("estado")
+                rs.getString("dni_mesero"),
+                mdata.buscar((int)rs.getInt("numero_mesa")),
+                rs.getDouble("total"),
+                rs.getBoolean("cobrado"),
+                rs.getBoolean("estado")
             ));
         }
         
