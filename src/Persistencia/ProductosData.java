@@ -162,7 +162,7 @@ public class ProductosData {
     public ArrayList<Producto> listar() throws SQLException {
         ArrayList<Producto> lista = new ArrayList<>();
         
-        String sql = "SELECT * FROM productos";
+        String sql = "SELECT * FROM productos ORDER BY codigo";
         
         Statement s = con.createStatement();
         ResultSet r = s.executeQuery(sql);
@@ -248,4 +248,84 @@ public class ProductosData {
         }
     }
     
+    public void actualizar(Producto p,String cambiar, int codigo) {
+        try {
+            int filas=0;
+            if (cambiar.contains("nombre")) {
+                if (p.getNombre()!=null) {
+                    String sql = "update productos set nombre=? where codigo=?";
+
+                    PreparedStatement st = con.prepareStatement(sql);
+                    st.setString(1, p.getNombre());
+                    st.setInt(2, codigo);
+
+                    filas = st.executeUpdate();
+                }else
+                    System.err.println("No se actualizo el nombre del producto ("+codigo+") porque es nulo");
+            }
+            if (cambiar.contains("precio")) {
+                if (p.getPrecio()!=0) {
+                    String sql = "update productos set precio=? where codigo=?";
+
+                    PreparedStatement st = con.prepareStatement(sql);
+                    st.setDouble(1, p.getPrecio());
+                    st.setInt(2, codigo);
+
+                    filas = st.executeUpdate();
+                }else
+                    System.err.println("No se actualizo el precio del producto ("+codigo+") porque es 0");
+            }
+            if (cambiar.contains("stock")) {
+                if (p.getStock()!=0) {
+                    String sql = "update productos set stock=? where codigo=?";
+
+                    PreparedStatement st = con.prepareStatement(sql);
+                    st.setInt(1, p.getStock());
+                    st.setInt(2, codigo);
+
+                    filas = st.executeUpdate();
+                }else
+                    System.err.println("No se actualizo el stock del producto ("+codigo+") porque es 0");
+            }
+            if (cambiar.contains("categoria")) {
+                if (p.getCategoria()!=null) {
+                    String sql = "update productos set categoria=? where codigo=?";
+
+                    PreparedStatement st = con.prepareStatement(sql);
+                    st.setString(1, p.getCategoria());
+                    st.setInt(2, codigo);
+
+                    filas = st.executeUpdate();
+                }else
+                    System.err.println("No se actualizo la categoria del producto ("+codigo+") porque es null");
+            }
+            if (cambiar.contains("estado")) {
+                String sql = "update productos set estado=? where codigo=?";
+
+                PreparedStatement st = con.prepareStatement(sql);
+                st.setBoolean(1, p.isEstado());
+                st.setInt(2, codigo);
+
+                filas = st.executeUpdate();
+            }
+            if (cambiar.contains("codigo")) {
+                if (p.getStock()!=0) {
+                    String sql = "update productos set codigo=? where codigo=?";
+
+                    PreparedStatement st = con.prepareStatement(sql);
+                    st.setInt(1, p.getCodigo());
+                    st.setInt(2, codigo);
+
+                    filas = st.executeUpdate();
+                }else
+                    System.err.println("No se actualizo el stock del producto ("+codigo+") porque es 0");
+            }
+            if (filas>0) {
+                System.out.println("\n//// Actualizado con exito");
+            }else
+                System.err.println("No se encontra el codigo del producto");
+        }catch(SQLException e) {
+            System.err.println("Error SQL");
+        }
+    }
 }

@@ -271,6 +271,10 @@
               <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jTableMouseClicked"/>
+            <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="jTablePropertyChange"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
@@ -304,12 +308,12 @@
         </Property>
         <Property name="text" type="java.lang.String" value="Actualizar"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbActualizarActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="jbEliminar">
       <Properties>
-        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="ff" green="ff" red="ff" type="rgb"/>
-        </Property>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Pristina" size="14" style="1"/>
         </Property>
@@ -318,6 +322,9 @@
         </Property>
         <Property name="text" type="java.lang.String" value="Eliminar"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbEliminarActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="jtfBuscar">
     </Component>
