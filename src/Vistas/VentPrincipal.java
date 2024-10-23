@@ -27,12 +27,13 @@ public class VentPrincipal extends javax.swing.JFrame {
         jDesktopPane1 = new javax.swing.JDesktopPane();
         jMenu = new javax.swing.JMenuBar();
         jMesa = new javax.swing.JMenu();
-        jReserva = new javax.swing.JMenuItem();
         jEstado = new javax.swing.JMenuItem();
         jDetPedido = new javax.swing.JMenu();
         jPedido = new javax.swing.JMenuItem();
         jProductos = new javax.swing.JMenu();
         jCategoria = new javax.swing.JMenuItem();
+        jReserva = new javax.swing.JMenu();
+        jMesero = new javax.swing.JMenu();
         jSalir = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -65,12 +66,6 @@ public class VentPrincipal extends javax.swing.JFrame {
         jMesa.setBorder(null);
         jMesa.setForeground(new java.awt.Color(255, 255, 204));
         jMesa.setText("Mesa");
-
-        jReserva.setBackground(new java.awt.Color(204, 102, 0));
-        jReserva.setForeground(new java.awt.Color(255, 255, 204));
-        jReserva.setText("Reserva");
-        jReserva.setBorder(null);
-        jMesa.add(jReserva);
 
         jEstado.setBackground(new java.awt.Color(204, 153, 0));
         jEstado.setForeground(new java.awt.Color(255, 255, 204));
@@ -114,6 +109,16 @@ public class VentPrincipal extends javax.swing.JFrame {
         jProductos.add(jCategoria);
 
         jMenu.add(jProductos);
+
+        jReserva.setBackground(new java.awt.Color(153, 102, 0));
+        jReserva.setForeground(new java.awt.Color(255, 255, 204));
+        jReserva.setText("Reserva");
+        jMenu.add(jReserva);
+
+        jMesero.setBackground(new java.awt.Color(153, 102, 0));
+        jMesero.setForeground(new java.awt.Color(255, 255, 204));
+        jMesero.setText("Mesero");
+        jMenu.add(jMesero);
 
         jSalir.setBorder(null);
         jSalir.setForeground(new java.awt.Color(255, 255, 255));
@@ -176,9 +181,10 @@ public class VentPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jEstado;
     private javax.swing.JMenuBar jMenu;
     private javax.swing.JMenu jMesa;
+    private javax.swing.JMenu jMesero;
     private javax.swing.JMenuItem jPedido;
     private javax.swing.JMenu jProductos;
-    private javax.swing.JMenuItem jReserva;
+    private javax.swing.JMenu jReserva;
     private javax.swing.JMenu jSalir;
     // End of variables declaration//GEN-END:variables
    
