@@ -2,8 +2,10 @@ package Vistas;
 
 import Modelo.Producto;
 import Modelo.Mesero;
+import Modelo.Mesa;
 import Persistencia.ProductosData;
 import Persistencia.MeseroData;
+import Persistencia.MesaData; 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -27,9 +29,11 @@ public class main {
         Set<String> accionesValidas = new HashSet<>();
         ProductosData pdata = new ProductosData();
         MeseroData meseroData = new MeseroData();
+        MesaData mesadata = new MesaData();
         accionesValidas.add("1");
         accionesValidas.add("2"); 
         accionesValidas.add("3");
+        accionesValidas.add("4");
         
         String accion = "";
         Scanner leerInt = new Scanner(System.in);
@@ -43,7 +47,8 @@ public class main {
             System.out.println("/// Bienvenido al sistema de gestión del Restaurante Entre Amigos ///");
             System.out.println("// 1 - Gestión de productos");
             System.out.println("// 2 - Gestión de meseros");
-            System.out.println("// 3 - Salir del sistema\n//");
+            System.out.println("// 3 - Gestión de mesas");
+            System.out.println("// 4 - Salir del sistema\n//");
             System.out.print("//// Ingrese una opción: ");
             accion = leerString.nextLine().toLowerCase();
 
@@ -55,18 +60,20 @@ public class main {
                 case "1": 
                     gestionarProductos(pdata, leerInt, leerString);
                     break;
-
                 case "2": 
                     gestionarMeseros(meseroData, leerInt, leerString);
                     break;
-
                 case "3":
+                    gestionarMesas (mesadata, leerInt, leerString);
+                    break;
+                case "4":
                     seguir = false;
                     System.out.println("//// Saliendo del sistema...");
                     break;
             }
 
         } while (seguir);
+        
     }
 
     private static void gestionarProductos(ProductosData pdata, Scanner leerInt, Scanner leerString) {
@@ -564,4 +571,117 @@ public class main {
 
         } while (!accionMesero.equals("5"));
     }
+    private static void gestionarMesas(MesaData mesaData, Scanner leerInt, Scanner leerString) {
+    Set<String> accionesMesa = new HashSet<>();
+    accionesMesa.add("1");
+    accionesMesa.add("2");
+    accionesMesa.add("3");
+    accionesMesa.add("4");
+    accionesMesa.add("5");
+
+    String accionMesa = "";
+
+    do {
+        System.out.println("/// Gestión de Mesas ///");
+        System.out.println("// 1 - Listar mesas");
+        System.out.println("// 2 - Buscar mesa por número");
+        System.out.println("// 3 - Agregar nueva mesa");
+        System.out.println("// 4 - Actualizar datos de una mesa");
+        System.out.println("// 5 - Volver al menú principal\n//");
+        System.out.print("//// Ingrese una opción: ");
+        accionMesa = leerString.nextLine().toLowerCase();
+
+        if (!accionesMesa.contains(accionMesa)) {
+            System.err.println("//// Opción inválida, inténtelo de nuevo");
+        }
+
+        switch (accionMesa) {
+            case "1":
+                try {
+                    ArrayList<Mesa> listaMesas = mesaData.listarMesas();
+                    System.out.println("\n///// Lista de mesas /////");
+                    for (Mesa m : listaMesas) {
+                        System.out.println(" - Mesa " + m.getNumeroMesa() + ": Capacidad " + m.getCapacidad() + ", Estado " + (m.isEstado() ? "Disponible" : "Ocupada") + ", Ocupada: " + m.getOcupada());
+                    }
+                    System.out.println("");
+                } catch (SQLException ex) {
+                    System.err.println("Error al listar mesas: " + ex.getMessage());
+                }
+                break;
+
+            case "2":
+                try {
+                    System.out.print("//// Ingrese el número de la mesa: ");
+                    int numeroMesa = leerInt.nextInt();
+                    Mesa mesa = mesaData.buscar(numeroMesa);
+                    if (mesa != null) {
+                        System.out.println("Mesa encontrada: " + "Mesa " + mesa.getNumeroMesa() + ": Capacidad " + mesa.getCapacidad() + ", Estado " + (mesa.isEstado() ? "Disponible" : "Ocupada") + ", Ocupada: " + mesa.getOcupada());
+                    } else {
+                        System.out.println("Mesa no encontrada.");
+                    }
+                } catch (SQLException ex) {
+                    System.err.println("Error de SQL al buscar mesa: " + ex.getMessage());
+                } catch (InputMismatchException ex) {
+                    System.err.println("El valor ingresado es inválido.");
+                    leerInt.next();
+                }
+                break;
+
+            case "3":
+                Mesa nuevaMesa = new Mesa();
+                System.out.print("//// Ingrese el número de la mesa: ");
+                nuevaMesa.setNumeroMesa(leerInt.nextInt());
+                System.out.print("//// Ingrese la capacidad de la mesa: ");
+                nuevaMesa.setCapacidad(leerInt.nextInt());
+                System.out.print("//// Ingrese el estado de la mesa (true para disponible, false para ocupada): ");
+                nuevaMesa.setEstado(leerInt.nextBoolean());
+                System.out.print("//// Ingrese el estado de ocupación (nombre del cliente o vacío si no está ocupada): ");
+                leerString.nextLine(); 
+                nuevaMesa.setOcupada(leerString.nextLine());
+
+                try {
+                    mesaData.guardarMesa(nuevaMesa);
+                    System.out.println("Mesa agregada exitosamente.");
+                } catch (SQLException ex) {
+                    System.err.println("Error al agregar mesa: " + ex.getMessage());
+                }
+                break;
+
+            case "4":
+                try {
+                    System.out.print("//// Ingrese el número de la mesa a actualizar: ");
+                    int numeroMesaActualizar = leerInt.nextInt();
+                    Mesa mesaActualizar = mesaData.buscar(numeroMesaActualizar);
+
+                    if (mesaActualizar != null) {
+                        System.out.println("Mesa encontrada: " + "Mesa " + mesaActualizar.getNumeroMesa() + ": Capacidad " + mesaActualizar.getCapacidad() + ", Estado " + (mesaActualizar.isEstado() ? "Disponible" : "Ocupada") + ", Ocupada: " + mesaActualizar.getOcupada());
+                        System.out.print("//// Ingrese la nueva capacidad de la mesa: ");
+                        mesaActualizar.setCapacidad(leerInt.nextInt());
+                        System.out.print("//// Ingrese el nuevo estado de la mesa (true para disponible, false para ocupada): ");
+                        mesaActualizar.setEstado(leerInt.nextBoolean());
+                        System.out.print("//// Ingrese el nuevo estado de ocupación (nombre del cliente o vacío si no está ocupada): ");
+                        leerString.nextLine(); 
+                        mesaActualizar.setOcupada(leerString.nextLine());
+
+                        mesaData.CambiarEstado(mesaActualizar.getOcupada(), mesaActualizar.getNumeroMesa());
+                        System.out.println("Mesa actualizada exitosamente.");
+                    } else {
+                        System.out.println("Mesa no encontrada.");
+                    }
+                } catch (SQLException ex) {
+                    System.err.println("Error al actualizar mesa: " + ex.getMessage());
+                } catch (InputMismatchException ex) {
+                    System.err.println("El valor ingresado es inválido.");
+                    leerInt.next();
+                }
+                break;
+
+            case "5":
+                System.out.println("Volviendo al menú principal...");
+                break;
+        }
+
+    } while (!accionMesa.equals("5"));
+}
+
 }
