@@ -16,7 +16,7 @@ public class MeseroData {
         String sql = "INSERT INTO mesero(dni, nombre, apellido) VALUES(?, ?, ?)";
         
         PreparedStatement ps = con.prepareStatement(sql);
-        ps.setInt(1, mesero.getDni());
+        ps.setInt(1, mesero.getDniMesero());
         ps.setString(2, mesero.getNombre());
         ps.setString(3, mesero.getApellido());
         
@@ -62,7 +62,7 @@ public class MeseroData {
         PreparedStatement ps = con.prepareStatement(sql);
         ps.setString(1, mesero.getNombre());
         ps.setString(2, mesero.getApellido());
-        ps.setInt(3, mesero.getDni());
+        ps.setInt(3, mesero.getDniMesero());
         
         int filas = ps.executeUpdate();
         if (filas > 0) {

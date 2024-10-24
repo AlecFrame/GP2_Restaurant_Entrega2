@@ -9,8 +9,7 @@ public class Mesero {
     private boolean estado;
 
     
-    public Mesero() {
-    }
+    
 
     public Mesero(int dniMesero, String nombre, String apellido, String reemplazando, boolean estado) {
         this.dniMesero = dniMesero;
@@ -18,6 +17,14 @@ public class Mesero {
         this.apellido = apellido;
         this.reemplazando = reemplazando;
         this.estado = estado;
+    }
+
+    public Mesero(int aInt, String string, String string0) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public Mesero() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public int getDniMesero() {
