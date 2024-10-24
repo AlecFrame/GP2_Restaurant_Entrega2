@@ -26,8 +26,6 @@ public class VentPrincipal extends javax.swing.JFrame {
 
         jDesktopPane1 = new javax.swing.JDesktopPane();
         jMenu = new javax.swing.JMenuBar();
-        jMesa = new javax.swing.JMenu();
-        jEstado = new javax.swing.JMenuItem();
         jDetPedido = new javax.swing.JMenu();
         jPedido = new javax.swing.JMenuItem();
         jProductos = new javax.swing.JMenu();
@@ -61,19 +59,6 @@ public class VentPrincipal extends javax.swing.JFrame {
         jMenu.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jMenu.setInheritsPopupMenu(true);
         jMenu.setMargin(new java.awt.Insets(2, 2, 2, 2));
-
-        jMesa.setBackground(new java.awt.Color(153, 102, 0));
-        jMesa.setBorder(null);
-        jMesa.setForeground(new java.awt.Color(255, 255, 204));
-        jMesa.setText("Mesa");
-
-        jEstado.setBackground(new java.awt.Color(204, 153, 0));
-        jEstado.setForeground(new java.awt.Color(255, 255, 204));
-        jEstado.setText("Estado");
-        jEstado.setBorder(null);
-        jMesa.add(jEstado);
-
-        jMenu.add(jMesa);
 
         jDetPedido.setBorder(null);
         jDetPedido.setForeground(new java.awt.Color(255, 255, 204));
@@ -178,9 +163,7 @@ public class VentPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jCategoria;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jDetPedido;
-    private javax.swing.JMenuItem jEstado;
     private javax.swing.JMenuBar jMenu;
-    private javax.swing.JMenu jMesa;
     private javax.swing.JMenu jMesero;
     private javax.swing.JMenuItem jPedido;
     private javax.swing.JMenu jProductos;
