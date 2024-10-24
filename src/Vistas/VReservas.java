@@ -66,10 +66,9 @@ public class VReservas extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         jDesktopPane1 = new javax.swing.JDesktopPane();
+        buttonGroup1 = new javax.swing.ButtonGroup();
         jLabel1 = new javax.swing.JLabel();
         jbBuscar = new javax.swing.JButton();
-        jcCategoria = new javax.swing.JComboBox<>();
-        jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable = new javax.swing.JTable();
         jbCargar = new javax.swing.JButton();
@@ -79,6 +78,10 @@ public class VReservas extends javax.swing.JInternalFrame {
         jbGuardar = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jLfondo = new javax.swing.JLabel();
+        jcbFecha = new javax.swing.JCheckBox();
+        jcbHora = new javax.swing.JCheckBox();
+        jrVigencia = new javax.swing.JRadioButton();
+        jrNoVigencia = new javax.swing.JRadioButton();
 
         javax.swing.GroupLayout jDesktopPane1Layout = new javax.swing.GroupLayout(jDesktopPane1);
         jDesktopPane1.setLayout(jDesktopPane1Layout);
@@ -94,11 +97,11 @@ public class VReservas extends javax.swing.JInternalFrame {
         setBackground(new java.awt.Color(255, 204, 153));
         setBorder(null);
         setForeground(new java.awt.Color(255, 255, 204));
-        setTitle("Productos");
+        setTitle("Reservas");
         setFont(new java.awt.Font("Calibri", 1, 10)); // NOI18N
 
         jLabel1.setFont(new java.awt.Font("Pristina", 1, 18)); // NOI18N
-        jLabel1.setText("Buscar por código/nombre:  ");
+        jLabel1.setText("Busca por ID / Apellido:");
         jLabel1.setAlignmentY(0.0F);
 
         jbBuscar.setBackground(new java.awt.Color(162, 108, 72));
@@ -113,35 +116,19 @@ public class VReservas extends javax.swing.JInternalFrame {
             }
         });
 
-        jcCategoria.setForeground(new java.awt.Color(162, 108, 72));
-        jcCategoria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "0-todas", "1-pizzas", "2-hamburguesas", "3-lomos", "4-tacos", "5-bebidas/a", "6-bebidasc/a", "7-gaseosas" }));
-        jcCategoria.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                jcCategoriaItemStateChanged(evt);
-            }
-        });
-        jcCategoria.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jcCategoriaActionPerformed(evt);
-            }
-        });
-
-        jLabel2.setFont(new java.awt.Font("Pristina", 1, 18)); // NOI18N
-        jLabel2.setText("Categorias:");
-
         jTable.setBackground(new java.awt.Color(255, 255, 204));
         jTable.setBorder(new javax.swing.border.MatteBorder(null));
         jTable.setForeground(new java.awt.Color(153, 90, 48));
         jTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                { new Integer(1), "Hola", "50",  new Integer(10), "pizzas",  new Boolean(true)}
+                { new Integer(1), null, null, null, null, null, null}
             },
             new String [] {
-                "Código", "Nombre", "Precio", "Stock", "Categoria", "Estado"
+                "ID", "N° de Mesa", "DNI Cliente", "Apellido", "Fecha Reser.", "Hora Reser.", "Vigencia"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.Object.class, java.lang.Integer.class, java.lang.String.class, java.lang.Boolean.class
+                java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -219,6 +206,28 @@ public class VReservas extends javax.swing.JInternalFrame {
         jLfondo.setBackground(new java.awt.Color(255, 204, 153));
         jLfondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/r25.jpg"))); // NOI18N
 
+        jcbFecha.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jcbFecha.setText("Fecha Reservada");
+        jcbFecha.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jcbFechaActionPerformed(evt);
+            }
+        });
+
+        jcbHora.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jcbHora.setText("Hora Reservada");
+
+        jrVigencia.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jrVigencia.setText("Vigencia");
+        jrVigencia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jrVigenciaActionPerformed(evt);
+            }
+        });
+
+        jrNoVigencia.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jrNoVigencia.setText("No Vigencia");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -237,22 +246,27 @@ public class VReservas extends javax.swing.JInternalFrame {
                         .addComponent(jbActualizar)
                         .addGap(18, 18, 18)
                         .addComponent(jbEliminar))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 506, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jcCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(117, 117, 117))
+                                .addComponent(jcbFecha)
+                                .addGap(18, 18, 18)
+                                .addComponent(jcbHora)
+                                .addGap(63, 63, 63)
+                                .addComponent(jrVigencia)
+                                .addGap(18, 18, 18)
+                                .addComponent(jrNoVigencia)
+                                .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jtfBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(jbBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 506, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -265,11 +279,13 @@ public class VReservas extends javax.swing.JInternalFrame {
                     .addComponent(jbBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
-                .addGap(13, 13, 13)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jcCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
                 .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jcbFecha)
+                    .addComponent(jcbHora)
+                    .addComponent(jrVigencia)
+                    .addComponent(jrNoVigencia))
+                .addGap(17, 17, 17)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(34, 34, 34)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -282,14 +298,6 @@ public class VReservas extends javax.swing.JInternalFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jcCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcCategoriaActionPerformed
-        
-    }//GEN-LAST:event_jcCategoriaActionPerformed
-
-    private void jcCategoriaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jcCategoriaItemStateChanged
-        cargarFiltro();
-    }//GEN-LAST:event_jcCategoriaItemStateChanged
 
     private void jbBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbBuscarActionPerformed
         String buscar = jtfBuscar.getText();
@@ -314,18 +322,7 @@ public class VReservas extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jbBuscarActionPerformed
 
     private void jbCargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCargarActionPerformed
-        String filtro;
-        switch (jcCategoria.getSelectedItem().toString()) {
-            case ("0-todas") : {filtro="";break;}
-            case ("1-pizzas") : {filtro="pizzas";break;}
-            case ("2-hamburguesas") : {filtro="hamburguesas";break;}
-            case ("3-lomos") : {filtro="lomos";break;}
-            case ("4-tacos") : {filtro="tacos";break;}
-            case ("5-bebidas/a") : {filtro="bebidas sin alcohol";break;}
-            case ("6-bebidasc/a") : {filtro="bebidas con alcohol";break;}
-            case ("7-gaseosas") : {filtro="bebidas gaseosas";break;}
-            default : {filtro="";break;}
-        }
+        String filtro=null;
         
         if (!cargando) {
             cargando = true;
@@ -454,7 +451,6 @@ public class VReservas extends javax.swing.JInternalFrame {
             cargando = false;
             jbCargar.setEnabled(true);
             jbGuardar.setEnabled(false);
-            jcCategoria.setSelectedIndex(0);
             jtfBuscar.setText("");
             jTable.setModel(modelo);
             lista = pdata.listar();
@@ -678,6 +674,14 @@ public class VReservas extends javax.swing.JInternalFrame {
         jTable.setModel(modelo);
         cargarFiltro();
     }//GEN-LAST:event_jbActualizarActionPerformed
+
+    private void jcbFechaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbFechaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jcbFechaActionPerformed
+
+    private void jrVigenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jrVigenciaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jrVigenciaActionPerformed
     
     public void limpiarAcciones() {
         jTable.setModel(modelo);
@@ -774,19 +778,8 @@ public class VReservas extends javax.swing.JInternalFrame {
     }
     
     private void cargarFiltro() {
-        String filtro;
+        String filtro=null;
         String nombre = jtfBuscar.getText();
-        switch (jcCategoria.getSelectedItem().toString()) {
-            case ("0-todas") : {filtro="todas";break;}
-            case ("1-pizzas") : {filtro="pizzas";break;}
-            case ("2-hamburguesas") : {filtro="hamburguesas";break;}
-            case ("3-lomos") : {filtro="lomos";break;}
-            case ("4-tacos") : {filtro="tacos";break;}
-            case ("5-bebidas/a") : {filtro="bebidas sin alcohol";break;}
-            case ("6-bebidasc/a") : {filtro="bebidas con alcohol";break;}
-            case ("7-gaseosas") : {filtro="bebidas gaseosas";break;}
-            default : {filtro="ninguna";break;}
-        }
         
         try {
             if (nombre.trim().isEmpty()) {
@@ -807,10 +800,10 @@ public class VReservas extends javax.swing.JInternalFrame {
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLfondo;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable;
@@ -819,7 +812,10 @@ public class VReservas extends javax.swing.JInternalFrame {
     private javax.swing.JButton jbCargar;
     private javax.swing.JButton jbEliminar;
     private javax.swing.JButton jbGuardar;
-    private javax.swing.JComboBox<String> jcCategoria;
+    private javax.swing.JCheckBox jcbFecha;
+    private javax.swing.JCheckBox jcbHora;
+    private javax.swing.JRadioButton jrNoVigencia;
+    private javax.swing.JRadioButton jrVigencia;
     private javax.swing.JTextField jtfBuscar;
     // End of variables declaration//GEN-END:variables
 }
