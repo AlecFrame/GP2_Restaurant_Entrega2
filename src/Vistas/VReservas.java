@@ -66,7 +66,7 @@ public class VReservas extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         jDesktopPane1 = new javax.swing.JDesktopPane();
-        buttonGroup1 = new javax.swing.ButtonGroup();
+        GrupoBotVigencia = new javax.swing.ButtonGroup();
         jLabel1 = new javax.swing.JLabel();
         jbBuscar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -222,6 +222,7 @@ public class VReservas extends javax.swing.JInternalFrame {
         jcbHora.setText("Hora Reservada");
 
         jrVigencia.setBackground(new java.awt.Color(204, 187, 165));
+        GrupoBotVigencia.add(jrVigencia);
         jrVigencia.setFont(new java.awt.Font("Monotype Corsiva", 0, 18)); // NOI18N
         jrVigencia.setText("Vigencia");
         jrVigencia.addActionListener(new java.awt.event.ActionListener() {
@@ -231,6 +232,7 @@ public class VReservas extends javax.swing.JInternalFrame {
         });
 
         jrNoVigencia.setBackground(new java.awt.Color(204, 187, 165));
+        GrupoBotVigencia.add(jrNoVigencia);
         jrNoVigencia.setFont(new java.awt.Font("Monotype Corsiva", 0, 18)); // NOI18N
         jrNoVigencia.setText("No Vigencia");
         jrNoVigencia.addActionListener(new java.awt.event.ActionListener() {
@@ -829,7 +831,7 @@ public class VReservas extends javax.swing.JInternalFrame {
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.ButtonGroup GrupoBotVigencia;
     private javax.swing.JButton jButton1;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JDesktopPane jDesktopPane1;
