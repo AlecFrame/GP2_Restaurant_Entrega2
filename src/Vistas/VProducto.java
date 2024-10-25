@@ -79,6 +79,7 @@ public class VProducto extends javax.swing.JInternalFrame {
         jbGuardar = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jLfondo = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
 
         javax.swing.GroupLayout jDesktopPane1Layout = new javax.swing.GroupLayout(jDesktopPane1);
         jDesktopPane1.setLayout(jDesktopPane1Layout);
@@ -91,18 +92,18 @@ public class VProducto extends javax.swing.JInternalFrame {
             .addGap(0, 100, Short.MAX_VALUE)
         );
 
-        setBackground(new java.awt.Color(255, 204, 153));
+        setBackground(new java.awt.Color(204, 187, 161));
         setBorder(null);
         setForeground(new java.awt.Color(255, 255, 204));
         setTitle("Productos");
         setFont(new java.awt.Font("Calibri", 1, 10)); // NOI18N
 
-        jLabel1.setFont(new java.awt.Font("Pristina", 1, 18)); // NOI18N
-        jLabel1.setText("Buscar por código/nombre:  ");
+        jLabel1.setFont(new java.awt.Font("Monotype Corsiva", 1, 18)); // NOI18N
+        jLabel1.setText("Busca por:  ");
         jLabel1.setAlignmentY(0.0F);
 
         jbBuscar.setBackground(new java.awt.Color(162, 108, 72));
-        jbBuscar.setFont(new java.awt.Font("Pristina", 1, 14)); // NOI18N
+        jbBuscar.setFont(new java.awt.Font("Monotype Corsiva", 1, 14)); // NOI18N
         jbBuscar.setForeground(new java.awt.Color(255, 255, 204));
         jbBuscar.setText("Buscar");
         jbBuscar.setBorder(null);
@@ -126,11 +127,12 @@ public class VProducto extends javax.swing.JInternalFrame {
             }
         });
 
-        jLabel2.setFont(new java.awt.Font("Pristina", 1, 18)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Monotype Corsiva", 1, 18)); // NOI18N
         jLabel2.setText("Categorias:");
 
         jTable.setBackground(new java.awt.Color(255, 255, 204));
         jTable.setBorder(new javax.swing.border.MatteBorder(null));
+        jTable.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jTable.setForeground(new java.awt.Color(153, 90, 48));
         jTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -162,7 +164,7 @@ public class VProducto extends javax.swing.JInternalFrame {
         jScrollPane1.setViewportView(jTable);
 
         jbCargar.setBackground(new java.awt.Color(162, 108, 72));
-        jbCargar.setFont(new java.awt.Font("Pristina", 1, 14)); // NOI18N
+        jbCargar.setFont(new java.awt.Font("Monotype Corsiva", 1, 14)); // NOI18N
         jbCargar.setForeground(new java.awt.Color(255, 255, 204));
         jbCargar.setText("Cargar");
         jbCargar.addActionListener(new java.awt.event.ActionListener() {
@@ -172,7 +174,7 @@ public class VProducto extends javax.swing.JInternalFrame {
         });
 
         jbActualizar.setBackground(new java.awt.Color(162, 108, 72));
-        jbActualizar.setFont(new java.awt.Font("Pristina", 1, 14)); // NOI18N
+        jbActualizar.setFont(new java.awt.Font("Monotype Corsiva", 1, 14)); // NOI18N
         jbActualizar.setForeground(new java.awt.Color(255, 255, 204));
         jbActualizar.setText("Actualizar");
         jbActualizar.addActionListener(new java.awt.event.ActionListener() {
@@ -181,7 +183,7 @@ public class VProducto extends javax.swing.JInternalFrame {
             }
         });
 
-        jbEliminar.setFont(new java.awt.Font("Pristina", 1, 14)); // NOI18N
+        jbEliminar.setFont(new java.awt.Font("Monotype Corsiva", 1, 14)); // NOI18N
         jbEliminar.setForeground(new java.awt.Color(204, 0, 0));
         jbEliminar.setText("Eliminar");
         jbEliminar.addActionListener(new java.awt.event.ActionListener() {
@@ -191,7 +193,7 @@ public class VProducto extends javax.swing.JInternalFrame {
         });
 
         jbGuardar.setBackground(new java.awt.Color(162, 108, 72));
-        jbGuardar.setFont(new java.awt.Font("Pristina", 1, 14)); // NOI18N
+        jbGuardar.setFont(new java.awt.Font("Monotype Corsiva", 1, 14)); // NOI18N
         jbGuardar.setForeground(new java.awt.Color(255, 255, 204));
         jbGuardar.setText("Guardar");
         jbGuardar.addActionListener(new java.awt.event.ActionListener() {
@@ -201,7 +203,7 @@ public class VProducto extends javax.swing.JInternalFrame {
         });
 
         jButton1.setBackground(new java.awt.Color(204, 0, 0));
-        jButton1.setFont(new java.awt.Font("Pristina", 1, 14)); // NOI18N
+        jButton1.setFont(new java.awt.Font("Monotype Corsiva", 1, 14)); // NOI18N
         jButton1.setForeground(new java.awt.Color(255, 255, 204));
         jButton1.setText("Cerrar");
         jButton1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -219,6 +221,9 @@ public class VProducto extends javax.swing.JInternalFrame {
         jLfondo.setBackground(new java.awt.Color(255, 204, 153));
         jLfondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/r25.jpg"))); // NOI18N
 
+        jLabel3.setFont(new java.awt.Font("Monotype Corsiva", 0, 18)); // NOI18N
+        jLabel3.setText("código/nombre");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -227,7 +232,7 @@ public class VProducto extends javax.swing.JInternalFrame {
                 .addComponent(jLfondo, javax.swing.GroupLayout.PREFERRED_SIZE, 575, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
-                .addGap(31, 31, 31)
+                .addGap(30, 30, 30)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jbCargar)
@@ -239,9 +244,15 @@ public class VProducto extends javax.swing.JInternalFrame {
                         .addComponent(jbEliminar))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(5, 5, 5)
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addGap(1, 1, 1)))
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jcCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -258,26 +269,27 @@ public class VProducto extends javax.swing.JInternalFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jLfondo, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26)
+                .addComponent(jLfondo, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jtfBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jbBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel3))
                 .addGap(13, 13, 13)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jcCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(34, 34, 34)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jbGuardar)
                     .addComponent(jbCargar)
                     .addComponent(jbActualizar)
                     .addComponent(jbEliminar))
-                .addContainerGap(43, Short.MAX_VALUE))
+                .addContainerGap(33, Short.MAX_VALUE))
         );
 
         pack();
@@ -316,14 +328,14 @@ public class VProducto extends javax.swing.JInternalFrame {
     private void jbCargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCargarActionPerformed
         String filtro;
         switch (jcCategoria.getSelectedItem().toString()) {
-            case ("0-todas") : {filtro="";break;}
-            case ("1-pizzas") : {filtro="pizzas";break;}
-            case ("2-hamburguesas") : {filtro="hamburguesas";break;}
-            case ("3-lomos") : {filtro="lomos";break;}
-            case ("4-tacos") : {filtro="tacos";break;}
-            case ("5-bebidas/a") : {filtro="bebidas sin alcohol";break;}
-            case ("6-bebidasc/a") : {filtro="bebidas con alcohol";break;}
-            case ("7-gaseosas") : {filtro="bebidas gaseosas";break;}
+            case ("0-Todas") : {filtro="";break;}
+            case ("1-Pizzas") : {filtro="pizzas";break;}
+            case ("2-Hamburguesas") : {filtro="hamburguesas";break;}
+            case ("3-Lomos") : {filtro="lomos";break;}
+            case ("4-Tacos") : {filtro="tacos";break;}
+            case ("5-Bebida s/a") : {filtro="bebidas sin alcohol";break;}
+            case ("6-Bebida c/a") : {filtro="bebidas con alcohol";break;}
+            case ("7-Gaseosas") : {filtro="bebidas gaseosas";break;}
             default : {filtro="";break;}
         }
         
@@ -382,18 +394,18 @@ public class VProducto extends javax.swing.JInternalFrame {
             if (pdata.buscar(codigo)==null) {
                 p.setCodigo(codigo);
             }else{
-                JOptionPane.showMessageDialog(this, "Error el codigo ingresado ya existe en la base de datos", "Error codigo existente", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error el código ingresado ya existe en la base de datos", "Error código existente", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }catch(NumberFormatException | SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error el codigo ingresado no es un numero entero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error el código ingresado no es un número entero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
         if (!mnombre.trim().equalsIgnoreCase("")) {
             p.setNombre(mnombre);
         }else{
-            JOptionPane.showMessageDialog(this, "Error el nombre esta vacio", "Error nombre vacio", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error el nombre esta vacío", "Error nombre vacío", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
@@ -401,7 +413,7 @@ public class VProducto extends javax.swing.JInternalFrame {
             double precio = Double.parseDouble(mprecio);
             p.setPrecio(precio);
         }catch(NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Error el precio ingresado no es un numero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error el precio ingresado no es un número: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
@@ -588,7 +600,7 @@ public class VProducto extends javax.swing.JInternalFrame {
         try {
             int codigo = Integer.parseInt(mcodigo);
             if (codigo<1) {
-                JOptionPane.showMessageDialog(this, "Error el codigo no puede ser menor a uno", "Error de tipo codigo", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error el código no puede ser menor a uno", "Error de tipo código", JOptionPane.ERROR_MESSAGE);
                 return;
             }else
             if (pdata.buscar(codigo)==null) {
@@ -598,12 +610,12 @@ public class VProducto extends javax.swing.JInternalFrame {
                 if (mcodigo.equals(pcodigo)) {
                     p.setCodigo(codigo);
                 }else{
-                    JOptionPane.showMessageDialog(this, "Error el codigo ingresado ya existe en la base de datos", "Error codigo existente", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Error el código ingresado ya existe en la base de datos", "Error código existente", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
             }
         }catch(NumberFormatException | SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error el codigo ingresado no es un numero entero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error el código ingresado no es un número entero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
@@ -611,7 +623,7 @@ public class VProducto extends javax.swing.JInternalFrame {
             p.setNombre(mnombre);
             cambios += ",nombre";
         }else{
-            JOptionPane.showMessageDialog(this, "Error el nombre esta vacio", "Error nombre vacio", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error el nombre esta vacío", "Error nombre vacío", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
@@ -620,7 +632,7 @@ public class VProducto extends javax.swing.JInternalFrame {
             p.setPrecio(precio);
             cambios += ",precio";
         }catch(NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Error el precio ingresado no es un numero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error el precio ingresado no es un número: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
@@ -629,7 +641,7 @@ public class VProducto extends javax.swing.JInternalFrame {
             p.setStock(stock);
             cambios += ",stock";
         }catch(NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Error el stock ingresado no es un numero entero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error el stock ingresado no es un número entero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
@@ -659,7 +671,7 @@ public class VProducto extends javax.swing.JInternalFrame {
             }
             cambios += ",categoria";
         }else{
-            JOptionPane.showMessageDialog(this, "Error la categoria solo puede ser:(1:pizzas|2:lomos|3:hamburguesas|4:tacos|5:bebidas con alcohol|6:bebidas sin alcohol|7:bebidas gaseosas)", "Error nombre vacio", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error la categoría solo puede ser:(1:pizzas|2:lomos|3:hamburguesas|4:tacos|5:bebidas con alcohol|6:bebidas sin alcohol|7:bebidas gaseosas)", "Error nombre vacio", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
@@ -667,7 +679,7 @@ public class VProducto extends javax.swing.JInternalFrame {
             p.setEstado(mestado.equalsIgnoreCase("true"));
             cambios += ",estado";
         }else{
-            JOptionPane.showMessageDialog(this, "Errorn el estado debe ser True o False", "Error de tipos de datos", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error en el estado debe ser True o False", "Error de tipos de datos", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
@@ -701,20 +713,20 @@ public class VProducto extends javax.swing.JInternalFrame {
         modelo.addColumn("Nombre");
         modelo.addColumn("Precio");
         modelo.addColumn("Stock");
-        modelo.addColumn("Categoria");
+        modelo.addColumn("Categoría");
         modelo.addColumn("Estado");
         jTable.setModel(modelo);
         modelo2.addColumn("Código");
         modelo2.addColumn("Nombre");
         modelo2.addColumn("Precio");
         modelo2.addColumn("Stock");
-        modelo2.addColumn("Categoria");
+        modelo2.addColumn("Categoría");
         modelo2.addColumn("Estado");
         modelo3.addColumn("Código");
         modelo3.addColumn("Nombre");
         modelo3.addColumn("Precio");
         modelo3.addColumn("Stock");
-        modelo3.addColumn("Categoria");
+        modelo3.addColumn("Categoría");
         modelo3.addColumn("Estado");
     }
     
@@ -811,6 +823,7 @@ public class VProducto extends javax.swing.JInternalFrame {
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLfondo;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable;

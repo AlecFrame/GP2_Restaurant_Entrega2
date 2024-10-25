@@ -32,6 +32,7 @@ public class VentPrincipal extends javax.swing.JFrame {
         jCategoria = new javax.swing.JMenuItem();
         jReserva = new javax.swing.JMenu();
         jMesero = new javax.swing.JMenu();
+        jMenu1 = new javax.swing.JMenu();
         jSalir = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -58,7 +59,7 @@ public class VentPrincipal extends javax.swing.JFrame {
         jMenu.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jMenu.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jMenu.setInheritsPopupMenu(true);
-        jMenu.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        jMenu.setMargin(new java.awt.Insets(4, 4, 4, 4));
 
         jDetPedido.setBorder(null);
         jDetPedido.setForeground(new java.awt.Color(255, 255, 204));
@@ -98,12 +99,27 @@ public class VentPrincipal extends javax.swing.JFrame {
         jReserva.setBackground(new java.awt.Color(153, 102, 0));
         jReserva.setForeground(new java.awt.Color(255, 255, 204));
         jReserva.setText("Reserva");
+        jReserva.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jReservaMouseClicked(evt);
+            }
+        });
         jMenu.add(jReserva);
 
         jMesero.setBackground(new java.awt.Color(153, 102, 0));
         jMesero.setForeground(new java.awt.Color(255, 255, 204));
         jMesero.setText("Mesero");
         jMenu.add(jMesero);
+
+        jMenu1.setBackground(new java.awt.Color(153, 102, 0));
+        jMenu1.setForeground(new java.awt.Color(255, 255, 204));
+        jMenu1.setText("Mesa");
+        jMenu1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenu1MouseClicked(evt);
+            }
+        });
+        jMenu.add(jMenu1);
 
         jSalir.setBorder(null);
         jSalir.setForeground(new java.awt.Color(255, 255, 255));
@@ -158,12 +174,31 @@ public class VentPrincipal extends javax.swing.JFrame {
         escritorio.moveToFront(v);
     }//GEN-LAST:event_jCategoriaActionPerformed
 
+    private void jReservaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jReservaMouseClicked
+        escritorio.removeAll();
+        escritorio.repaint();
+        VReservas v = new VReservas();
+        v.setVisible(true);
+        escritorio.add(v);
+        escritorio.moveToFront(v);        
+    }//GEN-LAST:event_jReservaMouseClicked
+
+    private void jMenu1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu1MouseClicked
+        escritorio.removeAll();
+        escritorio.repaint();
+        VMesa v = new VMesa();
+        v.setVisible(true);
+        escritorio.add(v);
+        escritorio.moveToFront(v);
+    }//GEN-LAST:event_jMenu1MouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem jCategoria;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jDetPedido;
     private javax.swing.JMenuBar jMenu;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMesero;
     private javax.swing.JMenuItem jPedido;
     private javax.swing.JMenu jProductos;
