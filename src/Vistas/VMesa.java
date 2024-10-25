@@ -99,6 +99,7 @@ public class VMesa extends javax.swing.JInternalFrame {
         setForeground(new java.awt.Color(255, 255, 204));
         setTitle("Mesa");
         setFont(new java.awt.Font("Calibri", 1, 10)); // NOI18N
+        setFrameIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/Logo5.png"))); // NOI18N
 
         jbBuscar.setBackground(new java.awt.Color(153, 102, 0));
         jbBuscar.setFont(new java.awt.Font("Monotype Corsiva", 1, 14)); // NOI18N

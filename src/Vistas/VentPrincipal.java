@@ -1,6 +1,8 @@
 package Vistas;
 
 import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import javax.swing.JDesktopPane;
@@ -17,6 +19,15 @@ public class VentPrincipal extends javax.swing.JFrame {
         escritorio= new VentPrincipal.EscritorioPersonalizado();
         this.setContentPane(escritorio);
         this.setLocationRelativeTo(this);
+        
+        setIconImage(getIconImage());
+    }
+    
+    //Logo ventana principal
+   @Override
+    public Image getIconImage(){
+        Image retValue= Toolkit.getDefaultToolkit().getImage(ClassLoader.getSystemResource("Recursos/logo4.png"));
+        return retValue;
     }
 
    
@@ -32,7 +43,7 @@ public class VentPrincipal extends javax.swing.JFrame {
         jCategoria = new javax.swing.JMenuItem();
         jReserva = new javax.swing.JMenu();
         jMesero = new javax.swing.JMenu();
-        jMenu1 = new javax.swing.JMenu();
+        jMesa = new javax.swing.JMenu();
         jSalir = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -111,15 +122,15 @@ public class VentPrincipal extends javax.swing.JFrame {
         jMesero.setText("Mesero");
         jMenu.add(jMesero);
 
-        jMenu1.setBackground(new java.awt.Color(153, 102, 0));
-        jMenu1.setForeground(new java.awt.Color(255, 255, 204));
-        jMenu1.setText("Mesa");
-        jMenu1.addMouseListener(new java.awt.event.MouseAdapter() {
+        jMesa.setBackground(new java.awt.Color(153, 102, 0));
+        jMesa.setForeground(new java.awt.Color(255, 255, 204));
+        jMesa.setText("Mesa");
+        jMesa.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jMenu1MouseClicked(evt);
+                jMesaMouseClicked(evt);
             }
         });
-        jMenu.add(jMenu1);
+        jMenu.add(jMesa);
 
         jSalir.setBorder(null);
         jSalir.setForeground(new java.awt.Color(255, 255, 255));
@@ -183,14 +194,14 @@ public class VentPrincipal extends javax.swing.JFrame {
         escritorio.moveToFront(v);        
     }//GEN-LAST:event_jReservaMouseClicked
 
-    private void jMenu1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu1MouseClicked
+    private void jMesaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMesaMouseClicked
         escritorio.removeAll();
         escritorio.repaint();
         VMesa v = new VMesa();
         v.setVisible(true);
         escritorio.add(v);
         escritorio.moveToFront(v);
-    }//GEN-LAST:event_jMenu1MouseClicked
+    }//GEN-LAST:event_jMesaMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -198,7 +209,7 @@ public class VentPrincipal extends javax.swing.JFrame {
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jDetPedido;
     private javax.swing.JMenuBar jMenu;
-    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMesa;
     private javax.swing.JMenu jMesero;
     private javax.swing.JMenuItem jPedido;
     private javax.swing.JMenu jProductos;

@@ -77,7 +77,7 @@ public class VProducto extends javax.swing.JInternalFrame {
         jbEliminar = new javax.swing.JButton();
         jtfBuscar = new javax.swing.JTextField();
         jbGuardar = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        jbSalir = new javax.swing.JButton();
         jLfondo = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
 
@@ -97,6 +97,7 @@ public class VProducto extends javax.swing.JInternalFrame {
         setForeground(new java.awt.Color(255, 255, 204));
         setTitle("Productos");
         setFont(new java.awt.Font("Calibri", 1, 10)); // NOI18N
+        setFrameIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/Logo5.png"))); // NOI18N
 
         jLabel1.setFont(new java.awt.Font("Monotype Corsiva", 1, 18)); // NOI18N
         jLabel1.setText("Busca por:  ");
@@ -202,24 +203,19 @@ public class VProducto extends javax.swing.JInternalFrame {
             }
         });
 
-        jButton1.setBackground(new java.awt.Color(204, 0, 0));
-        jButton1.setFont(new java.awt.Font("Monotype Corsiva", 1, 14)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 204));
-        jButton1.setText("Cerrar");
-        jButton1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+        jbSalir.setBackground(new java.awt.Color(204, 0, 0));
+        jbSalir.setFont(new java.awt.Font("Monotype Corsiva", 1, 14)); // NOI18N
+        jbSalir.setForeground(new java.awt.Color(255, 255, 204));
+        jbSalir.setText("Cerrar");
+        jbSalir.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jbSalir.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
-            }
-        });
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jbSalirMouseClicked(evt);
             }
         });
 
         jLfondo.setBackground(new java.awt.Color(255, 204, 153));
-        jLfondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/r25.jpg"))); // NOI18N
+        jLfondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/empanadas.jpg"))); // NOI18N
 
         jLabel3.setFont(new java.awt.Font("Monotype Corsiva", 0, 18)); // NOI18N
         jLabel3.setText("código/nombre");
@@ -262,7 +258,7 @@ public class VProducto extends javax.swing.JInternalFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(jbBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addComponent(jbSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 506, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -274,7 +270,7 @@ public class VProducto extends javax.swing.JInternalFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jtfBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jbBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jbSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1)
                     .addComponent(jLabel3))
                 .addGap(13, 13, 13)
@@ -476,13 +472,9 @@ public class VProducto extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_jbGuardarActionPerformed
 
-    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+    private void jbSalirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jbSalirMouseClicked
         dispose();
-    }//GEN-LAST:event_jButton1MouseClicked
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_jbSalirMouseClicked
 
     private void jTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableMouseClicked
         rowSelected = jTable.getSelectedRow();
@@ -819,7 +811,6 @@ public class VProducto extends javax.swing.JInternalFrame {
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -832,6 +823,7 @@ public class VProducto extends javax.swing.JInternalFrame {
     private javax.swing.JButton jbCargar;
     private javax.swing.JButton jbEliminar;
     private javax.swing.JButton jbGuardar;
+    private javax.swing.JButton jbSalir;
     private javax.swing.JComboBox<String> jcCategoria;
     private javax.swing.JTextField jtfBuscar;
     // End of variables declaration//GEN-END:variables
