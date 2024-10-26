@@ -1,5 +1,6 @@
 package Vistas;
 
+import Vistas.VProducto;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;

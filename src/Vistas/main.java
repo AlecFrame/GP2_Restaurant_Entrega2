@@ -468,9 +468,6 @@ public class main {
         
     }
     }
-
-    
-    
     private static void gestionarMeseros(MeseroData meseroData, Scanner leerInt, Scanner leerString) {
         Set<String> accionesMesero = new HashSet<>();
         accionesMesero.add("1");
