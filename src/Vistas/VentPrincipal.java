@@ -4,9 +4,11 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import javafx.scene.paint.Color;
 import javax.imageio.ImageIO;
 import javax.swing.JDesktopPane;
 import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.YES_NO_OPTION;
 
 
 public class VentPrincipal extends javax.swing.JFrame {
@@ -67,14 +69,22 @@ public class VentPrincipal extends javax.swing.JFrame {
         jMenu.setBackground(new java.awt.Color(152, 102, 0));
         jMenu.setBorder(null);
         jMenu.setForeground(new java.awt.Color(153, 102, 0));
+        jMenu.setBorderPainted(false);
         jMenu.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jMenu.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jMenu.setInheritsPopupMenu(true);
-        jMenu.setMargin(new java.awt.Insets(4, 4, 4, 4));
 
         jDetPedido.setBorder(null);
         jDetPedido.setForeground(new java.awt.Color(255, 255, 204));
         jDetPedido.setText("Detalle de Pedidos");
+        jDetPedido.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jDetPedidoMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jDetPedidoMouseExited(evt);
+            }
+        });
 
         jPedido.setBackground(new java.awt.Color(204, 102, 0));
         jPedido.setForeground(new java.awt.Color(255, 255, 204));
@@ -93,11 +103,19 @@ public class VentPrincipal extends javax.swing.JFrame {
         jProductos.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(153, 102, 0)));
         jProductos.setForeground(new java.awt.Color(255, 255, 204));
         jProductos.setText("Productos");
+        jProductos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jProductosMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jProductosMouseExited(evt);
+            }
+        });
 
         jCategoria.setBackground(new java.awt.Color(204, 102, 0));
         jCategoria.setForeground(new java.awt.Color(255, 255, 204));
         jCategoria.setText("Categoría");
-        jCategoria.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(204, 153, 0)));
+        jCategoria.setBorder(null);
         jCategoria.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCategoriaActionPerformed(evt);
@@ -108,19 +126,28 @@ public class VentPrincipal extends javax.swing.JFrame {
         jMenu.add(jProductos);
 
         jReserva.setBackground(new java.awt.Color(153, 102, 0));
+        jReserva.setBorder(null);
         jReserva.setForeground(new java.awt.Color(255, 255, 204));
         jReserva.setText("Reserva");
         jReserva.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jReservaMouseClicked(evt);
             }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jReservaMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jReservaMouseExited(evt);
+            }
         });
         jMenu.add(jReserva);
 
         jMesero.setBackground(new java.awt.Color(153, 102, 0));
+        jMesero.setBorder(null);
         jMesero.setForeground(new java.awt.Color(255, 255, 204));
         jMesero.setText("Mesero");
         jMesero.addMouseListener(new java.awt.event.MouseAdapter() {
+<<<<<<< Updated upstream
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jMeseroMouseClicked(evt);
             }
@@ -128,16 +155,30 @@ public class VentPrincipal extends javax.swing.JFrame {
         jMesero.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMeseroActionPerformed(evt);
+=======
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jMeseroMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jMeseroMouseExited(evt);
+>>>>>>> Stashed changes
             }
         });
         jMenu.add(jMesero);
 
         jMesa.setBackground(new java.awt.Color(153, 102, 0));
+        jMesa.setBorder(null);
         jMesa.setForeground(new java.awt.Color(255, 255, 204));
         jMesa.setText("Mesa");
         jMesa.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jMesaMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jMesaMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jMesaMouseExited(evt);
             }
         });
         jMenu.add(jMesa);
@@ -150,6 +191,12 @@ public class VentPrincipal extends javax.swing.JFrame {
         jSalir.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jSalirMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jSalirMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jSalirMouseExited(evt);
             }
         });
         jMenu.add(jSalir);
@@ -173,18 +220,6 @@ public class VentPrincipal extends javax.swing.JFrame {
     private void jPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPedidoActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jPedidoActionPerformed
-
-    private void jSalirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSalirMouseClicked
-
-        int cartel= JOptionPane.showConfirmDialog(this, "¿Desea salir de la aplicación?","Precaución",JOptionPane.WARNING_MESSAGE);
-        
-        if(cartel == JOptionPane.YES_OPTION){
-            System.exit(WIDTH);
-        }
-        
-        
-   
-    }//GEN-LAST:event_jSalirMouseClicked
 
     private void jCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCategoriaActionPerformed
         escritorio.removeAll();
@@ -213,6 +248,7 @@ public class VentPrincipal extends javax.swing.JFrame {
         escritorio.moveToFront(v);
     }//GEN-LAST:event_jMesaMouseClicked
 
+<<<<<<< Updated upstream
     private void jMeseroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMeseroActionPerformed
         
     }//GEN-LAST:event_jMeseroActionPerformed
@@ -225,6 +261,62 @@ public class VentPrincipal extends javax.swing.JFrame {
         escritorio.add(v);
         escritorio.moveToFront(v);
     }//GEN-LAST:event_jMeseroMouseClicked
+=======
+    private void jReservaMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jReservaMouseExited
+        jReserva.setForeground(java.awt.Color.yellow);
+    }//GEN-LAST:event_jReservaMouseExited
+
+    private void jSalirMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSalirMouseExited
+        jSalir.setForeground(java.awt.Color.white);
+    }//GEN-LAST:event_jSalirMouseExited
+
+    private void jSalirMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSalirMouseEntered
+        jSalir.setForeground(java.awt.Color.red);
+    }//GEN-LAST:event_jSalirMouseEntered
+
+    private void jMeseroMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMeseroMouseEntered
+        jMesero.setForeground(java.awt.Color.orange);
+    }//GEN-LAST:event_jMeseroMouseEntered
+
+    private void jMeseroMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMeseroMouseExited
+        jMesero.setForeground(java.awt.Color.yellow);
+    }//GEN-LAST:event_jMeseroMouseExited
+
+    private void jMesaMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMesaMouseEntered
+        jMesa.setForeground(java.awt.Color.orange);
+    }//GEN-LAST:event_jMesaMouseEntered
+
+    private void jMesaMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMesaMouseExited
+        jMesa.setForeground(java.awt.Color.yellow);
+    }//GEN-LAST:event_jMesaMouseExited
+
+    private void jReservaMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jReservaMouseEntered
+        jReserva.setForeground(java.awt.Color.orange);
+    }//GEN-LAST:event_jReservaMouseEntered
+
+    private void jProductosMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jProductosMouseEntered
+        jProductos.setForeground(java.awt.Color.orange);
+    }//GEN-LAST:event_jProductosMouseEntered
+
+    private void jProductosMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jProductosMouseExited
+        jProductos.setForeground(java.awt.Color.yellow);
+    }//GEN-LAST:event_jProductosMouseExited
+
+    private void jDetPedidoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jDetPedidoMouseEntered
+        jDetPedido.setForeground(java.awt.Color.orange);
+    }//GEN-LAST:event_jDetPedidoMouseEntered
+
+    private void jDetPedidoMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jDetPedidoMouseExited
+        jDetPedido.setForeground(java.awt.Color.yellow); 
+    }//GEN-LAST:event_jDetPedidoMouseExited
+
+    private void jSalirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSalirMouseClicked
+        int rta=JOptionPane.showConfirmDialog(this,"¿Desea salir del sistema?","Advertencia", JOptionPane.YES_NO_OPTION);
+        if(rta==JOptionPane.YES_OPTION){
+            System.exit(0);
+        }
+    }//GEN-LAST:event_jSalirMouseClicked
+>>>>>>> Stashed changes
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
