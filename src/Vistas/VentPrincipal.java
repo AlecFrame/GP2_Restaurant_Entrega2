@@ -125,15 +125,6 @@ public class VentPrincipal extends javax.swing.JFrame {
         jMenu.add(jProductos);
 
         jReserva.setBackground(new java.awt.Color(153, 102, 0));
-        jReserva.setForeground(new java.awt.Color(255, 255, 204));
-        jReserva.setText("Reserva");
-        jMenu.add(jReserva);
-
-        jMesero.setBackground(new java.awt.Color(153, 102, 0));
-        jMesero.setForeground(new java.awt.Color(255, 255, 204));
-        jMesero.setText("Mesero");
-        jMenu.add(jMesero);
-
         jReserva.setBorder(null);
         jReserva.setForeground(new java.awt.Color(255, 255, 204));
         jReserva.setText("Reserva");
@@ -155,11 +146,19 @@ public class VentPrincipal extends javax.swing.JFrame {
         jMesero.setForeground(new java.awt.Color(255, 255, 204));
         jMesero.setText("Mesero");
         jMesero.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMeseroMouseClicked(evt);
+            }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jMeseroMouseEntered(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 jMeseroMouseExited(evt);
+            }
+        });
+        jMesero.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMeseroActionPerformed(evt);
             }
         });
         jMenu.add(jMesero);
@@ -300,6 +299,19 @@ public class VentPrincipal extends javax.swing.JFrame {
             System.exit(0);
         }
     }//GEN-LAST:event_jSalirMouseClicked
+
+    private void jMeseroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMeseroActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMeseroActionPerformed
+
+    private void jMeseroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMeseroMouseClicked
+        escritorio.removeAll();
+        escritorio.repaint();
+        VMeseros v = new VMeseros();
+        v.setVisible(true);
+        escritorio.add(v);
+        escritorio.moveToFront(v);   
+    }//GEN-LAST:event_jMeseroMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem jCategoria;
