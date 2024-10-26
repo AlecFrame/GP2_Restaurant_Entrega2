@@ -120,6 +120,16 @@ public class VentPrincipal extends javax.swing.JFrame {
         jMesero.setBackground(new java.awt.Color(153, 102, 0));
         jMesero.setForeground(new java.awt.Color(255, 255, 204));
         jMesero.setText("Mesero");
+        jMesero.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMeseroMouseClicked(evt);
+            }
+        });
+        jMesero.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMeseroActionPerformed(evt);
+            }
+        });
         jMenu.add(jMesero);
 
         jMesa.setBackground(new java.awt.Color(153, 102, 0));
@@ -202,6 +212,19 @@ public class VentPrincipal extends javax.swing.JFrame {
         escritorio.add(v);
         escritorio.moveToFront(v);
     }//GEN-LAST:event_jMesaMouseClicked
+
+    private void jMeseroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMeseroActionPerformed
+        
+    }//GEN-LAST:event_jMeseroActionPerformed
+
+    private void jMeseroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMeseroMouseClicked
+
+        escritorio.repaint();
+        VMeseros v = new VMeseros();
+        v.setVisible(true);
+        escritorio.add(v);
+        escritorio.moveToFront(v);
+    }//GEN-LAST:event_jMeseroMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

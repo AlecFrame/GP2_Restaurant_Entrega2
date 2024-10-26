@@ -1,5 +1,4 @@
 package Persistencia;
-
 import Modelo.Conexion;
 import Modelo.Mesero;
 import Modelo.Pedido;
@@ -13,12 +12,16 @@ public class MeseroData {
 
     
     public void guardarMesero(Mesero mesero) throws SQLException {
-        String sql = "INSERT INTO mesero(dni, nombre, apellido) VALUES(?, ?, ?)";
+        String sql = "INSERT INTO mesero(dni, nombre, apellido, reemplazando, estado, numero_mesa) VALUES(?, ?, ?, ?, ?, ?)";
         
         PreparedStatement ps = con.prepareStatement(sql);
         ps.setInt(1, mesero.getDniMesero());
         ps.setString(2, mesero.getNombre());
         ps.setString(3, mesero.getApellido());
+        ps.setString(4, mesero.getReemplazando());
+        ps.setBoolean(5, mesero.isEstado());
+        ps.setInt(6, mesero.getNumeroMesa());
+      
         
         int filas = ps.executeUpdate();
         if (filas > 0) {
@@ -49,7 +52,14 @@ public class MeseroData {
         
         ResultSet rs = ps.executeQuery();
         while (rs.next()) {
-            mesero = new Mesero(rs.getInt("dni"), rs.getString("nombre"), rs.getString("apellido"));
+            mesero = new Mesero(
+                rs.getInt("dni"), 
+                rs.getString("nombre"), 
+                rs.getString("apellido"), 
+                rs.getString("reemplazando"), 
+                rs.getBoolean("estado"),
+                rs.getInt("numero_mesa") 
+            );
         }
         
         return mesero;
@@ -62,7 +72,10 @@ public class MeseroData {
         PreparedStatement ps = con.prepareStatement(sql);
         ps.setString(1, mesero.getNombre());
         ps.setString(2, mesero.getApellido());
-        ps.setInt(3, mesero.getDniMesero());
+        ps.setString(3, mesero.getReemplazando());
+        ps.setInt(4, mesero.isEstado() ? 1 : 0);
+        ps.setInt(5, mesero.getNumeroMesa()); 
+        ps.setInt(6, mesero.getDniMesero());
         
         int filas = ps.executeUpdate();
         if (filas > 0) {
@@ -78,8 +91,15 @@ public class MeseroData {
         Statement s = con.createStatement();
         ResultSet rs = s.executeQuery(sql);
         
-        while (rs.next()) {
-            lista.add(new Mesero(rs.getInt("dni"), rs.getString("nombre"), rs.getString("apellido")));
+      while (rs.next()) {
+            lista.add(new Mesero(
+                rs.getInt("dni"), 
+                rs.getString("nombre"), 
+                rs.getString("apellido"), 
+                rs.getString("reemplazando"), 
+                rs.getBoolean("estado"),
+                rs.getInt("numero_mesa")
+            ));
         }
         
         return lista;
