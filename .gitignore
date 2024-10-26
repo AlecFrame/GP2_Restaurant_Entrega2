@@ -27,3 +27,4 @@ replay_pid*
 # No ignorar la carpeta de librerías y los archivos .jar
 !lib/
 !lib/*.jar
+/dist/

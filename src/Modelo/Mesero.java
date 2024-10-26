@@ -7,16 +7,18 @@ public class Mesero {
     private String apellido;
     private String reemplazando;
     private boolean estado;
+    private int numeroMesa;
 
     
     
 
-    public Mesero(int dniMesero, String nombre, String apellido, String reemplazando, boolean estado) {
+    public Mesero(int dniMesero, String nombre, String apellido, String reemplazando, boolean estado, int numeroMesa) {
         this.dniMesero = dniMesero;
         this.nombre = nombre;
         this.apellido = apellido;
         this.reemplazando = reemplazando;
         this.estado = estado;
+        this.numeroMesa = numeroMesa;
     }
 
     public Mesero(int aInt, String string, String string0) {
@@ -64,7 +66,15 @@ public class Mesero {
     }
 
     public void setEstado(boolean estado) {
-        this.estado = estado;
+        this.estado = estado;}
+    
+    public int getNumeroMesa() {
+        return numeroMesa;
+    }
+
+    public void setNumeroMesa(int numeroMesa) {
+        this.numeroMesa = numeroMesa;
+    
     }
     
     @Override
@@ -73,6 +83,7 @@ public class Mesero {
                 "dniMesero=" + dniMesero +
                 ", nombre='" + nombre + '\'' +
                 ", apellido='" + apellido + '\'' +
+                ", numeroMesa=" + numeroMesa +
                 '}';
     }
 }
