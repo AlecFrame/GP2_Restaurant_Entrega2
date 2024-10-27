@@ -5,26 +5,28 @@ public class Mesero {
     private int dniMesero;
     private String nombre;
     private String apellido;
-    private String reemplazando;
+    private Mesa mesa;
+    private Mesero reemplazando;
     private boolean estado;
-    private int numeroMesa;
 
-
-    public Mesero(int dniMesero, String nombre, String apellido, String reemplazando, boolean estado, int numeroMesa) {
+    public Mesero(int dniMesero, String nombre, String apellido, Mesa mesa, Mesero reemplazando, boolean estado) {
         this.dniMesero = dniMesero;
         this.nombre = nombre;
         this.apellido = apellido;
+        this.mesa = mesa;
         this.reemplazando = reemplazando;
         this.estado = estado;
-        this.numeroMesa = numeroMesa;
     }
 
-    public Mesero(int aInt, String string, String string0) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Mesero(String nombre, String apellido, Mesa mesa, Mesero reemplazando, boolean estado) {
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.mesa = mesa;
+        this.reemplazando = reemplazando;
+        this.estado = estado;
     }
 
     public Mesero() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public int getDniMesero() {
@@ -51,11 +53,19 @@ public class Mesero {
         this.apellido = apellido;
     }
 
-    public String getReemplazando() {
+    public Mesa getMesa() {
+        return mesa;
+    }
+
+    public void setMesa(Mesa mesa) {
+        this.mesa = mesa;
+    }
+
+    public Mesero getReemplazando() {
         return reemplazando;
     }
 
-    public void setReemplazando(String reemplazando) {
+    public void setReemplazando(Mesero reemplazando) {
         this.reemplazando = reemplazando;
     }
 
@@ -66,23 +76,9 @@ public class Mesero {
     public void setEstado(boolean estado) {
         this.estado = estado;
     }
-    
-    public int getNumeroMesa() {
-        return numeroMesa;
-    }
 
-    public void setNumeroMesa(int numeroMesa) {
-        this.numeroMesa = numeroMesa;
-    
-    }
-    
     @Override
     public String toString() {
-        return "Mesero{" +
-                "dniMesero=" + dniMesero +
-                ", nombre='" + nombre + '\'' +
-                ", apellido='" + apellido + '\'' +
-                ", numeroMesa=" + numeroMesa +
-                '}';
+        return "Mesero{" + "dniMesero=" + dniMesero + ", nombre=" + nombre + ", apellido=" + apellido + ", mesa=" + mesa.getNumeroMesa() + ", reemplazando=" + reemplazando.getDniMesero() + ", estado=" + estado + '}';
     }
 }
