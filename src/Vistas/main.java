@@ -495,7 +495,7 @@ public class main {
             switch (accionMesero) {
                 case "1": 
                     try {
-                        ArrayList<Mesero> listaMeseros = meseroData.listarMeseros();
+                        ArrayList<Mesero> listaMeseros = meseroData.listar();
                         System.out.println("\n///// Lista de meseros /////");
                         for (Mesero m : listaMeseros) {
                             System.out.println(" - " + m);
@@ -510,7 +510,7 @@ public class main {
                     try {
                         System.out.print("//// Ingrese el ID del mesero: ");
                         int idMesero = leerInt.nextInt();
-                        Mesero mesero = meseroData.buscarMesero(idMesero);
+                        Mesero mesero = meseroData.buscar(String.valueOf(idMesero));
                         if (mesero != null) {
                             System.out.println("Mesero encontrado: " + mesero);
                         } else {
@@ -524,43 +524,240 @@ public class main {
                     }
                     break;
 
-                case "3":
+                case "3": {
                     Mesero nuevoMesero = new Mesero();
+                    MesaData mdata = new MesaData();
+                    MeseroData msdata = new MeseroData();
+                    boolean valido = true;
+                    System.out.print("//// Ingrese el DNI del nuevo mesero: ");
+                    do {
+                        valido = true;
+                        try {
+                            nuevoMesero.setDniMesero((int)leerInt.nextInt());
+                        } catch (InputMismatchException e) {
+                            System.err.print("//// valor invalido, tiene que ser un numero, intentelo nuevamente\n//// : ");
+                            leerInt.nextLine();
+                            valido = false;
+                        }
+                    } while (!valido);
+                    System.out.print("//// Ingrese el apellido del nuevo mesero: ");
+                    do {
+                        valido = true;
+                        nuevoMesero.setApellido(leerString.nextLine());
+                        if (nuevoMesero.getApellido().trim().isEmpty()) {
+                            System.err.print("//// El apellido del mesero está vacio, intentelo nuevamente\n//// : ");
+                            valido=false;
+                        }
+                    } while (!valido);
                     System.out.print("//// Ingrese el nombre del nuevo mesero: ");
-                    nuevoMesero.setNombre(leerString.nextLine());
-
+                    do {
+                        valido = true;
+                        nuevoMesero.setNombre(leerString.nextLine());
+                        if (nuevoMesero.getNombre().trim().isEmpty()) {
+                            System.err.print("//// El nombre del mesero está vacio, intentelo nuevamente\n//// : ");
+                            valido=false;
+                        }
+                    } while (!valido);
+                    System.out.print("//// Ingrese la mesa asignada al mesero: ");
+                    do {
+                        valido = true;
+                        try {
+                            int numeromesa = leerInt.nextInt();
+                            Mesa m = mdata.buscar(numeromesa);
+                            if (m==null) {
+                                System.err.print("//// Numero de mesa invalido, no existe esa mesa, intentelo nuevamente\n//// : ");
+                                leerInt.nextLine();
+                                valido = false;
+                            }else {
+                                nuevoMesero.setMesa(m);
+                            }
+                        } catch (SQLException | InputMismatchException e) {
+                            System.err.print("//// valor invalido, tiene que ser un numero, intentelo nuevamente\n//// : ");
+                            leerInt.nextLine();
+                            valido = false;
+                        }
+                    } while (!valido);
+                    System.out.print("//// Ingrese si el mesero esta remplazando a otro mesero por DNI si no ingrese null: ");
+                    do {
+                        valido = true;
+                        try {
+                            String dni = leerString.nextLine();
+                            Mesero m = msdata.buscar(dni);
+                            
+                            if (m==null) {
+                                if (dni.equalsIgnoreCase("null")) {
+                                    nuevoMesero.setMesa(null);
+                                }else{
+                                    System.err.print("//// DNI de mesero invalido, no existe ese mesero, intentelo nuevamente\n//// : ");
+                                    leerInt.nextLine();
+                                    valido = false;
+                                }
+                            }else {
+                                nuevoMesero.setReemplazando(m);
+                            }
+                        } catch (SQLException | InputMismatchException e) {
+                            System.err.print("//// valor invalido, tiene que ser un numero, intentelo nuevamente\n//// : ");
+                            leerInt.nextLine();
+                            valido = false;
+                        }
+                    } while (!valido);
+                    System.out.print("//// Ingrese (1|habilitado o 2|inhabilitado) para el estado del nuevo mesero\n//// : ");
+                    do {
+                        valido = true;
+                        String estado = leerString.nextLine();
+                        switch (estado.toLowerCase()) {
+                            case ("1") : case ("habilitado") : {
+                                nuevoMesero.setEstado(true);break;
+                            }
+                            case ("2") : case ("inhabilitado") : {
+                                nuevoMesero.setEstado(false);break;
+                            }
+                            default : {
+                                System.err.print("//// Invalido debe ingresar una de estas opciones (1|habilitado o 2|inhabilitado), intentelo nuevamente\n//// : ");
+                                valido = false;
+                                break;
+                            }
+                        }
+                    } while (!valido);
+                    
                     try {
-                        meseroData.guardarMesero(nuevoMesero);
+                        meseroData.guardar(nuevoMesero);
                         System.out.println("Mesero agregado exitosamente.");
                     } catch (SQLException ex) {
                         System.err.println("Error al agregar mesero: " + ex.getMessage());
                     }
                     break;
-
-                case "4":
-                    try {
-                        System.out.print("//// Ingrese el ID del mesero a actualizar: ");
-                        int idMesero = leerInt.nextInt();
-                        Mesero mesero = meseroData.buscarMesero(idMesero);
-
-                        if (mesero != null) {
-                            System.out.println("Mesero encontrado: " + mesero);
-                            System.out.print("//// Ingrese el nuevo nombre del mesero: ");
-                            mesero.setNombre(leerString.nextLine());
-
-                            meseroData.actualizarMesero(mesero);
-                            System.out.println("Mesero actualizado exitosamente.");
-                        } else {
-                            System.out.println("Mesero no encontrado.");
+                }
+                case "4": {
+                    MeseroData msdata = new MeseroData();
+                    MesaData mdata = new MesaData();
+                    Mesero m = new Mesero(0,null,null,null,null,false);
+                    boolean valido = true;
+                    String opcions = null;
+                    System.out.print("//// Ingrese el DNI del mesero que desea actualizar, ingrese 0 para cancelar\n//// : ");
+                    do {
+                        valido = true;
+                        opcions = String.valueOf(leerInt.nextInt());
+                        if ("0".equals(opcions)) {
+                            System.out.println("///// Operacion cancelada /////\n");
+                            break;
+                        }else{
+                            try {
+                                m.setDniMesero(Integer.parseInt(opcions));
+                            } catch (NumberFormatException ex) {
+                                System.out.print("//// DNI invalido, Intentelo nuevamente o ingrese 0 para cancelar\n//// : ");
+                                leerInt.next();
+                                valido = false;
+                            }
                         }
-                    } catch (SQLException ex) {
-                        System.err.println("Error al actualizar mesero: " + ex.getMessage());
-                    } catch (InputMismatchException ex) {
-                        System.err.println("El valor ingresado es inválido.");
-                        leerInt.next(); 
-                    }
-                    break;
+                    } while (!valido);
+                try {
+                    if (msdata.buscar(String.valueOf(m.getDniMesero()))!=null) {
+                        System.out.print("//// Ingrese que atributos del producto desea actualizar: (apellido, nombre, numero_mesa, remplazando, estado) puede ponerlo asi para todos o solo algunos\n//// : ");
+                        String filtros = leerString.nextLine().toLowerCase();
+                        
+                        if (filtros.contains("apellido")) {
+                            System.out.print("//// Ingrese el nuevo apellido del mesero\n//// : ");
+                            do {
+                                valido = true;
+                                m.setApellido(leerString.nextLine());
+                                if (m.getApellido().trim().isEmpty()|m.getApellido().isEmpty()) {
+                                    System.err.print("//// El apellido del mesero está vacio, intentelo nuevamente\n//// : ");
+                                    valido=false;
+                                }
+                            } while (!valido);
+                        }
+                        if (filtros.contains("nombre")) {
+                            System.out.print("//// Ingrese el nuevo nombre del mesero\n//// : ");
+                            do {
+                                valido = true;
+                                m.setNombre(leerString.nextLine());
+                                if (m.getNombre().trim().isEmpty()|m.getNombre().isEmpty()) {
+                                    System.err.print("//// El nombre del mesero está vacio, intentelo nuevamente\n//// : ");
+                                    valido=false;
+                                }
+                            } while (!valido);
+                        }
+                        if (filtros.contains("numero_mesa")) {
+                            System.out.print("//// Ingrese la nueva mesa asignada para el mesero\n//// : ");
+                            do {
+                                valido = true;
+                                try {
+                                    int numeromesa = leerInt.nextInt();
+                                    Mesa mm = mdata.buscar(numeromesa);
+                                    if (mm==null) {
+                                        System.err.print("//// Numero de mesa invalido, no existe esa mesa, intentelo nuevamente\n//// : ");
+                                        leerInt.nextLine();
+                                        valido = false;
+                                    }else {
+                                        m.setMesa(mm);
+                                    }
+                                } catch (SQLException | InputMismatchException e) {
+                                    System.err.print("//// valor invalido, tiene que ser un numero, intentelo nuevamente\n//// : ");
+                                    leerInt.nextLine();
+                                    valido = false;
+                                }
+                            } while (!valido);
+                        }
+                        if (filtros.contains("remplazando")) {
+                            System.out.print("//// Ingrese si el mesero esta remplazando a otro mesero por DNI si no ingrese null: ");
+                            do {
+                                valido = true;
+                                try {
+                                    String dni = leerString.nextLine();
+                                    Mesero mm = msdata.buscar(dni);
 
+                                    if (mm==null) {
+                                        if (dni.equalsIgnoreCase("null")) {
+                                            m.setMesa(null);
+                                        }else{
+                                            System.err.print("//// DNI de mesero invalido, no existe ese mesero, intentelo nuevamente\n//// : ");
+                                            leerInt.nextLine();
+                                            valido = false;
+                                        }
+                                    }else {
+                                        m.setReemplazando(mm);
+                                    }
+                                } catch (SQLException | InputMismatchException e) {
+                                    System.err.print("//// valor invalido, tiene que ser un numero, intentelo nuevamente\n//// : ");
+                                    leerInt.nextLine();
+                                    valido = false;
+                                }
+                            } while (!valido);
+                        }
+                        if (filtros.contains("estado")) {
+                            System.out.print("//// Ingrese (1|habilitado o 2|inhabilitado) para el nuevo estado del mesero\n//// : ");
+                            do {
+                                valido = true;
+                                String estado = leerString.nextLine();
+                                switch (estado.toLowerCase()) {
+                                    case ("1") : case ("habilitado") : {
+                                        m.setEstado(true);break;
+                                    }
+                                    case ("2") : case ("inhabilitado") : {
+                                        m.setEstado(false);break;
+                                    }
+                                    default : {
+                                        System.err.print("//// Invalido debe ingresar una de estas opciones (1|habilitado o 2|inhabilitado), intentelo nuevamente\n//// : ");
+                                        valido = false;
+                                        break;
+                                    }
+                                }
+                            } while (!valido);
+                        }
+                        
+                        msdata.actualizar(m,m.getDniMesero());
+                        System.out.println(" - "+msdata.buscar(String.valueOf(m.getDniMesero()))+"\n");
+                        break;
+                    }else {
+                        if (!"0".equals(opcions)) {
+                            System.err.println("Mesero no encontrado");
+                        }
+                        break;
+                    }
+                } catch (SQLException ex) {
+                    System.err.println("Error SQL: "+ex);
+                }}
                 case "5":
                     System.out.println("Volviendo al menú principal...");
                     break;

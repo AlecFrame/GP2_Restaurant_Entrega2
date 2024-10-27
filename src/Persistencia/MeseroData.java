@@ -7,34 +7,50 @@ import java.util.ArrayList;
 
 public class MeseroData {
     private Connection con = Conexion.cargaConexion();
+    private MesaData mdata = new MesaData();
     
     public MeseroData() {}
 
-    
-    public void guardarMesero(Mesero mesero) throws SQLException {
-        String sql = "INSERT INTO mesero(dni, nombre, apellido, reemplazando, estado, numero_mesa) VALUES(?, ?, ?, ?, ?, ?)";
-        
-        PreparedStatement ps = con.prepareStatement(sql);
-        ps.setInt(1, mesero.getDniMesero());
-        ps.setString(2, mesero.getNombre());
-        ps.setString(3, mesero.getApellido());
-        ps.setString(4, mesero.getReemplazando());
-        ps.setBoolean(5, mesero.isEstado());
-        ps.setInt(6, mesero.getNumeroMesa());
-      
-        
-        int filas = ps.executeUpdate();
-        if (filas > 0) {
-            System.out.println("Mesero registrado con éxito.");
+    public void guardar(Mesero mesero) throws SQLException {
+        if (mesero.getDniMesero()==0) {
+            String sql = "INSERT INTO mesero(apellido, nombre, numero_mesa, remplazando, estado) VALUES(?, ?, ?, ?, ?)";
+
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, mesero.getApellido());
+            ps.setString(2, mesero.getNombre());
+            ps.setInt(3, (int) mesero.getMesa().getNumeroMesa());
+            ps.setString(4, String.valueOf(mesero.getReemplazando().getDniMesero()));
+            ps.setBoolean(5, mesero.isEstado());
+
+
+            int filas = ps.executeUpdate();
+            if (filas > 0) {
+                System.out.println("Mesero registrado con éxito.");
+            }
+        }else{
+            String sql = "INSERT INTO mesero(dni_mesero, apellido, nombre, numero_mesa, remplazando, estado) VALUES(?, ?, ?, ?, ?, ?)";
+
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, String.valueOf(mesero.getDniMesero()));
+            ps.setString(2, mesero.getApellido());
+            ps.setString(3, mesero.getNombre());
+            ps.setInt(4, (int) mesero.getMesa().getNumeroMesa());
+            ps.setString(5, String.valueOf(mesero.getReemplazando().getDniMesero()));
+            ps.setBoolean(6, mesero.isEstado());
+
+
+            int filas = ps.executeUpdate();
+            if (filas > 0) {
+                System.out.println("Mesero registrado con éxito.");
+            }
         }
     }
 
-    
-    public void eliminarMesero(int dni) throws SQLException {
-        String sql = "DELETE FROM mesero WHERE dni = ?";
+    public void eliminar(String dni) throws SQLException {
+        String sql = "DELETE FROM mesero WHERE dni_mesero = ?";
         
         PreparedStatement ps = con.prepareStatement(sql);
-        ps.setInt(1, dni);
+        ps.setString(1, dni);
         
         int filas = ps.executeUpdate();
         if (filas > 0) {
@@ -42,49 +58,63 @@ public class MeseroData {
         }
     }
 
-   
-    public Mesero buscarMesero(int dni) throws SQLException {
+    public Mesero buscar(String dni) throws SQLException {
         Mesero mesero = null;
-        String sql = "SELECT * FROM mesero WHERE dni = ?";
+        String sql = "SELECT * FROM mesero WHERE dni_mesero = ?";
         
         PreparedStatement ps = con.prepareStatement(sql);
-        ps.setInt(1, dni);
+        ps.setString(1, dni);
         
         ResultSet rs = ps.executeQuery();
         while (rs.next()) {
             mesero = new Mesero(
-                rs.getInt("dni"), 
-                rs.getString("nombre"), 
+                rs.getInt("dni_mesero"), 
                 rs.getString("apellido"), 
-                rs.getString("reemplazando"), 
-                rs.getBoolean("estado"),
-                rs.getInt("numero_mesa") 
-            );
+                rs.getString("nombre"), 
+                mdata.buscar(rs.getInt("numero_mesa")), 
+                buscar(rs.getString("remplazando")),
+                rs.getBoolean("estado"));
         }
         
         return mesero;
     }
 
-  
-    public void actualizarMesero(Mesero mesero) throws SQLException {
-        String sql = "UPDATE mesero SET nombre = ?, apellido = ? WHERE dni = ?";
+    public void actualizar(Mesero mesero, int dni) throws SQLException {
+        if (mesero.getDniMesero()==0) {
+            String sql = "UPDATE mesero SET apellido=?, nombre=?, numero_mesa=?, remplazando=?, estado=? WHERE dni_mesero=?";
         
-        PreparedStatement ps = con.prepareStatement(sql);
-        ps.setString(1, mesero.getNombre());
-        ps.setString(2, mesero.getApellido());
-        ps.setString(3, mesero.getReemplazando());
-        ps.setInt(4, mesero.isEstado() ? 1 : 0);
-        ps.setInt(5, mesero.getNumeroMesa()); 
-        ps.setInt(6, mesero.getDniMesero());
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, mesero.getApellido());
+            ps.setString(2, mesero.getNombre());
+            ps.setInt(3, mesero.getMesa().getNumeroMesa());
+            ps.setString(4, String.valueOf(mesero.getReemplazando().getDniMesero()));
+            ps.setBoolean(5, mesero.isEstado());
+            ps.setInt(6, dni);
+            
+            int filas = ps.executeUpdate();
+            if (filas > 0) {
+                System.out.println("Mesero actualizado con éxito.");
+            }
+        }else {
+            String sql = "UPDATE mesero SET dni_mesero=?, apellido=?, nombre=?, numero_mesa=?, remplazando=?, estado=? WHERE dni_mesero=?";
         
-        int filas = ps.executeUpdate();
-        if (filas > 0) {
-            System.out.println("Mesero actualizado con éxito.");
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, String.valueOf(mesero.getDniMesero()));
+            ps.setString(2, mesero.getApellido());
+            ps.setString(3, mesero.getNombre());
+            ps.setInt(4, mesero.getMesa().getNumeroMesa());
+            ps.setString(5, String.valueOf(mesero.getReemplazando().getDniMesero()));
+            ps.setBoolean(6, mesero.isEstado());
+            ps.setInt(7, dni);
+            
+            int filas = ps.executeUpdate();
+            if (filas > 0) {
+                System.out.println("Mesero actualizado con éxito.");
+            }
         }
     }
 
-   
-    public ArrayList<Mesero> listarMeseros() throws SQLException {
+    public ArrayList<Mesero> listar() throws SQLException {
         ArrayList<Mesero> lista = new ArrayList<>();
         String sql = "SELECT * FROM mesero";
         
@@ -93,22 +123,19 @@ public class MeseroData {
         
       while (rs.next()) {
             lista.add(new Mesero(
-                rs.getInt("dni"), 
-                rs.getString("nombre"), 
+                rs.getInt("dni_mesero"), 
                 rs.getString("apellido"), 
-                rs.getString("reemplazando"), 
-                rs.getBoolean("estado"),
-                rs.getInt("numero_mesa")
-            ));
+                rs.getString("nombre"), 
+                mdata.buscar(rs.getInt("numero_mesa")), 
+                buscar(rs.getString("remplazando")),
+                rs.getBoolean("estado")));
         }
         
         return lista;
     }
 
-   
     public ArrayList<Pedido> listarPedidosPorMesero(int dniMesero, Date fecha) throws SQLException {
         ArrayList<Pedido> pedidos = new ArrayList<>();
-        MesaData mdata = new MesaData();
         String sql = "SELECT * FROM pedido WHERE dni_mesero = ? AND DATE(fecha_hora) = ?";
         
         PreparedStatement ps = con.prepareStatement(sql);
@@ -130,7 +157,6 @@ public class MeseroData {
         return pedidos;
     }
 
-    
     public double listarIngresosPorFecha(Date fecha) throws SQLException {
         double totalIngresos = 0;
         String sql = "SELECT SUM(monto_total) AS ingresos FROM pedido WHERE DATE(fecha_hora) = ?";
@@ -146,9 +172,8 @@ public class MeseroData {
         return totalIngresos;
     }
 
-    
     public void anularPedido(int idPedido) throws SQLException {
-        String sql = "UPDATE pedido SET estado = 'anulado' WHERE id_pedido = ?";
+        String sql = "UPDATE pedido SET estado = false WHERE idPedido = ?";
         
         PreparedStatement ps = con.prepareStatement(sql);
         ps.setInt(1, idPedido);
