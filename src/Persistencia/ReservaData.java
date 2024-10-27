@@ -3,7 +3,6 @@ package Persistencia;
 
 import Modelo.Conexion;
 import Modelo.Reserva;
-import Modelo.Mesa;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,7 +10,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class ReservaData {
     private Connection con = Conexion.cargaConexion();
@@ -20,23 +18,45 @@ public class ReservaData {
     public ReservaData() {}
 
     public void guardarReserva(Reserva r) throws SQLException {
-        String sql = "INSERT INTO reserva(numero_mesa, dni_cliente, nombre, fecha, hora, vigencia, estado) VALUES(?,?,?,?,?,?,?)";
-        
-        PreparedStatement s = con.prepareStatement(sql);
-        s.setInt(1, r.getMesa().getNumeroMesa());
-        s.setString(2, r.getDni_cliente());
-        s.setString(3, r.getNombre());
-        s.setObject(4, r.getFecha());
-        s.setObject(5, r.getHora());
-        s.setString(6, r.getVigencia());
-        s.setBoolean(7, r.isEstado());
-        
-        int filas = s.executeUpdate();
-        if (filas > 0) {
-            System.out.println("Reserva registrada con éxito");
-            JOptionPane.showMessageDialog(null, "Reserva registrada con éxito");
-        } else {
-            System.out.println("Error al registrar la reserva");
+        if (r.getIdReserva()==0) {
+            String sql = "INSERT INTO reserva(numero_mesa, dni_cliente, apellido, fecha, hora, vigencia, estado) VALUES(?,?,?,?,?,?,?)";
+
+            PreparedStatement s = con.prepareStatement(sql);
+            s.setInt(1, r.getMesa().getNumeroMesa());
+            s.setString(2, r.getDni_cliente());
+            s.setString(3, r.getNombre());
+            s.setDate(4, java.sql.Date.valueOf(r.getFecha()));
+            s.setTime(5, java.sql.Time.valueOf(r.getHora()));
+            s.setString(6, r.getVigencia());
+            s.setBoolean(7, r.isEstado());
+
+            int filas = s.executeUpdate();
+            if (filas > 0) {
+                System.out.println("Reserva registrada con éxito");
+                JOptionPane.showMessageDialog(null, "Reserva registrada con éxito");
+            } else {
+                System.out.println("Error al registrar la reserva");
+            }
+        }else{
+            String sql = "INSERT INTO reserva(idReserva, numero_mesa, dni_cliente, apellido, fecha, hora, vigencia, estado) VALUES(?,?,?,?,?,?,?,?)";
+
+            PreparedStatement s = con.prepareStatement(sql);
+            s.setInt(1, r.getIdReserva());
+            s.setInt(2, r.getMesa().getNumeroMesa());
+            s.setString(3, r.getDni_cliente());
+            s.setString(4, r.getNombre());
+            s.setDate(5, java.sql.Date.valueOf(r.getFecha()));
+            s.setTime(6, java.sql.Time.valueOf(r.getHora()));
+            s.setString(7, r.getVigencia());
+            s.setBoolean(8, r.isEstado());
+
+            int filas = s.executeUpdate();
+            if (filas > 0) {
+                System.out.println("Reserva registrada con éxito");
+                JOptionPane.showMessageDialog(null, "Reserva registrada con éxito");
+            } else {
+                System.out.println("Error al registrar la reserva");
+            }
         }
     }
 
@@ -67,9 +87,9 @@ public class ReservaData {
             reserva = new Reserva(rs.getInt("idReserva"),
                                   mesaData.buscar(rs.getInt("numero_mesa")),
                                   rs.getString("dni_cliente"),
-                                  rs.getString("nombre"),
-                                  rs.getObject("fecha", LocalDate.class),
-                                  rs.getObject("hora", LocalDateTime.class),
+                                  rs.getString("apellido"),
+                                  rs.getDate("fecha").toLocalDate(),
+                                  rs.getTime("hora").toLocalTime(),
                                   rs.getString("vigencia"),
                                   rs.getBoolean("estado"));
         }
@@ -77,25 +97,48 @@ public class ReservaData {
         return reserva;
     }
 
-    public void actualizarReserva(Reserva r) throws SQLException {
-        String sql = "UPDATE reserva SET numero_mesa = ?, dni_cliente = ?, nombre = ?, fecha = ?, hora = ?, vigencia = ?, estado = ? WHERE idReserva = ?";
-        
-        PreparedStatement s = con.prepareStatement(sql);
-        s.setInt(1, r.getMesa().getNumeroMesa());
-        s.setString(2, r.getDni_cliente());
-        s.setString(3, r.getNombre());
-        s.setObject(4, r.getFecha());
-        s.setObject(5, r.getHora());
-        s.setString(6, r.getVigencia());
-        s.setBoolean(7, r.isEstado());
-        s.setInt(8, r.getIdReserva());
+    public void actualizarReserva(Reserva r, int id) throws SQLException {
+        if (r.getIdReserva()==0){
+            String sql = "UPDATE reserva SET numero_mesa = ?, dni_cliente = ?, apellido = ?, fecha = ?, hora = ?, vigencia = ?, estado = ? WHERE idReserva = ?";
 
-        int filas = s.executeUpdate();
-        if (filas > 0) {
-            System.out.println("Reserva actualizada con éxito");
-            JOptionPane.showMessageDialog(null, "Reserva actualizada con éxito");
-        } else {
-            System.out.println("Error al actualizar la reserva");
+            PreparedStatement s = con.prepareStatement(sql);
+            s.setInt(1, r.getMesa().getNumeroMesa());
+            s.setString(2, r.getDni_cliente());
+            s.setString(3, r.getNombre());
+            s.setDate(4, java.sql.Date.valueOf(r.getFecha()));
+            s.setTime(5, java.sql.Time.valueOf(r.getHora()));
+            s.setString(6, r.getVigencia());
+            s.setBoolean(7, r.isEstado());
+            s.setInt(8, id);
+
+            int filas = s.executeUpdate();
+            if (filas > 0) {
+                System.out.println("Reserva actualizada con éxito");
+                JOptionPane.showMessageDialog(null, "Reserva actualizada con éxito");
+            } else {
+                System.out.println("Error al actualizar la reserva");
+            }
+        }else{
+            String sql = "UPDATE reserva SET idReserva = ?, numero_mesa = ?, dni_cliente = ?, apellido = ?, fecha = ?, hora = ?, vigencia = ?, estado = ? WHERE idReserva = ?";
+
+            PreparedStatement s = con.prepareStatement(sql);
+            s.setInt(1, r.getIdReserva());
+            s.setInt(2, r.getMesa().getNumeroMesa());
+            s.setString(3, r.getDni_cliente());
+            s.setString(4, r.getNombre());
+            s.setDate(5, java.sql.Date.valueOf(r.getFecha()));
+            s.setTime(6, java.sql.Time.valueOf(r.getHora()));
+            s.setString(7, r.getVigencia());
+            s.setBoolean(8, r.isEstado());
+            s.setInt(9, id);
+
+            int filas = s.executeUpdate();
+            if (filas > 0) {
+                System.out.println("Reserva actualizada con éxito");
+                JOptionPane.showMessageDialog(null, "Reserva actualizada con éxito");
+            } else {
+                System.out.println("Error al actualizar la reserva");
+            }
         }
     }
 
@@ -110,9 +153,9 @@ public class ReservaData {
             Reserva reserva = new Reserva(rs.getInt("idReserva"),
                                           mesaData.buscar(rs.getInt("numero_mesa")),
                                           rs.getString("dni_cliente"),
-                                          rs.getString("nombre"),
-                                          rs.getObject("fecha", LocalDate.class),
-                                          rs.getObject("hora", LocalDateTime.class),
+                                          rs.getString("apellido"),
+                                           rs.getDate("fecha").toLocalDate(),
+                                            rs.getTime("hora").toLocalTime(),
                                           rs.getString("vigencia"),
                                           rs.getBoolean("estado"));
             reservas.add(reserva);
@@ -131,9 +174,9 @@ public class ReservaData {
             Reserva reserva = new Reserva(rs.getInt("idReserva"),
                                           mesaData.buscar(rs.getInt("numero_mesa")),
                                           rs.getString("dni_cliente"),
-                                          rs.getString("nombre"),
-                                          rs.getObject("fecha", LocalDate.class),
-                                          rs.getObject("hora", LocalDateTime.class),
+                                          rs.getString("apellido"),
+                                            rs.getDate("fecha").toLocalDate(),
+                                            rs.getTime("hora").toLocalTime(),
                                           rs.getString("vigencia"),
                                           rs.getBoolean("estado"));
             reservas.add(reserva);
@@ -153,9 +196,9 @@ public class ReservaData {
             Reserva reserva = new Reserva(rs.getInt("idReserva"),
                                           mesaData.buscar(rs.getInt("numero_mesa")),
                                           rs.getString("dni_cliente"),
-                                          rs.getString("nombre"),
-                                          rs.getObject("fecha", LocalDate.class),
-                                          rs.getObject("hora", LocalDateTime.class),
+                                          rs.getString("apellido"),
+                                           rs.getDate("fecha").toLocalDate(),
+                                            rs.getTime("hora").toLocalTime(),
                                           rs.getString("vigencia"),
                                           rs.getBoolean("estado"));
             reservas.add(reserva);

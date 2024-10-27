@@ -5,6 +5,7 @@ import Modelo.Conexion;
 import Modelo.Mesa;
 import java.sql.*;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 
 public class MesaData {
     private Connection con = Conexion.cargaConexion();
@@ -67,6 +68,43 @@ public class MesaData {
         int filas = s.executeUpdate();
         if (filas>0) {
             System.out.println("Mesa "+numero+" fue actualizada a "+ocupada);
+        }
+    }
+    
+    public void Actualizar(Mesa m, int numero) throws SQLException {
+        if (m.getNumeroMesa()==0){
+            String sql = "UPDATE mesa SET capacidad=?, ocupada=?, estado=? WHERE numero_mesa=?";
+
+            PreparedStatement s = con.prepareStatement(sql);
+            s.setInt(1, m.getCapacidad());
+            s.setString(2, m.getOcupada());
+            s.setBoolean(3, m.isEstado());
+            s.setInt(4, numero);
+
+            int filas = s.executeUpdate();
+            if (filas > 0) {
+                System.out.println("Mesa actualizada con éxito");
+                JOptionPane.showMessageDialog(null, "Mesa actualizada con éxito");
+            } else {
+                System.out.println("Error al actualizar la reserva");
+            }
+        }else{
+            String sql = "UPDATE mesa SET numero_mesa=?, capacidad=?, ocupada=?, estado=? WHERE numero_mesa=?";
+
+            PreparedStatement s = con.prepareStatement(sql);
+            s.setInt(1, m.getNumeroMesa());
+            s.setInt(2,  m.getCapacidad());
+            s.setString(3, m.getOcupada());
+            s.setBoolean(4, m.isEstado());
+            s.setInt(5, numero);
+
+            int filas = s.executeUpdate();
+            if (filas > 0) {
+                System.out.println("Mesa actualizada con éxito");
+                JOptionPane.showMessageDialog(null, "Mesa actualizada con éxito");
+            } else {
+                System.out.println("Error al actualizar la reserva");
+            }
         }
     }
     

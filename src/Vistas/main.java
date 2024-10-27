@@ -525,7 +525,7 @@ public class main {
                     break;
 
                 case "3": {
-                    Mesero nuevoMesero = new Mesero();
+                    Mesero nuevoMesero = new Mesero(0,null,null,null,null,false);
                     MesaData mdata = new MesaData();
                     MeseroData msdata = new MeseroData();
                     boolean valido = true;
@@ -534,7 +534,12 @@ public class main {
                         valido = true;
                         try {
                             nuevoMesero.setDniMesero((int)leerInt.nextInt());
-                        } catch (InputMismatchException e) {
+                            if (msdata.buscar(String.valueOf(nuevoMesero.getDniMesero()))!=null) {
+                                System.err.print("//// valor invalido, el DNI ingresado ya existe, intentelo nuevamente\n//// : ");
+                                leerInt.nextLine();
+                                valido = false;
+                            }
+                        } catch (SQLException | InputMismatchException e) {
                             System.err.print("//// valor invalido, tiene que ser un numero, intentelo nuevamente\n//// : ");
                             leerInt.nextLine();
                             valido = false;
@@ -586,7 +591,7 @@ public class main {
                             
                             if (m==null) {
                                 if (dni.equalsIgnoreCase("null")) {
-                                    nuevoMesero.setMesa(null);
+                                    nuevoMesero.setReemplazando(null);
                                 }else{
                                     System.err.print("//// DNI de mesero invalido, no existe ese mesero, intentelo nuevamente\n//// : ");
                                     leerInt.nextLine();
@@ -644,7 +649,12 @@ public class main {
                         }else{
                             try {
                                 m.setDniMesero(Integer.parseInt(opcions));
-                            } catch (NumberFormatException ex) {
+                                if (msdata.buscar(opcions)!=null) {
+                                    System.err.print("//// valor invalido, el DNI ingresado ya existe, intentelo nuevamente\n//// : ");
+                                    leerInt.nextLine();
+                                    valido = false;
+                                }
+                            } catch (SQLException | NumberFormatException ex) {
                                 System.out.print("//// DNI invalido, Intentelo nuevamente o ingrese 0 para cancelar\n//// : ");
                                 leerInt.next();
                                 valido = false;
@@ -822,16 +832,58 @@ public class main {
                 break;
 
             case "3":
-                Mesa nuevaMesa = new Mesa();
-                System.out.print("//// Ingrese el número de la mesa: ");
-                nuevaMesa.setNumeroMesa(leerInt.nextInt());
-                System.out.print("//// Ingrese la capacidad de la mesa: ");
-                nuevaMesa.setCapacidad(leerInt.nextInt());
-                System.out.print("//// Ingrese el estado de la mesa (true para disponible, false para ocupada): ");
-                nuevaMesa.setEstado(leerInt.nextBoolean());
-                System.out.print("//// Ingrese el estado de ocupación (nombre del cliente o vacío si no está ocupada): ");
-                leerString.nextLine(); 
-                nuevaMesa.setOcupada(leerString.nextLine());
+                Mesa nuevaMesa = new Mesa(0,0,false,null);
+                boolean valido = true;
+                System.out.print("//// Ingrese la capacidad de la mesa\n//// : ");
+                do {
+                    valido = true;
+                    try {
+                        nuevaMesa.setCapacidad((int)leerInt.nextInt());
+                    } catch (InputMismatchException e) {
+                         System.err.print("//// valor invalido, tiene que ser un numero, intentelo nuevamente\n//// : ");
+                        leerInt.nextLine();
+                        valido = false;
+                    }
+                } while (!valido);
+                System.out.print("//// Ingrese el estado de ocupación (1:libre | 2:ocupada | 3:atendida): ");
+                do {
+                    valido = true;
+                    String estado = leerString.nextLine();
+                    switch (estado.toLowerCase()) {
+                        case ("1") : case ("libre") : {
+                            nuevaMesa.setOcupada("libre");break;
+                        }
+                        case ("2") : case ("ocupada") : {
+                            nuevaMesa.setOcupada("ocupada");break;
+                        }
+                        case ("3") : case ("atendida") : {
+                            nuevaMesa.setOcupada("atendida");break;
+                        }
+                        default : {
+                            System.err.print("//// Invalido debe ingresar una de estas opciones (1:libre | 2:ocupada | 3:atendida), intentelo nuevamente\n//// : ");
+                            valido = false;
+                            break;
+                        }
+                    }
+                } while (!valido);
+                System.out.print("//// Ingrese (1|habilitado o 2|inhabilitado) para el nuevo estado de la mesa\n//// : ");
+                do {
+                    valido = true;
+                    String estado = leerString.nextLine();
+                    switch (estado.toLowerCase()) {
+                        case ("1") : case ("habilitado") : {
+                            nuevaMesa.setEstado(true);break;
+                        }
+                        case ("2") : case ("inhabilitado") : {
+                            nuevaMesa.setEstado(false);break;
+                        }
+                        default : {
+                            System.err.print("//// Invalido debe ingresar una de estas opciones (1|habilitado o 2|inhabilitado), intentelo nuevamente\n//// : ");
+                            valido = false;
+                            break;
+                        }
+                    }
+                } while (!valido);
 
                 try {
                     mesaData.guardarMesa(nuevaMesa);
@@ -850,14 +902,57 @@ public class main {
                     if (mesaActualizar != null) {
                         System.out.println("Mesa encontrada: " + "Mesa " + mesaActualizar.getNumeroMesa() + ": Capacidad " + mesaActualizar.getCapacidad() + ", Estado " + (mesaActualizar.isEstado() ? "Disponible" : "Ocupada") + ", Ocupada: " + mesaActualizar.getOcupada());
                         System.out.print("//// Ingrese la nueva capacidad de la mesa: ");
-                        mesaActualizar.setCapacidad(leerInt.nextInt());
-                        System.out.print("//// Ingrese el nuevo estado de la mesa (true para disponible, false para ocupada): ");
-                        mesaActualizar.setEstado(leerInt.nextBoolean());
-                        System.out.print("//// Ingrese el nuevo estado de ocupación (nombre del cliente o vacío si no está ocupada): ");
-                        leerString.nextLine(); 
-                        mesaActualizar.setOcupada(leerString.nextLine());
+                        do {
+                            valido = true;
+                            try {
+                                mesaActualizar.setCapacidad((int)leerInt.nextInt());
+                            } catch (InputMismatchException e) {
+                                 System.err.print("//// valor invalido, tiene que ser un numero, intentelo nuevamente\n//// : ");
+                                leerInt.nextLine();
+                                valido = false;
+                            }
+                        } while (!valido);
+                        System.out.print("//// Ingrese el estado de ocupación (1:libre | 2:ocupada | 3:atendida): ");
+                        do {
+                            valido = true;
+                            String estado = leerString.nextLine();
+                            switch (estado.toLowerCase()) {
+                                case ("1") : case ("libre") : {
+                                    mesaActualizar.setOcupada("libre");break;
+                                }
+                                case ("2") : case ("ocupada") : {
+                                    mesaActualizar.setOcupada("ocupada");break;
+                                }
+                                case ("3") : case ("atendida") : {
+                                    mesaActualizar.setOcupada("atendida");break;
+                                }
+                                default : {
+                                    System.err.print("//// Invalido debe ingresar una de estas opciones (1:libre | 2:ocupada | 3:atendida), intentelo nuevamente\n//// : ");
+                                    valido = false;
+                                    break;
+                                }
+                            }
+                        } while (!valido);
+                        System.out.print("//// Ingrese (1|habilitado o 2|inhabilitado) para el nuevo estado de la mesa\n//// : ");
+                        do {
+                            valido = true;
+                            String estado = leerString.nextLine();
+                            switch (estado.toLowerCase()) {
+                                case ("1") : case ("habilitado") : {
+                                    mesaActualizar.setEstado(true);break;
+                                }
+                                case ("2") : case ("inhabilitado") : {
+                                    mesaActualizar.setEstado(false);break;
+                                }
+                                default : {
+                                    System.err.print("//// Invalido debe ingresar una de estas opciones (1|habilitado o 2|inhabilitado), intentelo nuevamente\n//// : ");
+                                    valido = false;
+                                    break;
+                                }
+                            }
+                        } while (!valido);
 
-                        mesaData.CambiarEstado(mesaActualizar.getOcupada(), mesaActualizar.getNumeroMesa());
+                        mesaData.Actualizar(mesaActualizar, mesaActualizar.getNumeroMesa());
                         System.out.println("Mesa actualizada exitosamente.");
                     } else {
                         System.out.println("Mesa no encontrada.");

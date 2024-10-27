@@ -19,7 +19,10 @@ public class MeseroData {
             ps.setString(1, mesero.getApellido());
             ps.setString(2, mesero.getNombre());
             ps.setInt(3, (int) mesero.getMesa().getNumeroMesa());
-            ps.setString(4, String.valueOf(mesero.getReemplazando().getDniMesero()));
+            if (mesero.getReemplazando()==null) {
+                ps.setNull(4, java.sql.Types.VARCHAR);
+            }else
+                ps.setString(4, String.valueOf(mesero.getReemplazando().getDniMesero()));
             ps.setBoolean(5, mesero.isEstado());
 
 
@@ -35,7 +38,10 @@ public class MeseroData {
             ps.setString(2, mesero.getApellido());
             ps.setString(3, mesero.getNombre());
             ps.setInt(4, (int) mesero.getMesa().getNumeroMesa());
-            ps.setString(5, String.valueOf(mesero.getReemplazando().getDniMesero()));
+            if (mesero.getReemplazando()==null) {
+                ps.setNull(5, java.sql.Types.VARCHAR);
+            }else
+                ps.setString(5, String.valueOf(mesero.getReemplazando().getDniMesero()));
             ps.setBoolean(6, mesero.isEstado());
 
 
@@ -87,7 +93,10 @@ public class MeseroData {
             ps.setString(1, mesero.getApellido());
             ps.setString(2, mesero.getNombre());
             ps.setInt(3, mesero.getMesa().getNumeroMesa());
-            ps.setString(4, String.valueOf(mesero.getReemplazando().getDniMesero()));
+            if (mesero.getReemplazando()==null) {
+                ps.setNull(4, java.sql.Types.VARCHAR);
+            }else
+                ps.setString(4, String.valueOf(mesero.getReemplazando().getDniMesero()));
             ps.setBoolean(5, mesero.isEstado());
             ps.setInt(6, dni);
             
@@ -122,12 +131,17 @@ public class MeseroData {
         ResultSet rs = s.executeQuery(sql);
         
       while (rs.next()) {
+            String dniReemplazando = rs.getString("remplazando");
+            Mesero reemplazando = null;
+            if (dniReemplazando != null && !rs.wasNull()) {
+                reemplazando = buscar(dniReemplazando);
+            }
             lista.add(new Mesero(
                 rs.getInt("dni_mesero"), 
                 rs.getString("apellido"), 
                 rs.getString("nombre"), 
                 mdata.buscar(rs.getInt("numero_mesa")), 
-                buscar(rs.getString("remplazando")),
+                reemplazando,
                 rs.getBoolean("estado")));
         }
         

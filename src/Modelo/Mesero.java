@@ -79,6 +79,6 @@ public class Mesero {
 
     @Override
     public String toString() {
-        return "Mesero{" + "dniMesero=" + dniMesero + ", nombre=" + nombre + ", apellido=" + apellido + ", mesa=" + mesa.getNumeroMesa() + ", reemplazando=" + reemplazando.getDniMesero() + ", estado=" + estado + '}';
+        return "Mesero{" + "dniMesero=" + dniMesero + ", nombre=" + nombre + ", apellido=" + apellido + ", mesa=" + mesa.getNumeroMesa() + ", reemplazando=" + ((reemplazando==null)? "null":reemplazando.getDniMesero()) + ", estado=" + estado + '}';
     }
 }

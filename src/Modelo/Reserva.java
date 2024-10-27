@@ -2,7 +2,7 @@
 package Modelo;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class Reserva {
     private int idReserva;
@@ -10,14 +10,14 @@ public class Reserva {
     private String dni_cliente;
     private String nombre;
     private LocalDate fecha;
-    private LocalDateTime hora;
+    private LocalTime hora;
     private String vigencia;
     private boolean estado;
 
     public Reserva() {
     }
 
-    public Reserva(Mesa mesa, String dni_cliente, String nombre, LocalDate fecha, LocalDateTime hora, String vigencia, boolean estado) {
+    public Reserva(Mesa mesa, String dni_cliente, String nombre, LocalDate fecha, LocalTime hora, String vigencia, boolean estado) {
         this.mesa = mesa;
         this.dni_cliente = dni_cliente;
         this.nombre = nombre;
@@ -27,7 +27,7 @@ public class Reserva {
         this.estado = estado;
     }
 
-    public Reserva(int idReserva, Mesa mesa, String dni_cliente, String nombre, LocalDate fecha, LocalDateTime hora, String vigencia, boolean estado) {
+    public Reserva(int idReserva, Mesa mesa, String dni_cliente, String nombre, LocalDate fecha, LocalTime hora, String vigencia, boolean estado) {
         this.idReserva = idReserva;
         this.mesa = mesa;
         this.dni_cliente = dni_cliente;
@@ -78,11 +78,11 @@ public class Reserva {
         this.fecha = fecha;
     }
 
-    public LocalDateTime getHora() {
+    public LocalTime getHora() {
         return hora;
     }
 
-    public void setHora(LocalDateTime hora) {
+    public void setHora(LocalTime hora) {
         this.hora = hora;
     }
 
