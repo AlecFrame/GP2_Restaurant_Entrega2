@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class ReservaData {
     private Connection con = Conexion.cargaConexion();
@@ -184,24 +185,65 @@ public class ReservaData {
         return reservas;
     }
 
-    public ArrayList<Reserva> buscarReservasPorFecha(LocalDate fecha) throws SQLException {
+    public ArrayList<Reserva> buscarReservasPorFechayHora(LocalDate fecha, LocalTime hora) throws SQLException {
         ArrayList<Reserva> reservas = new ArrayList<>();
-        String sql = "SELECT * FROM reserva WHERE fecha = ?";
-        
-        PreparedStatement ps = con.prepareStatement(sql);
-        ps.setObject(1, fecha);
-        ResultSet rs = ps.executeQuery();
-        
-        while (rs.next()) {
-            Reserva reserva = new Reserva(rs.getInt("idReserva"),
-                                          mesaData.buscar(rs.getInt("numero_mesa")),
-                                          rs.getString("dni_cliente"),
-                                          rs.getString("apellido"),
-                                           rs.getDate("fecha").toLocalDate(),
-                                            rs.getTime("hora").toLocalTime(),
-                                          rs.getString("vigencia"),
-                                          rs.getBoolean("estado"));
-            reservas.add(reserva);
+        if (fecha!=null & hora!=null) {
+            String sql = "SELECT * FROM reserva WHERE fecha = ? AND hora = ?";
+
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setObject(1, fecha);
+            ps.setObject(2, hora);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Reserva reserva = new Reserva(rs.getInt("idReserva"),
+                                              mesaData.buscar(rs.getInt("numero_mesa")),
+                                              rs.getString("dni_cliente"),
+                                              rs.getString("apellido"),
+                                              rs.getDate("fecha").toLocalDate(),
+                                              rs.getTime("hora").toLocalTime(),
+                                              rs.getString("vigencia"),
+                                              rs.getBoolean("estado"));
+                reservas.add(reserva);
+            }
+        }else
+        if (hora!=null) {
+            String sql = "SELECT * FROM reserva WHERE hora = ?";
+
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setObject(1, hora);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Reserva reserva = new Reserva(rs.getInt("idReserva"),
+                                              mesaData.buscar(rs.getInt("numero_mesa")),
+                                              rs.getString("dni_cliente"),
+                                              rs.getString("apellido"),
+                                              rs.getDate("fecha").toLocalDate(),
+                                              rs.getTime("hora").toLocalTime(),
+                                              rs.getString("vigencia"),
+                                              rs.getBoolean("estado"));
+                reservas.add(reserva);
+            }
+        }else
+        if (fecha!=null) {
+            String sql = "SELECT * FROM reserva WHERE fecha = ?";
+
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setObject(1, fecha);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Reserva reserva = new Reserva(rs.getInt("idReserva"),
+                                              mesaData.buscar(rs.getInt("numero_mesa")),
+                                              rs.getString("dni_cliente"),
+                                              rs.getString("apellido"),
+                                               rs.getDate("fecha").toLocalDate(),
+                                                rs.getTime("hora").toLocalTime(),
+                                              rs.getString("vigencia"),
+                                              rs.getBoolean("estado"));
+                reservas.add(reserva);
+            }
         }
         return reservas;
     }

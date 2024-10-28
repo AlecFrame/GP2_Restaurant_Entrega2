@@ -13,17 +13,36 @@ public class MesaData {
     public MesaData() {}
     
     public void guardarMesa(Mesa m) throws SQLException {
-        String sql = "Insert into mesa(numero_mesa,capacidad,estado,ocupada) values(?,?,?,?);";
-        
-        PreparedStatement s = con.prepareStatement(sql);
-        s.setInt(1, m.getNumeroMesa());
-        s.setInt(2, m.getCapacidad());
-        s.setBoolean(3, m.isEstado());
-        s.setString(4, m.getOcupada());
-        
-        int filas = s.executeUpdate();
-        if (filas>0) {
-            System.out.println("Mesa registrada con exito");
+        if (m.getNumeroMesa()==0) {
+            String sql = "Insert into mesa(capacidad,ocupada,dni_mesero,estado) values(?,?,?,?);";
+
+            PreparedStatement s = con.prepareStatement(sql);
+            s.setInt(1, m.getCapacidad());
+            s.setString(2, m.getOcupada());
+            if (m.getMesero()==null) {
+                s.setNull(4, java.sql.Types.VARCHAR);
+            }else
+                s.setString(3, String.valueOf(m.getMesero().getDniMesero()));
+            s.setBoolean(4, m.isEstado());
+
+            int filas = s.executeUpdate();
+            if (filas>0) {
+                System.out.println("Mesa registrada con exito");
+            }
+        }else{
+            String sql = "Insert into mesa(numero_mesa,capacidad,ocupada,dni_mesero,estado) values(?,?,?,?,?);";
+
+            PreparedStatement s = con.prepareStatement(sql);
+            s.setInt(1, m.getNumeroMesa());
+            s.setInt(2, m.getCapacidad());
+            s.setString(3, m.getOcupada());
+            s.setString(4, String.valueOf(m.getMesero().getDniMesero()));
+            s.setBoolean(5, m.isEstado());
+
+            int filas = s.executeUpdate();
+            if (filas>0) {
+                System.out.println("Mesa registrada con exito");
+            }
         }
     }
     
@@ -40,6 +59,7 @@ public class MesaData {
     }
     
     public Mesa buscar(int numero) throws SQLException {
+        MeseroData mdata = new MeseroData();
         Mesa mesa = null;
         String sql = "Select * From mesa Where numero_mesa = ?";
         
@@ -52,7 +72,8 @@ public class MesaData {
             mesa = new Mesa(r.getInt("numero_mesa"),
                     r.getInt("capacidad"),
                     r.getBoolean("estado"),
-                    r.getString("ocupada"));
+                    r.getString("ocupada"),
+                    mdata.buscar(r.getString("dni_mesero")));
         }
         
         return mesa;
@@ -109,6 +130,7 @@ public class MesaData {
     }
     
     public ArrayList<Mesa> filtrarMesasOcupacion(String filtro) throws SQLException {
+        MeseroData mdata = new MeseroData();
         ArrayList<Mesa> lista = new ArrayList<>();
         
         String sql = "SELECT * FROM mesa WHERE ocupada = ?";
@@ -121,13 +143,15 @@ public class MesaData {
             lista.add(new Mesa(r.getInt("numero_mesa"),
                     r.getInt("capacidad"),
                     r.getBoolean("estado"),
-                    r.getString("ocupada")));
+                    r.getString("ocupada"),
+                    mdata.buscar(r.getString("dni_mesero"))));
         }
         
         return lista;
     }
     
     public ArrayList<Mesa> filtrarMesasCapacidad(int filtro) throws SQLException {
+        MeseroData mdata = new MeseroData();
         ArrayList<Mesa> lista = new ArrayList<>();
         
         String sql = "SELECT * FROM mesa WHERE capacidad = ?";
@@ -140,13 +164,15 @@ public class MesaData {
             lista.add(new Mesa(r.getInt("numero_mesa"),
                     r.getInt("capacidad"),
                     r.getBoolean("estado"),
-                    r.getString("ocupada")));
+                    r.getString("ocupada"),
+                    mdata.buscar(r.getString("dni_mesero"))));
         }
         
         return lista;
     }
     
     public ArrayList<Mesa> listarMesas() throws SQLException {
+        MeseroData mdata = new MeseroData();
         ArrayList<Mesa> lista = new ArrayList<>();
         
         String sql = "SELECT * FROM mesa";
@@ -158,7 +184,8 @@ public class MesaData {
             lista.add(new Mesa(r.getInt("numero_mesa"),
                     r.getInt("capacidad"),
                     r.getBoolean("estado"),
-                    r.getString("ocupada")));
+                    r.getString("ocupada"),
+                    mdata.buscar(r.getString("dni_mesero"))));
         }
         
         return lista;

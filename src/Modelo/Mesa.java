@@ -4,22 +4,25 @@ public class Mesa {
     private int numeroMesa;   
     private int capacidad;   
     private boolean estado;    
-    private String ocupada; 
+    private String ocupada;
+    private Mesero mesero;
 
-    public Mesa() {
-    }
-
-    public Mesa(int numeroMesa, int capacidad, boolean estado, String ocupada) {
+    public Mesa(int numeroMesa, int capacidad, boolean estado, String ocupada, Mesero mesero) {
         this.numeroMesa = numeroMesa;
         this.capacidad = capacidad;
         this.estado = estado;
         this.ocupada = ocupada;
+        this.mesero = mesero;
     }
 
-    public Mesa(int capacidad, boolean estado, String ocupada) {
+    public Mesa(int capacidad, boolean estado, String ocupada, Mesero mesero) {
         this.capacidad = capacidad;
         this.estado = estado;
         this.ocupada = ocupada;
+        this.mesero = mesero;
+    }
+
+    public Mesa() {
     }
 
     public int getNumeroMesa() {
@@ -53,7 +56,17 @@ public class Mesa {
     public void setOcupada(String ocupada) {
         this.ocupada = ocupada;
     }
-    
-    
-    
+
+    public Mesero getMesero() {
+        return mesero;
+    }
+
+    public void setMesero(Mesero mesero) {
+        this.mesero = mesero;
+    }
+
+    @Override
+    public String toString() {
+        return "Mesa{" + "numeroMesa=" + numeroMesa + ", capacidad=" + capacidad + ", estado=" + estado + ", ocupada=" + ocupada + ", mesero=" + mesero + '}';
+    }
 }

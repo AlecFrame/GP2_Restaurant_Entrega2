@@ -4,17 +4,25 @@ package Vistas;
 import java.sql.*;
 import Modelo.Conexion;
 import Modelo.Producto;
+import Modelo.Reserva;
 import Persistencia.ProductosData;
+import Persistencia.ReservaData;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 public class VReservas extends javax.swing.JInternalFrame {
     
-    private ArrayList<Producto> lista = new ArrayList<>();
+    private ArrayList<Reserva> lista = new ArrayList<>();
     private ProductosData pdata = new ProductosData();
+    private ReservaData rdata = new ReservaData();
     private Connection con = Conexion.cargaConexion();
     private int rowSelected = -1;
     private int srowSelected = -1;
@@ -50,11 +58,14 @@ public class VReservas extends javax.swing.JInternalFrame {
     public VReservas() {
         initComponents();
         try {
-            lista = pdata.listar();
+            lista = rdata.listarReservas();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error de SQL al cargar la tabla: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
         }
         
+        
+        jtfHora.setEnabled(false);
+        jFecha.setEnabled(false);
         jbGuardar.setEnabled(false);
         Botones(false);
         cargarCabecera();
@@ -83,6 +94,8 @@ public class VReservas extends javax.swing.JInternalFrame {
         jrVigencia = new javax.swing.JRadioButton();
         jrNoVigencia = new javax.swing.JRadioButton();
         jCheckBox1 = new javax.swing.JCheckBox();
+        jFecha = new com.toedter.calendar.JDateChooser();
+        jtfHora = new javax.swing.JTextField();
 
         javax.swing.GroupLayout jDesktopPane1Layout = new javax.swing.GroupLayout(jDesktopPane1);
         jDesktopPane1.setLayout(jDesktopPane1Layout);
@@ -222,6 +235,11 @@ public class VReservas extends javax.swing.JInternalFrame {
         jcbHora.setBackground(new java.awt.Color(204, 187, 165));
         jcbHora.setFont(new java.awt.Font("Monotype Corsiva", 0, 18)); // NOI18N
         jcbHora.setText("Hora Reservada");
+        jcbHora.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jcbHoraActionPerformed(evt);
+            }
+        });
 
         jrVigencia.setBackground(new java.awt.Color(204, 187, 165));
         GrupoBotVigencia.add(jrVigencia);
@@ -247,6 +265,14 @@ public class VReservas extends javax.swing.JInternalFrame {
         jCheckBox1.setFont(new java.awt.Font("Monotype Corsiva", 0, 18)); // NOI18N
         jCheckBox1.setText("ID / Apellido:");
 
+        jtfHora.setText("00:00");
+        jtfHora.setToolTipText("");
+        jtfHora.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jtfHoraKeyReleased(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -260,7 +286,7 @@ public class VReservas extends javax.swing.JInternalFrame {
                     .addComponent(jLabel1)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jbCargar)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -272,24 +298,23 @@ public class VReservas extends javax.swing.JInternalFrame {
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 517, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jCheckBox1)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jtfBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jcbFecha)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jcbHora)))
-                                .addGap(18, 18, 18)
+                                    .addComponent(jcbHora, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addGap(51, 51, 51)
+                                            .addComponent(jCheckBox1))
+                                        .addComponent(jcbFecha, javax.swing.GroupLayout.Alignment.TRAILING)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(jFecha, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jtfBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+                                    .addComponent(jtfHora))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(0, 0, Short.MAX_VALUE)
-                                        .addComponent(jrVigencia)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jrNoVigencia))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jbBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addGap(109, 109, 109)))))))
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jrNoVigencia)
+                                        .addComponent(jrVigencia, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jbBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -301,20 +326,21 @@ public class VReservas extends javax.swing.JInternalFrame {
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jCheckBox1)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(3, 3, 3)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jtfBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jbBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jCheckBox1)
+                    .addComponent(jtfBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jbBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jcbFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jrVigencia, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jcbHora, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jrVigencia, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jrNoVigencia))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(jrNoVigencia, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jtfHora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -329,164 +355,15 @@ public class VReservas extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbBuscarActionPerformed
-        String buscar = jtfBuscar.getText();
         
-        try {
-            int codigo = Integer.parseInt(buscar);
-            
-            lista.clear();
-            try {
-                lista.add(pdata.buscar(codigo));
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error de SQL al buscar por codigo: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
-            }
-        }catch(NumberFormatException e) {
-            try {
-                lista = pdata.buscarPorNombre(buscar);
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error de SQL al buscar por nombre: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-        cargarTabla();
     }//GEN-LAST:event_jbBuscarActionPerformed
 
     private void jbCargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCargarActionPerformed
-        String filtro=null;
         
-        if (!cargando) {
-            cargando = true;
-            jbCargar.setEnabled(false);
-            jbGuardar.setEnabled(true);
-            try {
-                modelo2.addRow(new Object[] {
-                    Enumerar(),
-                    "",
-                    "",
-                    "",
-                    filtro,
-                    ""
-                });
-                jTable.setModel(modelo2);
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error de SQL al cargar el producto: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
-            }
-        }
     }//GEN-LAST:event_jbCargarActionPerformed
     
     private void jbGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbGuardarActionPerformed
-        int row = modelo2.getRowCount()-1;
-        String mcodigo = modelo2.getValueAt(row, 0).toString();
-        String mnombre = modelo2.getValueAt(row, 1).toString();
-        String mprecio = modelo2.getValueAt(row, 2).toString();
-        String mstock = modelo2.getValueAt(row, 3).toString();
-        String mcategoria = modelo2.getValueAt(row, 4).toString();
-        String mestado = modelo2.getValueAt(row, 5).toString();
-        Producto p = new Producto();
         
-        Set<String> categorias = new HashSet<>();
-        categorias.add("1");
-        categorias.add("2");
-        categorias.add("3");
-        categorias.add("4");
-        categorias.add("5");
-        categorias.add("6");
-        categorias.add("7");
-        categorias.add("pizzas");
-        categorias.add("lomos");
-        categorias.add("hamburguesas");
-        categorias.add("tacos");
-        categorias.add("bebidas con alcohol");
-        categorias.add("bebidas sin alcohol");
-        categorias.add("bebidas gaseosas");
-        
-        try {
-            int codigo = Integer.parseInt(mcodigo);
-            if (codigo<1) {
-                JOptionPane.showMessageDialog(this, "Error el codigo no puede ser menor a uno", "Error de tipo codigo", JOptionPane.ERROR_MESSAGE);
-                return;
-            }else
-            if (pdata.buscar(codigo)==null) {
-                p.setCodigo(codigo);
-            }else{
-                JOptionPane.showMessageDialog(this, "Error el codigo ingresado ya existe en la base de datos", "Error codigo existente", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }catch(NumberFormatException | SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error el codigo ingresado no es un numero entero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        if (!mnombre.trim().equalsIgnoreCase("")) {
-            p.setNombre(mnombre);
-        }else{
-            JOptionPane.showMessageDialog(this, "Error el nombre esta vacio", "Error nombre vacio", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        try {
-            double precio = Double.parseDouble(mprecio);
-            p.setPrecio(precio);
-        }catch(NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Error el precio ingresado no es un numero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        try {
-            int stock = Integer.parseInt(mstock);
-            p.setStock(stock);
-        }catch(NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Error el stock ingresado no es un numero entero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        if (categorias.contains(mcategoria)) {
-            switch (mcategoria.toLowerCase()) {
-                case ("1") : case ("pizzas") : {
-                    p.setCategoria("pizzas");break;
-                }
-                case ("2") : case ("lomos") : {
-                    p.setCategoria("lomos");break;
-                }
-                case ("3") : case ("hamburguesas") : {
-                    p.setCategoria("hamburguesas");break;
-                }
-                case ("4") : case ("tacos") : {
-                    p.setCategoria("tacos");break;
-                }
-                case ("5") : case ("bebidas con alcohol") : {
-                    p.setCategoria("bebidas con alcohol");break;
-                }
-                case ("6") : case ("bebidas sin alcohol") : {
-                    p.setCategoria("bebidas sin alcohol");break;
-                }
-                case ("7") : case ("bebidas gaseosas") : {
-                    p.setCategoria("bebidas gaseosas");break;
-                }
-            }
-        }else{
-            JOptionPane.showMessageDialog(this, "Error la categoria solo puede ser:(1:pizzas|2:lomos|3:hamburguesas|4:tacos|5:bebidas con alcohol|6:bebidas sin alcohol|7:bebidas gaseosas)", "Error nombre vacio", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        if (mestado.equalsIgnoreCase("true")|mestado.equalsIgnoreCase("false")) {
-            p.setEstado(mestado.equalsIgnoreCase("true"));
-        }else{
-            JOptionPane.showMessageDialog(this, "Errorn el estado debe ser True o False", "Error de tipos de datos", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        try {
-            pdata.guardarProducto(p);
-            cargando = false;
-            jbCargar.setEnabled(true);
-            jbGuardar.setEnabled(false);
-            jtfBuscar.setText("");
-            jTable.setModel(modelo);
-            lista = pdata.listar();
-            cargarTabla();
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error de SQL al guardar el producto: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
-        }
     }//GEN-LAST:event_jbGuardarActionPerformed
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
@@ -705,16 +582,53 @@ public class VReservas extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jbActualizarActionPerformed
 
     private void jcbFechaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbFechaActionPerformed
-        // TODO add your handling code here:
+        jFecha.setEnabled(jcbFecha.isSelected());
+        if (!jcbFecha.isSelected()) {
+            jFecha.setDate(null);
+        }
     }//GEN-LAST:event_jcbFechaActionPerformed
 
     private void jrVigenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jrVigenciaActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_jrVigenciaActionPerformed
 
     private void jrNoVigenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jrNoVigenciaActionPerformed
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_jrNoVigenciaActionPerformed
+
+    private void jcbHoraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbHoraActionPerformed
+        jtfHora.setEnabled(jcbHora.isSelected());
+        if (!jcbHora.isSelected()) {
+            try {
+                jtfHora.setText("00:00");
+                lista = rdata.listarReservas();
+                cargarTabla();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error de SQL","SQL Error",JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_jcbHoraActionPerformed
+
+    private void jtfHoraKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jtfHoraKeyReleased
+        String texto = jtfHora.getText();
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm");
+        try {
+            LocalTime hora = LocalTime.parse(texto, formato);
+            try {
+                lista = rdata.buscarReservasPorFechayHora(null, hora);
+                cargarTabla();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error de SQL","SQL Error",JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (DateTimeParseException e) {
+            try {
+                lista = rdata.listarReservas();
+                cargarTabla();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error de SQL","SQL Error",JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_jtfHoraKeyReleased
     
     public void limpiarAcciones() {
         jTable.setModel(modelo);
@@ -734,25 +648,28 @@ public class VReservas extends javax.swing.JInternalFrame {
     }
     
     public void cargarCabecera() {
-        modelo.addColumn("Código");
-        modelo.addColumn("Nombre");
-        modelo.addColumn("Precio");
-        modelo.addColumn("Stock");
-        modelo.addColumn("Categoria");
-        modelo.addColumn("Estado");
+        modelo.addColumn("ID");
+        modelo.addColumn("N° de Mesa");
+        modelo.addColumn("DNI Cliente");
+        modelo.addColumn("Apellido");
+        modelo.addColumn("Fecha Reserva");
+        modelo.addColumn("Hora Reserva");
+        modelo.addColumn("Vigencia");
+        modelo2.addColumn("ID");
+        modelo2.addColumn("N° de Mesa");
+        modelo2.addColumn("DNI Cliente");
+        modelo2.addColumn("Apellido");
+        modelo2.addColumn("Fecha Reserva");
+        modelo2.addColumn("Hora Reserva");
+        modelo2.addColumn("Vigencia");
+        modelo3.addColumn("ID");
+        modelo3.addColumn("N° de Mesa");
+        modelo3.addColumn("DNI Cliente");
+        modelo3.addColumn("Apellido");
+        modelo3.addColumn("Fecha Reserva");
+        modelo3.addColumn("Hora Reserva");
+        modelo3.addColumn("Vigencia");
         jTable.setModel(modelo);
-        modelo2.addColumn("Código");
-        modelo2.addColumn("Nombre");
-        modelo2.addColumn("Precio");
-        modelo2.addColumn("Stock");
-        modelo2.addColumn("Categoria");
-        modelo2.addColumn("Estado");
-        modelo3.addColumn("Código");
-        modelo3.addColumn("Nombre");
-        modelo3.addColumn("Precio");
-        modelo3.addColumn("Stock");
-        modelo3.addColumn("Categoria");
-        modelo3.addColumn("Estado");
     }
     
     private void cargarTabla() {
@@ -761,35 +678,38 @@ public class VReservas extends javax.swing.JInternalFrame {
         modelo.setRowCount(0);
         modelo2.setRowCount(0);
         modelo3.setRowCount(0);
-        for (Producto p: lista) {
-            agregarFila(p);
+        for (Reserva r: lista) {
+            agregarFila(r);
         }
     }
     
-    private void agregarFila(Producto p) {
+    private void agregarFila(Reserva r) {
         modelo.addRow(new Object[] {
-            p.getCodigo(),
-            p.getNombre(),
-            p.getPrecio(),
-            p.getStock(),
-            p.getCategoria(),
-            p.isEstado()
+            r.getIdReserva(),
+            r.getMesa().getNumeroMesa(),
+            r.getDni_cliente(),
+            r.getNombre(),
+            r.getFecha(),
+            r.getHora(),
+            r.getVigencia()
         });
         modelo2.addRow(new Object[] {
-            p.getCodigo(),
-            p.getNombre(),
-            p.getPrecio(),
-            p.getStock(),
-            p.getCategoria(),
-            p.isEstado()
+            r.getIdReserva(),
+            r.getMesa().getNumeroMesa(),
+            r.getDni_cliente(),
+            r.getNombre(),
+            r.getFecha(),
+            r.getHora(),
+            r.getVigencia()
         });
         modelo3.addRow(new Object[] {
-            p.getCodigo(),
-            p.getNombre(),
-            p.getPrecio(),
-            p.getStock(),
-            p.getCategoria(),
-            p.isEstado()
+            r.getIdReserva(),
+            r.getMesa().getNumeroMesa(),
+            r.getDni_cliente(),
+            r.getNombre(),
+            r.getFecha(),
+            r.getHora(),
+            r.getVigencia()
         });
     }
     
@@ -811,25 +731,7 @@ public class VReservas extends javax.swing.JInternalFrame {
     }
     
     private void cargarFiltro() {
-        String filtro=null;
-        String nombre = jtfBuscar.getText();
         
-        try {
-            if (nombre.trim().isEmpty()) {
-                if ("todas".equals(filtro)) {
-                    lista = pdata.listar();
-                }else
-                    lista = pdata.filtrarCategoria(filtro);
-            }else{
-                if ("todas".equals(filtro)) {
-                    lista = pdata.listar();
-                }else
-                    lista = pdata.filtrarCategoriaYNombre(filtro,nombre);
-            }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error de SQL al cargar la tabla con filtro: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
-        }
-        cargarTabla();
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -837,6 +739,7 @@ public class VReservas extends javax.swing.JInternalFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JDesktopPane jDesktopPane1;
+    private com.toedter.calendar.JDateChooser jFecha;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLfondo;
     private javax.swing.JScrollPane jScrollPane1;
@@ -851,5 +754,6 @@ public class VReservas extends javax.swing.JInternalFrame {
     private javax.swing.JRadioButton jrNoVigencia;
     private javax.swing.JRadioButton jrVigencia;
     private javax.swing.JTextField jtfBuscar;
+    private javax.swing.JTextField jtfHora;
     // End of variables declaration//GEN-END:variables
 }

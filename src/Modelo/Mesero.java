@@ -5,24 +5,18 @@ public class Mesero {
     private int dniMesero;
     private String nombre;
     private String apellido;
-    private Mesa mesa;
-    private Mesero reemplazando;
     private boolean estado;
 
-    public Mesero(int dniMesero, String nombre, String apellido, Mesa mesa, Mesero reemplazando, boolean estado) {
+    public Mesero(int dniMesero, String nombre, String apellido, boolean estado) {
         this.dniMesero = dniMesero;
         this.nombre = nombre;
         this.apellido = apellido;
-        this.mesa = mesa;
-        this.reemplazando = reemplazando;
         this.estado = estado;
     }
 
-    public Mesero(String nombre, String apellido, Mesa mesa, Mesero reemplazando, boolean estado) {
+    public Mesero(String nombre, String apellido, boolean estado) {
         this.nombre = nombre;
         this.apellido = apellido;
-        this.mesa = mesa;
-        this.reemplazando = reemplazando;
         this.estado = estado;
     }
 
@@ -53,22 +47,6 @@ public class Mesero {
         this.apellido = apellido;
     }
 
-    public Mesa getMesa() {
-        return mesa;
-    }
-
-    public void setMesa(Mesa mesa) {
-        this.mesa = mesa;
-    }
-
-    public Mesero getReemplazando() {
-        return reemplazando;
-    }
-
-    public void setReemplazando(Mesero reemplazando) {
-        this.reemplazando = reemplazando;
-    }
-
     public boolean isEstado() {
         return estado;
     }
@@ -79,6 +57,6 @@ public class Mesero {
 
     @Override
     public String toString() {
-        return "Mesero{" + "dniMesero=" + dniMesero + ", nombre=" + nombre + ", apellido=" + apellido + ", mesa=" + mesa.getNumeroMesa() + ", reemplazando=" + ((reemplazando==null)? "null":reemplazando.getDniMesero()) + ", estado=" + estado + '}';
+        return "Mesero{" + "dniMesero=" + dniMesero + ", nombre=" + nombre + ", apellido=" + apellido + ", estado=" + estado + '}';
     }
 }

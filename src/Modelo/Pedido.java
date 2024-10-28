@@ -1,27 +1,36 @@
 
 package Modelo;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 public class Pedido {
     private int idPedido;
-    private String dni_mesero;
+    private Mesero mesero;
     private Mesa mesa;
     private double importe;
+    private LocalDate fecha;
+    private LocalTime hora;
     private boolean cobrado;
     private boolean estado;
 
-    public Pedido(int idPedido, String dni_mesero, Mesa mesa, double importe, boolean cobrado, boolean estado) {
+    public Pedido(int idPedido, Mesero mesero, Mesa mesa, double importe, LocalDate fecha, LocalTime hora, boolean cobrado, boolean estado) {
         this.idPedido = idPedido;
-        this.dni_mesero = dni_mesero;
+        this.mesero = mesero;
         this.mesa = mesa;
         this.importe = importe;
+        this.fecha = fecha;
+        this.hora = hora;
         this.cobrado = cobrado;
         this.estado = estado;
     }
 
-    public Pedido(String dni_mesero, Mesa mesa, double importe, boolean cobrado, boolean estado) {
-        this.dni_mesero = dni_mesero;
+    public Pedido(Mesero mesero, Mesa mesa, double importe, LocalDate fecha, LocalTime hora, boolean cobrado, boolean estado) {
+        this.mesero = mesero;
         this.mesa = mesa;
         this.importe = importe;
+        this.fecha = fecha;
+        this.hora = hora;
         this.cobrado = cobrado;
         this.estado = estado;
     }
@@ -37,12 +46,12 @@ public class Pedido {
         this.idPedido = idPedido;
     }
 
-    public String getDni_mesero() {
-        return dni_mesero;
+    public Mesero getMesero() {
+        return mesero;
     }
 
-    public void setDni_mesero(String dni_mesero) {
-        this.dni_mesero = dni_mesero;
+    public void setMesero(Mesero mesero) {
+        this.mesero = mesero;
     }
 
     public Mesa getMesa() {
@@ -61,6 +70,22 @@ public class Pedido {
         this.importe = importe;
     }
 
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
+    }
+
+    public LocalTime getHora() {
+        return hora;
+    }
+
+    public void setHora(LocalTime hora) {
+        this.hora = hora;
+    }
+
     public boolean isCobrado() {
         return cobrado;
     }
@@ -75,5 +100,10 @@ public class Pedido {
 
     public void setEstado(boolean estado) {
         this.estado = estado;
+    }
+
+    @Override
+    public String toString() {
+        return "Pedido{" + "idPedido=" + idPedido + ", mesero=" + mesero + ", mesa=" + mesa + ", importe=" + importe + ", fecha=" + fecha + ", hora=" + hora + ", cobrado=" + cobrado + ", estado=" + estado + '}';
     }
 }
