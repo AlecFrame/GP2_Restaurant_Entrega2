@@ -318,28 +318,8 @@ public class VMesa extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jcCategoriaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jcCategoriaItemStateChanged
-        cargarFiltro();
-        switch (jcCategoria.getSelectedIndex()) {
-            case (0) : {
-                scondicion="todas";
-                break;
-            }
-            case (1) : {
-                scondicion="libre";
-                break;
-            }
-            case (2) : {
-                scondicion="ocupada";
-                break;
-            }
-            case (3) : {
-                scondicion="atendida";
-                break;
-            }
-            default : {
-                scondicion="";
-                break;
-            }
+        if (!"numero".equals(buscar)) {
+            cargarFiltro();
         }
     }//GEN-LAST:event_jcCategoriaItemStateChanged
 
@@ -359,7 +339,6 @@ public class VMesa extends javax.swing.JInternalFrame {
                         break;
                     case "capacidad":
                         scapacidad = numero;
-                        System.out.println(scapacidad);
                         cargarFiltro();
                         break;
                     default:
@@ -371,12 +350,7 @@ public class VMesa extends javax.swing.JInternalFrame {
                 JOptionPane.showMessageDialog(this, "Error de SQL al buscar por codigo: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
             }
         }catch(NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Error tipo de dato invalido, tiene que ser un entero: "+e, "Error tipo de dato", JOptionPane.WARNING_MESSAGE);
-            try {
-                lista = mdata.listarMesas();
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error de SQL al buscar por codigo: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
-            }
+            cargarFiltro();
         }
         cargarTabla();
     }//GEN-LAST:event_jbBuscarActionPerformed
@@ -725,6 +699,7 @@ public class VMesa extends javax.swing.JInternalFrame {
             jtfBuscar.setEnabled(true);
             jbBuscar.setEnabled(true);
             buscar = "numero";
+            jcCategoria.setEnabled(false);
         }
     }//GEN-LAST:event_jBotonMesaActionPerformed
 
@@ -733,6 +708,7 @@ public class VMesa extends javax.swing.JInternalFrame {
             jtfBuscar.setEnabled(true);
             jbBuscar.setEnabled(true);
             buscar = "capacidad";
+            jcCategoria.setEnabled(true);
         }
     }//GEN-LAST:event_jBotonCapacidadActionPerformed
     
@@ -822,11 +798,37 @@ public class VMesa extends javax.swing.JInternalFrame {
     }
     
     private void cargarFiltro() {
+        switch (jcCategoria.getSelectedIndex()) {
+            case (0) : {
+                scondicion="todas";
+                break;
+            }
+            case (1) : {
+                scondicion="libre";
+                break;
+            }
+            case (2) : {
+                scondicion="ocupada";
+                break;
+            }
+            case (3) : {
+                scondicion="atendida";
+                break;
+            }
+            default : {
+                scondicion="";
+                break;
+            }
+        }
+        
         try {
-            if ("todas".equals(scondicion)) {
-                lista = mdata.listarMesas();
-            }else
-                lista = mdata.filtrarMesasCondicionCapacidad(scondicion,scapacidad);
+            if (!jBotonCapacidad.isSelected()) {
+                scapacidad=0;
+            }
+            if ("".equals(jtfBuscar.getText())) {
+                scapacidad=0;
+            }
+            lista = mdata.filtrarMesasCondicionCapacidad(scondicion,scapacidad);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error de SQL al cargar la tabla con filtro: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
         }

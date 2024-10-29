@@ -178,6 +178,9 @@ public class MesaData {
     public ArrayList<Mesa> filtrarMesasCondicionCapacidad(String filtro, int numero) throws SQLException {
         MeseroData mdata = new MeseroData();
         ArrayList<Mesa> lista = new ArrayList<>();
+        if ("todas".equals(filtro)) {
+            filtro = "";
+        }
         
         if (!"".equals(filtro)&&numero>0) {
             String sql = "SELECT * FROM mesa WHERE ocupada = ? AND capacidad = ?";
@@ -217,6 +220,21 @@ public class MesaData {
 
             PreparedStatement s = con.prepareStatement(sql);
             s.setString(1, filtro);
+            ResultSet r = s.executeQuery();
+
+            while (r.next()) {
+                lista.add(new Mesa(r.getInt("numero_mesa"),
+                        r.getInt("capacidad"),
+                        r.getBoolean("estado"),
+                        r.getString("ocupada"),
+                        mdata.buscar(r.getString("dni_mesero"))));
+            }
+            return lista;
+        }else
+        if ("".equals(filtro)) {
+            String sql = "SELECT * FROM mesa";
+
+            PreparedStatement s = con.prepareStatement(sql);
             ResultSet r = s.executeQuery();
 
             while (r.next()) {
