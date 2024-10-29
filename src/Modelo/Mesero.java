@@ -59,4 +59,12 @@ public class Mesero {
     public String toString() {
         return "Mesero{" + "dniMesero=" + dniMesero + ", nombre=" + nombre + ", apellido=" + apellido + ", estado=" + estado + '}';
     }
+
+    public void setMesaAsignada(int aInt) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public void setReemplazando(String string) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

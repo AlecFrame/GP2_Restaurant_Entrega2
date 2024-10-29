@@ -495,7 +495,7 @@ public class main {
             switch (accionMesero) {
                 case "1": 
                     try {
-                        ArrayList<Mesero> listaMeseros = meseroData.listar();
+                        ArrayList<Mesero> listaMeseros = meseroData.listarMeseros();
                         System.out.println("\n///// Lista de meseros /////");
                         for (Mesero m : listaMeseros) {
                             System.out.println(" - " + m);
