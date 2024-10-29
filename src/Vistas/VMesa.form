@@ -89,7 +89,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="jbBuscar" min="-2" pref="69" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="jButton1" min="-2" pref="58" max="-2" attributes="0"/>
+                                  <Component id="jbSalir" min="-2" pref="58" max="-2" attributes="0"/>
                               </Group>
                               <Component id="jcCategoria" min="-2" pref="135" max="-2" attributes="0"/>
                           </Group>
@@ -109,7 +109,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jtfBuscar" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                   <Component id="jbBuscar" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
-                  <Component id="jButton1" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
+                  <Component id="jbSalir" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                   <Component id="jBotonMesa" alignment="3" min="-2" pref="20" max="-2" attributes="0"/>
                   <Component id="jbBuscaPor" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
@@ -159,21 +159,16 @@
     <Component class="javax.swing.JComboBox" name="jcCategoria">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="8">
+          <StringArray count="4">
             <StringItem index="0" value="0-todas"/>
-            <StringItem index="1" value="1-pizzas"/>
-            <StringItem index="2" value="2-hamburguesas"/>
-            <StringItem index="3" value="3-lomos"/>
-            <StringItem index="4" value="4-tacos"/>
-            <StringItem index="5" value="5-bebidas/a"/>
-            <StringItem index="6" value="6-bebidasc/a"/>
-            <StringItem index="7" value="7-gaseosas"/>
+            <StringItem index="1" value="1-libre"/>
+            <StringItem index="2" value="2-ocupada"/>
+            <StringItem index="3" value="3-atendida"/>
           </StringArray>
         </Property>
       </Properties>
       <Events>
         <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="jcCategoriaItemStateChanged"/>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jcCategoriaActionPerformed"/>
       </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
@@ -325,7 +320,7 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbGuardarActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="jButton1">
+    <Component class="javax.swing.JButton" name="jbSalir">
       <Properties>
         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
           <Color blue="0" green="0" red="cc" type="rgb"/>
@@ -344,8 +339,7 @@
         </Property>
       </Properties>
       <Events>
-        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jButton1MouseClicked"/>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbSalirActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLfondo">
@@ -388,6 +382,9 @@
         </Property>
         <Property name="text" type="java.lang.String" value="Capacidad"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jBotonCapacidadActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jbBuscaPor">
       <Properties>

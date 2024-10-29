@@ -20,7 +20,7 @@ public class MesaData {
             s.setInt(1, m.getCapacidad());
             s.setString(2, m.getOcupada());
             if (m.getMesero()==null) {
-                s.setNull(4, java.sql.Types.VARCHAR);
+                s.setNull(3, java.sql.Types.VARCHAR);
             }else
                 s.setString(3, String.valueOf(m.getMesero().getDniMesero()));
             s.setBoolean(4, m.isEstado());
@@ -36,7 +36,10 @@ public class MesaData {
             s.setInt(1, m.getNumeroMesa());
             s.setInt(2, m.getCapacidad());
             s.setString(3, m.getOcupada());
-            s.setString(4, String.valueOf(m.getMesero().getDniMesero()));
+            if (m.getMesero()==null) {
+                s.setNull(4, java.sql.Types.VARCHAR);
+            }else
+                s.setString(4, String.valueOf(m.getMesero().getDniMesero()));
             s.setBoolean(5, m.isEstado());
 
             int filas = s.executeUpdate();
@@ -79,7 +82,20 @@ public class MesaData {
         return mesa;
     }
     
-    public void CambiarEstado(String ocupada, int numero) throws SQLException {
+    public void CambiarEstado(Boolean estado, int numero) throws SQLException {
+        String sql = "Update mesa set estado = ? where numero_mesa = ?";
+        
+        PreparedStatement s = con.prepareStatement(sql);
+        s.setBoolean(1, estado);
+        s.setInt(2, numero);
+        
+        int filas = s.executeUpdate();
+        if (filas>0) {
+            System.out.println("Mesa "+numero+" fue actualizada a "+estado);
+        }
+    }
+    
+    public void CambiarCondicion(String ocupada, int numero) throws SQLException {
         String sql = "Update mesa set ocupada = ? where numero_mesa = ?";
         
         PreparedStatement s = con.prepareStatement(sql);
@@ -94,13 +110,17 @@ public class MesaData {
     
     public void Actualizar(Mesa m, int numero) throws SQLException {
         if (m.getNumeroMesa()==0){
-            String sql = "UPDATE mesa SET capacidad=?, ocupada=?, estado=? WHERE numero_mesa=?";
+            String sql = "UPDATE mesa SET capacidad=?, ocupada=?, dni_mesero=?, estado=? WHERE numero_mesa=?";
 
             PreparedStatement s = con.prepareStatement(sql);
             s.setInt(1, m.getCapacidad());
             s.setString(2, m.getOcupada());
-            s.setBoolean(3, m.isEstado());
-            s.setInt(4, numero);
+            if (m.getMesero()==null) {
+                s.setNull(3, java.sql.Types.VARCHAR);
+            }else
+                s.setString(3, String.valueOf(m.getMesero().getDniMesero()));
+            s.setBoolean(4, m.isEstado());
+            s.setInt(5, numero);
 
             int filas = s.executeUpdate();
             if (filas > 0) {
@@ -110,14 +130,18 @@ public class MesaData {
                 System.out.println("Error al actualizar la reserva");
             }
         }else{
-            String sql = "UPDATE mesa SET numero_mesa=?, capacidad=?, ocupada=?, estado=? WHERE numero_mesa=?";
+            String sql = "UPDATE mesa SET numero_mesa=?, capacidad=?, ocupada=?, dni_mesero=?, estado=? WHERE numero_mesa=?";
 
             PreparedStatement s = con.prepareStatement(sql);
             s.setInt(1, m.getNumeroMesa());
             s.setInt(2,  m.getCapacidad());
             s.setString(3, m.getOcupada());
-            s.setBoolean(4, m.isEstado());
-            s.setInt(5, numero);
+            if (m.getMesero()==null) {
+                s.setNull(4, java.sql.Types.VARCHAR);
+            }else
+                s.setString(4, String.valueOf(m.getMesero().getDniMesero()));
+            s.setBoolean(5, m.isEstado());
+            s.setInt(6, numero);
 
             int filas = s.executeUpdate();
             if (filas > 0) {
@@ -137,7 +161,7 @@ public class MesaData {
         
         PreparedStatement s = con.prepareStatement(sql);
         s.setString(1, filtro);
-        ResultSet r = s.executeQuery(sql);
+        ResultSet r = s.executeQuery();
         
         while (r.next()) {
             lista.add(new Mesa(r.getInt("numero_mesa"),
@@ -150,6 +174,63 @@ public class MesaData {
         return lista;
     }
     
+    
+    public ArrayList<Mesa> filtrarMesasCondicionCapacidad(String filtro, int numero) throws SQLException {
+        MeseroData mdata = new MeseroData();
+        ArrayList<Mesa> lista = new ArrayList<>();
+        
+        if (!"".equals(filtro)&&numero>0) {
+            String sql = "SELECT * FROM mesa WHERE ocupada = ? AND capacidad = ?";
+        
+            PreparedStatement s = con.prepareStatement(sql);
+            s.setString(1, filtro);
+            s.setInt(2, numero);
+            ResultSet r = s.executeQuery();
+
+            while (r.next()) {
+                lista.add(new Mesa(r.getInt("numero_mesa"),
+                        r.getInt("capacidad"),
+                        r.getBoolean("estado"),
+                        r.getString("ocupada"),
+                        mdata.buscar(r.getString("dni_mesero"))));
+            }
+            return lista;
+        }else
+        if (numero>0) {
+            String sql = "SELECT * FROM mesa WHERE capacidad = ?";
+
+            PreparedStatement s = con.prepareStatement(sql);
+            s.setInt(1, numero);
+            ResultSet r = s.executeQuery();
+
+            while (r.next()) {
+                lista.add(new Mesa(r.getInt("numero_mesa"),
+                        r.getInt("capacidad"),
+                        r.getBoolean("estado"),
+                        r.getString("ocupada"),
+                        mdata.buscar(r.getString("dni_mesero"))));
+            }
+            return lista;
+        }else
+        if (!"".equals(filtro)) {
+            String sql = "SELECT * FROM mesa WHERE ocupada = ?";
+
+            PreparedStatement s = con.prepareStatement(sql);
+            s.setString(1, filtro);
+            ResultSet r = s.executeQuery();
+
+            while (r.next()) {
+                lista.add(new Mesa(r.getInt("numero_mesa"),
+                        r.getInt("capacidad"),
+                        r.getBoolean("estado"),
+                        r.getString("ocupada"),
+                        mdata.buscar(r.getString("dni_mesero"))));
+            }
+            return lista;
+        }
+        return lista;
+    }
+    
     public ArrayList<Mesa> filtrarMesasCapacidad(int filtro) throws SQLException {
         MeseroData mdata = new MeseroData();
         ArrayList<Mesa> lista = new ArrayList<>();
@@ -158,7 +239,7 @@ public class MesaData {
         
         PreparedStatement s = con.prepareStatement(sql);
         s.setInt(1, filtro);
-        ResultSet r = s.executeQuery(sql);
+        ResultSet r = s.executeQuery();
         
         while (r.next()) {
             lista.add(new Mesa(r.getInt("numero_mesa"),

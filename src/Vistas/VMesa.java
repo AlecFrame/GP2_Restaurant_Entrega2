@@ -4,10 +4,13 @@ package Vistas;
 import java.sql.*;
 import Modelo.Conexion;
 import Modelo.Mesa;
+import Modelo.Mesero;
 import Persistencia.MesaData;
 import Persistencia.MeseroData;
 import Persistencia.ProductosData;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -18,6 +21,9 @@ public class VMesa extends javax.swing.JInternalFrame {
     private MesaData mdata = new MesaData();
     private MeseroData msdata = new MeseroData();
     private Connection con = Conexion.cargaConexion();
+    private String buscar = "ninguno";
+    private int scapacidad = 0;
+    private String scondicion = "";
     private int rowSelected = -1;
     private int srowSelected = -1;
     private int prowSelected = -1;
@@ -56,7 +62,9 @@ public class VMesa extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(this, "Error de SQL al cargar la tabla: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
         }
         
+        jtfBuscar.setEnabled(false);
         jbGuardar.setEnabled(false);
+        jbBuscar.setEnabled(false);
         Botones(false);
         cargarCabecera();
         cargarTabla();
@@ -78,7 +86,7 @@ public class VMesa extends javax.swing.JInternalFrame {
         jbEliminar = new javax.swing.JButton();
         jtfBuscar = new javax.swing.JTextField();
         jbGuardar = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        jbSalir = new javax.swing.JButton();
         jLfondo = new javax.swing.JLabel();
         jBotonMesa = new javax.swing.JRadioButton();
         jBotonCapacidad = new javax.swing.JRadioButton();
@@ -114,15 +122,10 @@ public class VMesa extends javax.swing.JInternalFrame {
             }
         });
 
-        jcCategoria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "0-todas", "1-pizzas", "2-hamburguesas", "3-lomos", "4-tacos", "5-bebidas/a", "6-bebidasc/a", "7-gaseosas" }));
+        jcCategoria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "0-todas", "1-libre", "2-ocupada", "3-atendida" }));
         jcCategoria.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 jcCategoriaItemStateChanged(evt);
-            }
-        });
-        jcCategoria.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jcCategoriaActionPerformed(evt);
             }
         });
 
@@ -207,19 +210,14 @@ public class VMesa extends javax.swing.JInternalFrame {
             }
         });
 
-        jButton1.setBackground(new java.awt.Color(204, 0, 0));
-        jButton1.setFont(new java.awt.Font("Monotype Corsiva", 1, 14)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 204));
-        jButton1.setText("Cerrar");
-        jButton1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
-            }
-        });
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jbSalir.setBackground(new java.awt.Color(204, 0, 0));
+        jbSalir.setFont(new java.awt.Font("Monotype Corsiva", 1, 14)); // NOI18N
+        jbSalir.setForeground(new java.awt.Color(255, 255, 204));
+        jbSalir.setText("Cerrar");
+        jbSalir.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jbSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jbSalirActionPerformed(evt);
             }
         });
 
@@ -240,6 +238,11 @@ public class VMesa extends javax.swing.JInternalFrame {
         GrupoBotMesa.add(jBotonCapacidad);
         jBotonCapacidad.setFont(new java.awt.Font("Monotype Corsiva", 0, 18)); // NOI18N
         jBotonCapacidad.setText("Capacidad");
+        jBotonCapacidad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBotonCapacidadActionPerformed(evt);
+            }
+        });
 
         jbBuscaPor.setFont(new java.awt.Font("Monotype Corsiva", 1, 18)); // NOI18N
         jbBuscaPor.setText("Busca por:");
@@ -278,7 +281,7 @@ public class VMesa extends javax.swing.JInternalFrame {
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(jbBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGap(18, 18, 18)
-                                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jbSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addComponent(jcCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 514, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(30, 30, 30))
@@ -291,7 +294,7 @@ public class VMesa extends javax.swing.JInternalFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jtfBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jbBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jbSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jBotonMesa, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jbBuscaPor))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -314,19 +317,82 @@ public class VMesa extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jcCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcCategoriaActionPerformed
-        
-    }//GEN-LAST:event_jcCategoriaActionPerformed
-
     private void jcCategoriaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jcCategoriaItemStateChanged
-        
+        cargarFiltro();
+        switch (jcCategoria.getSelectedIndex()) {
+            case (0) : {
+                scondicion="todas";
+                break;
+            }
+            case (1) : {
+                scondicion="libre";
+                break;
+            }
+            case (2) : {
+                scondicion="ocupada";
+                break;
+            }
+            case (3) : {
+                scondicion="atendida";
+                break;
+            }
+            default : {
+                scondicion="";
+                break;
+            }
+        }
     }//GEN-LAST:event_jcCategoriaItemStateChanged
 
     private void jbBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbBuscarActionPerformed
+        String mbuscar = jtfBuscar.getText();
         
+        try {
+            int numero = Integer.parseInt(mbuscar);
+            try {
+                switch (buscar) {
+                    case "numero":
+                        lista.clear();
+                        lista.add(mdata.buscar(numero));
+                        jcCategoria.setSelectedIndex(0);
+                        scondicion = "todas";
+                        scapacidad = 0;
+                        break;
+                    case "capacidad":
+                        scapacidad = numero;
+                        System.out.println(scapacidad);
+                        cargarFiltro();
+                        break;
+                    default:
+                        JOptionPane.showMessageDialog(this, "No se encontro a ninguno", "numero inexistente", JOptionPane.INFORMATION_MESSAGE);
+                        scapacidad = 0;
+                        break;
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error de SQL al buscar por codigo: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
+            }
+        }catch(NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Error tipo de dato invalido, tiene que ser un entero: "+e, "Error tipo de dato", JOptionPane.WARNING_MESSAGE);
+            try {
+                lista = mdata.listarMesas();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error de SQL al buscar por codigo: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        cargarTabla();
     }//GEN-LAST:event_jbBuscarActionPerformed
 
     private void jbCargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCargarActionPerformed
+        String capacidad="";
+        
+        if (!"".equals(jtfBuscar.getText())) {
+            try {
+                int cap = Integer.parseInt(jtfBuscar.getText());
+                if (cap>0)
+                    capacidad = String.valueOf(cap);
+            }catch(NumberFormatException e) {}
+        }
+        
+        
         if (!cargando) {
             cargando = true;
             jbCargar.setEnabled(false);
@@ -334,10 +400,10 @@ public class VMesa extends javax.swing.JInternalFrame {
             try {
                 modelo2.addRow(new Object[] {
                     Enumerar(),
+                    capacidad,
+                    scondicion,
                     "",
-                    "",
-                    "",
-                    "",
+                    "ninguno",
                 });
                 jTable.setModel(modelo2);
             } catch (SQLException ex) {
@@ -347,16 +413,117 @@ public class VMesa extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jbCargarActionPerformed
     
     private void jbGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbGuardarActionPerformed
+        int row = modelo2.getRowCount()-1;
+        String mnumero = modelo2.getValueAt(row, 0).toString();
+        String mcapacidad = modelo2.getValueAt(row, 1).toString();
+        String mcondicion = modelo2.getValueAt(row, 2).toString();
+        String mestado = modelo2.getValueAt(row, 3).toString();
+        String mmesero = modelo2.getValueAt(row, 4).toString();
+        Mesa m = new Mesa();
         
+        Set<String> ocupaciones = new HashSet<>();
+        ocupaciones.add("1");
+        ocupaciones.add("2");
+        ocupaciones.add("3");
+        ocupaciones.add("libre");
+        ocupaciones.add("ocupada");
+        ocupaciones.add("atendida");
+        
+        try {
+            int numero = Integer.parseInt(mnumero);
+            if (numero<1) {
+                JOptionPane.showMessageDialog(this, "Error el numero no puede ser menor a uno", "Error de tipo numero", JOptionPane.WARNING_MESSAGE);
+                return;
+            }else
+            if (mdata.buscar(numero)==null) {
+                m.setNumeroMesa(numero);
+            }else{
+                JOptionPane.showMessageDialog(this, "Error el numero ingresado ya existe en la base de datos", "Error numero existente", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }catch(NumberFormatException | SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error el numero ingresado no es entero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        try {
+            int capacidad = Integer.parseInt(mcapacidad);
+            if (capacidad<1) {
+                JOptionPane.showMessageDialog(this, "Error la capacidad no puede ser menor a uno", "Error de tipo numero", JOptionPane.WARNING_MESSAGE);
+                return;
+            }else
+                m.setCapacidad(capacidad);
+        }catch(NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Error la capacidad ingresada tiene que ser un numero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if (ocupaciones.contains(mcondicion)) {
+            switch (mcondicion.toLowerCase()) {
+                case ("1") : case ("libre") : {
+                    m.setOcupada("libre");break;
+                }
+                case ("2") : case ("ocupada") : {
+                    m.setOcupada("ocupada");break;
+                }
+                case ("3") : case ("atendida") : {
+                    m.setOcupada("atendida");break;
+                }
+            }
+        }else{
+            JOptionPane.showMessageDialog(this, "Error la condicion solo puede ser:(1:libre|2:ocupada|3:atendida)", "Error condicion invalida", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if (mestado.equalsIgnoreCase("true")|mestado.equalsIgnoreCase("false")) {
+            m.setEstado(mestado.equalsIgnoreCase("true"));
+        }else{
+            JOptionPane.showMessageDialog(this, "Error el estado debe ser True o False", "Error de tipos de datos", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        try {
+            if (mmesero.equals("ninguno")) {
+                m.setMesero(null);
+            }else
+            try {
+                int dni = Integer.parseInt(mmesero);
+                
+                Mesero mesero = msdata.buscar(mmesero);
+
+                if (mesero==null) {
+                    JOptionPane.showMessageDialog(this, "Error la mesa no encuentra el DNI del mesero ingresado", "Error DNI invalido", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }else
+                    m.setMesero(mesero);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Error el DNI ingresado no es un numero: "+e, "Error DNI", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error de SQL al guardar el mesero: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        try {
+            mdata.guardarMesa(m);
+            cargando = false;
+            jbCargar.setEnabled(true);
+            jbGuardar.setEnabled(false);
+            jcCategoria.setSelectedIndex(0);
+            scondicion = "todas";
+            jtfBuscar.setText("");
+            jTable.setModel(modelo);
+            lista = mdata.listarMesas();
+            cargarTabla();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error de SQL al guardar el producto: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jbGuardarActionPerformed
 
-    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+    private void jbSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbSalirActionPerformed
         dispose();
-    }//GEN-LAST:event_jButton1MouseClicked
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_jbSalirActionPerformed
 
     private void jTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableMouseClicked
         rowSelected = jTable.getSelectedRow();
@@ -376,20 +543,198 @@ public class VMesa extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jTableMouseClicked
 
     private void jbEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbEliminarActionPerformed
-        
+        try {
+            if (cargando) {
+                cargarFiltro();
+            }else{
+                int codigo = Integer.parseInt(jTable.getValueAt(rowSelected, 0).toString());
+                mdata.CambiarEstado(false, codigo);
+                cargarFiltro();
+            }
+        } catch (NumberFormatException | SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error de SQL al cambiar el estado: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jbEliminarActionPerformed
 
     private void jTablePropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jTablePropertyChange
+        boolean cambiovalido = true;
         
+        if (jTable.isEditing()) {
+            jTable.getCellEditor().stopCellEditing();
+        }
+        
+        if (jTable.getModel() == modelo3) {
+            
+            srowSelected = rowSelected;
+            
+            if (srowSelected == prowSelected) {
+                if (prowSelected!=-1) {
+                    String mnumero = modelo3.getValueAt(prowSelected, 0).toString();
+                    String mcapacidad = modelo3.getValueAt(prowSelected, 1).toString();
+                    String mcondicion = modelo3.getValueAt(prowSelected, 2).toString();
+                    String mestado = modelo3.getValueAt(prowSelected, 3).toString();
+                    String mmesero = modelo3.getValueAt(prowSelected, 4).toString();
+                    
+                    if (mnumero.equals(pnumero)&mcapacidad.equals(pcapacidad)&
+                        mcondicion.equals(pcondicion)&mmesero.equals(pmesero)&
+                        mestado.equals(pestado)) {
+                        cambiovalido = false;
+                    }
+                }
+                if (srowSelected!=-1&cambiovalido) {
+                    cambiando = true;
+                    jbActualizar.setEnabled(true);
+                    //System.out.println("("+srowSelected+") cambiando: "+cambiando);
+                }
+            } else {
+                if (prowSelected!=-1) {
+                    modelo3.setValueAt(pnumero, prowSelected, 0);
+                    modelo3.setValueAt(pcapacidad, prowSelected, 1);
+                    modelo3.setValueAt(pcondicion, prowSelected, 2);
+                    modelo3.setValueAt(pestado, prowSelected, 3);
+                    modelo3.setValueAt(pmesero, prowSelected, 4);
+                }
+                prowSelected = srowSelected;
+                pnumero = modelo.getValueAt(prowSelected, 0).toString();
+                pcapacidad = modelo.getValueAt(prowSelected, 1).toString();
+                pcondicion = modelo.getValueAt(prowSelected, 2).toString();
+                pestado = modelo.getValueAt(prowSelected, 3).toString();
+                pmesero = modelo.getValueAt(prowSelected, 4).toString();
+                if (srowSelected!=-1) {
+                    cambiando = false;
+                    jbActualizar.setEnabled(false);
+                    //System.out.println("("+srowSelected+") cambiando: "+cambiando);
+                }
+            }
+        }
     }//GEN-LAST:event_jTablePropertyChange
 
     private void jbActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbActualizarActionPerformed
+        String mnumero = modelo3.getValueAt(srowSelected, 0).toString();
+        String mcapacidad = modelo3.getValueAt(srowSelected, 1).toString();
+        String mcondicion = modelo3.getValueAt(srowSelected, 2).toString();
+        String mestado = modelo3.getValueAt(srowSelected, 3).toString();
+        String mmesero = "ninguno";
+        if (modelo3.getValueAt(srowSelected, 4)!="ninguno") {
+            mmesero = modelo3.getValueAt(srowSelected, 4).toString();
+        }
+        Mesa m = new Mesa();
         
+        Set<String> ocupaciones = new HashSet<>();
+        ocupaciones.add("1");
+        ocupaciones.add("2");
+        ocupaciones.add("3");
+        ocupaciones.add("libre");
+        ocupaciones.add("ocupada");
+        ocupaciones.add("atendida");
+        
+        try {
+            int numero = Integer.parseInt(mnumero);
+            if (numero<1) {
+                JOptionPane.showMessageDialog(this, "Error el numero no puede ser menor a uno", "Error de tipo numero", JOptionPane.WARNING_MESSAGE);
+                return;
+            }else
+            if (mdata.buscar(numero)==null) {
+                m.setNumeroMesa(numero);
+            }else{
+                if (mnumero.equals(pnumero)) {
+                    m.setNumeroMesa(numero);
+                }else {
+                    JOptionPane.showMessageDialog(this, "Error el numero ingresado ya existe en la base de datos", "Error numero existente", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+        }catch(NumberFormatException | SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error el numero ingresado no es entero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        try {
+            int capacidad = Integer.parseInt(mcapacidad);
+            if (capacidad<1) {
+                JOptionPane.showMessageDialog(this, "Error la capacidad no puede ser menor a uno", "Error de tipo numero", JOptionPane.WARNING_MESSAGE);
+                return;
+            }else
+                m.setCapacidad(capacidad);
+        }catch(NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Error la capacidad ingresada tiene que ser un numero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if (ocupaciones.contains(mcondicion)) {
+            switch (mcondicion.toLowerCase()) {
+                case ("1") : case ("libre") : {
+                    m.setOcupada("libre");break;
+                }
+                case ("2") : case ("ocupada") : {
+                    m.setOcupada("ocupada");break;
+                }
+                case ("3") : case ("atendida") : {
+                    m.setOcupada("atendida");break;
+                }
+            }
+        }else{
+            JOptionPane.showMessageDialog(this, "Error la condicion solo puede ser:(1:libre|2:ocupada|3:atendida)", "Error condicion invalida", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if (mestado.equalsIgnoreCase("true")|mestado.equalsIgnoreCase("false")) {
+            m.setEstado(mestado.equalsIgnoreCase("true"));
+        }else{
+            JOptionPane.showMessageDialog(this, "Error el estado debe ser True o False", "Error de tipos de datos", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        try {
+            if (mmesero.equals("ninguno")) {
+                m.setMesero(null);
+            }else
+            try {
+                int dni = Integer.parseInt(mmesero);
+                
+                Mesero mesero = msdata.buscar(mmesero);
+
+                if (mesero==null) {
+                    JOptionPane.showMessageDialog(this, "Error la mesa no encuentra el DNI del mesero ingresado", "Error DNI invalido", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }else
+                    m.setMesero(mesero);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Error el DNI ingresado no es un numero: "+e, "Error DNI", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error de SQL al guardar el mesero: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        try {
+            mdata.Actualizar(m, Integer.parseInt(pnumero));
+            cargando = false;
+            jbCargar.setEnabled(true);
+            jbGuardar.setEnabled(false);
+            jTable.setModel(modelo);
+            cargarFiltro();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error de SQL al actualizar: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jbActualizarActionPerformed
 
     private void jBotonMesaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBotonMesaActionPerformed
-        // TODO add your handling code here:
+        if (jBotonMesa.isSelected()) {
+            jtfBuscar.setEnabled(true);
+            jbBuscar.setEnabled(true);
+            buscar = "numero";
+        }
     }//GEN-LAST:event_jBotonMesaActionPerformed
+
+    private void jBotonCapacidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBotonCapacidadActionPerformed
+        if (jBotonCapacidad.isSelected()) {
+            jtfBuscar.setEnabled(true);
+            jbBuscar.setEnabled(true);
+            buscar = "capacidad";
+        }
+    }//GEN-LAST:event_jBotonCapacidadActionPerformed
     
     public void limpiarAcciones() {
         jTable.setModel(modelo);
@@ -434,13 +779,29 @@ public class VMesa extends javax.swing.JInternalFrame {
     }
     
     private void agregarFila(Mesa m) {
-        modelo.addRow(new Object[] {
-            m.getNumeroMesa(),
-            m.getCapacidad(),
-            m.getOcupada(),
-            m.isEstado(),
-            m.getMesero().getDniMesero(),
-        });
+        if (m!=null) {
+            modelo.addRow(new Object[] {
+                m.getNumeroMesa(),
+                m.getCapacidad(),
+                m.getOcupada(),
+                m.isEstado(),
+                (m.getMesero()!=null)? m.getMesero().getDniMesero():"ninguno",
+            });
+            modelo2.addRow(new Object[] {
+                m.getNumeroMesa(),
+                m.getCapacidad(),
+                m.getOcupada(),
+                m.isEstado(),
+                (m.getMesero()!=null)? m.getMesero().getDniMesero():"ninguno",
+            });
+            modelo3.addRow(new Object[] {
+                m.getNumeroMesa(),
+                m.getCapacidad(),
+                m.getOcupada(),
+                m.isEstado(),
+                (m.getMesero()!=null)? m.getMesero().getDniMesero():"ninguno",
+            });
+        }
     }
     
     private void Botones(boolean b) {
@@ -460,11 +821,22 @@ public class VMesa extends javax.swing.JInternalFrame {
         return numero;
     }
     
+    private void cargarFiltro() {
+        try {
+            if ("todas".equals(scondicion)) {
+                lista = mdata.listarMesas();
+            }else
+                lista = mdata.filtrarMesasCondicionCapacidad(scondicion,scapacidad);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error de SQL al cargar la tabla con filtro: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
+        }
+        cargarTabla();
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup GrupoBotMesa;
     private javax.swing.JRadioButton jBotonCapacidad;
     private javax.swing.JRadioButton jBotonMesa;
-    private javax.swing.JButton jButton1;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JLabel jLfondo;
     private javax.swing.JScrollPane jScrollPane1;
@@ -476,6 +848,7 @@ public class VMesa extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jbCondicion;
     private javax.swing.JButton jbEliminar;
     private javax.swing.JButton jbGuardar;
+    private javax.swing.JButton jbSalir;
     private javax.swing.JComboBox<String> jcCategoria;
     private javax.swing.JTextField jtfBuscar;
     // End of variables declaration//GEN-END:variables
