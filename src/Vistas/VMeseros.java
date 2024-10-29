@@ -2,8 +2,10 @@ package Vistas;
 
 import java.sql.*;
 import Modelo.Conexion;
-import Modelo.Producto;
-import Persistencia.ProductosData;
+import Modelo.Mesero;
+import Persistencia.MeseroData;
+import Persistencia.MesaData;
+import Persistencia.PedidoData;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,10 +14,8 @@ import javax.swing.table.DefaultTableModel;
 
 public class VMeseros extends javax.swing.JInternalFrame {
 
-
-   
-    private ArrayList<Producto> lista = new ArrayList<>();
-    private ProductosData pdata = new ProductosData();
+    private ArrayList<Mesero> lista = new ArrayList<>();
+    private MeseroData msdata = new MeseroData();
     private Connection con = Conexion.cargaConexion();
     private int rowSelected = -1;
     private int srowSelected = -1;
@@ -23,12 +23,12 @@ public class VMeseros extends javax.swing.JInternalFrame {
     private boolean cargando = false;
     private boolean cambiando = false;
     
-    private String pcodigo = null;
-    private String pnombre = null;
-    private String pprecio = null;
-    private String pstock = null;
-    private String pcategoria = null;
-    private String pestado = null;
+    private String msdni = null;
+    private String msapellido = null;
+    private String msnombre = null;
+    private String msmesaasignada = null;
+    private String msreemplazando = null;
+    private String msestado = null;
     
     private DefaultTableModel modelo = new DefaultTableModel() {
         public boolean isCellEditable(int fila, int col) { 
@@ -49,19 +49,35 @@ public class VMeseros extends javax.swing.JInternalFrame {
     };
     
     public VMeseros() {
-        initComponents();
-        try {
-            lista = pdata.listar();
-        } catch (SQLException ex) {
+          initComponents();
+     try {
+        lista = msdata.listarMeseros(); 
+        actualizarTabla(lista);
+    } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error de SQL al cargar la tabla: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
         }
         
+        jbBuscar.setEnabled(false);
+        jtfBuscar.setEnabled(false);
         jbGuardar.setEnabled(false);
         Botones(false);
         cargarCabecera();
         cargarTabla();
     }
-    
+    private void actualizarTabla(ArrayList<Mesero> lista) {
+    DefaultTableModel modelo = (DefaultTableModel) jTable.getModel();
+    modelo.setRowCount(0); 
+
+    for (Mesero mesero : lista) {
+        modelo.addRow(new Object[]{
+            mesero.getDniMesero(),
+            mesero.getApellido(),
+            mesero.getNombre(),
+            mesero.isEstado()
+        });
+    }
+}
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -177,6 +193,12 @@ public class VMeseros extends javax.swing.JInternalFrame {
             }
         });
 
+        jtfBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jtfBuscarActionPerformed(evt);
+            }
+        });
+
         jbGuardar.setBackground(new java.awt.Color(153, 102, 0));
         jbGuardar.setFont(new java.awt.Font("Monotype Corsiva", 1, 14)); // NOI18N
         jbGuardar.setForeground(new java.awt.Color(255, 255, 204));
@@ -276,29 +298,11 @@ public class VMeseros extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbBuscarActionPerformed
-        String buscar = jtfBuscar.getText();
 
-        try {
-            int codigo = Integer.parseInt(buscar);
-
-            lista.clear();
-            try {
-                lista.add(pdata.buscar(codigo));
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error de SQL al buscar por codigo: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
-            }
-        }catch(NumberFormatException e) {
-            try {
-                lista = pdata.buscarPorNombre(buscar);
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error de SQL al buscar por nombre: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-        cargarTabla();
     }//GEN-LAST:event_jbBuscarActionPerformed
 
     private void jcCategoriaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jcCategoriaItemStateChanged
-        cargarFiltro();
+
     }//GEN-LAST:event_jcCategoriaItemStateChanged
 
     private void jcCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcCategoriaActionPerformed
@@ -306,361 +310,27 @@ public class VMeseros extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jcCategoriaActionPerformed
 
     private void jTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableMouseClicked
-        rowSelected = jTable.getSelectedRow();
-        if (jTable.getModel()==modelo3) {
-            if (jTable.isEditing()) {
-                jTable.getCellEditor().stopCellEditing();
-            }
-            srowSelected = jTable.getSelectedRow();
-            //System.out.println("srow:"+srowSelected);
-        }
-        if (!cambiando) {
-            jbEliminar.setEnabled(true);
-            if (cargando==false) {
-                jTable.setModel(modelo3);
-            }
-        }
+       
     }//GEN-LAST:event_jTableMouseClicked
 
     private void jTablePropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jTablePropertyChange
-        boolean cambiovalido = true;
-
-        if (jTable.isEditing()) {
-            jTable.getCellEditor().stopCellEditing();
-        }
-
-        if (jTable.getModel() == modelo3) {
-
-            srowSelected = rowSelected;
-
-            if (srowSelected == prowSelected) {
-                if (prowSelected!=-1) {
-                    String mcodigo = modelo3.getValueAt(prowSelected, 0).toString();
-                    String mnombre = modelo3.getValueAt(prowSelected, 1).toString();
-                    String mprecio = modelo3.getValueAt(prowSelected, 2).toString();
-                    String mstock = modelo3.getValueAt(prowSelected, 3).toString();
-                    String mcategoria = modelo3.getValueAt(prowSelected, 4).toString();
-                    String mestado = modelo3.getValueAt(prowSelected, 5).toString();
-
-                    if (mcodigo.equals(pcodigo)&mnombre.equals(pnombre)&
-                        mprecio.equals(pprecio)&mstock.equals(pstock)&
-                        mcategoria.equals(pcategoria)&mestado.equals(pestado)) {
-                        cambiovalido = false;
-                    }
-                }
-                if (srowSelected!=-1&cambiovalido) {
-                    cambiando = true;
-                    jbActualizar.setEnabled(true);
-                    //System.out.println("("+srowSelected+") cambiando: "+cambiando);
-                }
-            } else {
-                if (prowSelected!=-1) {
-                    modelo3.setValueAt(pcodigo, prowSelected, 0);
-                    modelo3.setValueAt(pnombre, prowSelected, 1);
-                    modelo3.setValueAt(pprecio, prowSelected, 2);
-                    modelo3.setValueAt(pstock, prowSelected, 3);
-                    modelo3.setValueAt(pcategoria, prowSelected, 4);
-                    modelo3.setValueAt(pestado, prowSelected, 5);
-                }
-                prowSelected = srowSelected;
-                pcodigo = modelo.getValueAt(prowSelected, 0).toString();
-                pnombre = modelo.getValueAt(prowSelected, 1).toString();
-                pprecio = modelo.getValueAt(prowSelected, 2).toString();
-                pstock = modelo.getValueAt(prowSelected, 3).toString();
-                pcategoria = modelo.getValueAt(prowSelected, 4).toString();
-                pestado = modelo.getValueAt(prowSelected, 5).toString();
-                if (srowSelected!=-1) {
-                    cambiando = false;
-                    jbActualizar.setEnabled(false);
-                    //System.out.println("("+srowSelected+") cambiando: "+cambiando);
-                }
-            }
-        }
+       
     }//GEN-LAST:event_jTablePropertyChange
 
     private void jbCargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCargarActionPerformed
-        String filtro;
-        switch (jcCategoria.getSelectedItem().toString()) {
-            case ("0-todas") : {filtro="";break;}
-            case ("1-pizzas") : {filtro="pizzas";break;}
-            case ("2-hamburguesas") : {filtro="hamburguesas";break;}
-            case ("3-lomos") : {filtro="lomos";break;}
-            case ("4-tacos") : {filtro="tacos";break;}
-            case ("5-bebidas/a") : {filtro="bebidas sin alcohol";break;}
-            case ("6-bebidasc/a") : {filtro="bebidas con alcohol";break;}
-            case ("7-gaseosas") : {filtro="bebidas gaseosas";break;}
-            default : {filtro="";break;}
-        }
-
-        if (!cargando) {
-            cargando = true;
-            jbCargar.setEnabled(false);
-            jbGuardar.setEnabled(true);
-            try {
-                modelo2.addRow(new Object[] {
-                    Enumerar(),
-                    "",
-                    "",
-                    "",
-                    filtro,
-                    ""
-                });
-                jTable.setModel(modelo2);
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error de SQL al cargar el producto: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
-            }
-        }
+   
     }//GEN-LAST:event_jbCargarActionPerformed
 
     private void jbActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbActualizarActionPerformed
-        String mcodigo = modelo3.getValueAt(srowSelected, 0).toString();
-        String mnombre = modelo3.getValueAt(srowSelected, 1).toString();
-        String mprecio = modelo3.getValueAt(srowSelected, 2).toString();
-        String mstock = modelo3.getValueAt(srowSelected, 3).toString();
-        String mcategoria = modelo3.getValueAt(srowSelected, 4).toString();
-        String mestado = modelo3.getValueAt(srowSelected, 5).toString();
-        Producto p = new Producto();
-
-        Set<String> categorias = new HashSet<>();
-        categorias.add("1");
-        categorias.add("2");
-        categorias.add("3");
-        categorias.add("4");
-        categorias.add("5");
-        categorias.add("6");
-        categorias.add("7");
-        categorias.add("pizzas");
-        categorias.add("lomos");
-        categorias.add("hamburguesas");
-        categorias.add("tacos");
-        categorias.add("bebidas con alcohol");
-        categorias.add("bebidas sin alcohol");
-        categorias.add("bebidas gaseosas");
-        String cambios = "";
-
-        try {
-            int codigo = Integer.parseInt(mcodigo);
-            if (codigo<1) {
-                JOptionPane.showMessageDialog(this, "Error el codigo no puede ser menor a uno", "Error de tipo codigo", JOptionPane.ERROR_MESSAGE);
-                return;
-            }else
-            if (pdata.buscar(codigo)==null) {
-                p.setCodigo(codigo);
-                cambios += "codigo";
-            }else{
-                if (mcodigo.equals(pcodigo)) {
-                    p.setCodigo(codigo);
-                }else{
-                    JOptionPane.showMessageDialog(this, "Error el codigo ingresado ya existe en la base de datos", "Error codigo existente", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-            }
-        }catch(NumberFormatException | SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error el codigo ingresado no es un numero entero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (!mnombre.trim().equalsIgnoreCase("")) {
-            p.setNombre(mnombre);
-            cambios += ",nombre";
-        }else{
-            JOptionPane.showMessageDialog(this, "Error el nombre esta vacio", "Error nombre vacio", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        try {
-            double precio = Double.parseDouble(mprecio);
-            p.setPrecio(precio);
-            cambios += ",precio";
-        }catch(NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Error el precio ingresado no es un numero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        try {
-            int stock = Integer.parseInt(mstock);
-            p.setStock(stock);
-            cambios += ",stock";
-        }catch(NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Error el stock ingresado no es un numero entero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (categorias.contains(mcategoria)) {
-            switch (mcategoria.toLowerCase()) {
-                case ("1") : case ("pizzas") : {
-                    p.setCategoria("pizzas");break;
-                }
-                case ("2") : case ("lomos") : {
-                    p.setCategoria("lomos");break;
-                }
-                case ("3") : case ("hamburguesas") : {
-                    p.setCategoria("hamburguesas");break;
-                }
-                case ("4") : case ("tacos") : {
-                    p.setCategoria("tacos");break;
-                }
-                case ("5") : case ("bebidas con alcohol") : {
-                    p.setCategoria("bebidas con alcohol");break;
-                }
-                case ("6") : case ("bebidas sin alcohol") : {
-                    p.setCategoria("bebidas sin alcohol");break;
-                }
-                case ("7") : case ("bebidas gaseosas") : {
-                    p.setCategoria("bebidas gaseosas");break;
-                }
-            }
-            cambios += ",categoria";
-        }else{
-            JOptionPane.showMessageDialog(this, "Error la categoria solo puede ser:(1:pizzas|2:lomos|3:hamburguesas|4:tacos|5:bebidas con alcohol|6:bebidas sin alcohol|7:bebidas gaseosas)", "Error nombre vacio", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (mestado.equalsIgnoreCase("true")|mestado.equalsIgnoreCase("false")) {
-            p.setEstado(mestado.equalsIgnoreCase("true"));
-            cambios += ",estado";
-        }else{
-            JOptionPane.showMessageDialog(this, "Errorn el estado debe ser True o False", "Error de tipos de datos", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        pdata.actualizar(p,cambios,Integer.parseInt(pcodigo));
-        cargando = false;
-        jbCargar.setEnabled(true);
-        jbGuardar.setEnabled(false);
-        jTable.setModel(modelo);
-        cargarFiltro();
+  
     }//GEN-LAST:event_jbActualizarActionPerformed
 
     private void jbEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbEliminarActionPerformed
-        try {
-            if (cargando) {
-                cargarFiltro();
-            }else{
-                int codigo = Integer.parseInt(jTable.getValueAt(rowSelected, 0).toString());
-                pdata.CambiarEstado(false, codigo);
-                cargarFiltro();
-            }
-        } catch (NumberFormatException | SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error de SQL al cambiar el estado: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
-        }
+ 
     }//GEN-LAST:event_jbEliminarActionPerformed
 
     private void jbGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbGuardarActionPerformed
-        int row = modelo2.getRowCount()-1;
-        String mcodigo = modelo2.getValueAt(row, 0).toString();
-        String mnombre = modelo2.getValueAt(row, 1).toString();
-        String mprecio = modelo2.getValueAt(row, 2).toString();
-        String mstock = modelo2.getValueAt(row, 3).toString();
-        String mcategoria = modelo2.getValueAt(row, 4).toString();
-        String mestado = modelo2.getValueAt(row, 5).toString();
-        Producto p = new Producto();
 
-        Set<String> categorias = new HashSet<>();
-        categorias.add("1");
-        categorias.add("2");
-        categorias.add("3");
-        categorias.add("4");
-        categorias.add("5");
-        categorias.add("6");
-        categorias.add("7");
-        categorias.add("pizzas");
-        categorias.add("lomos");
-        categorias.add("hamburguesas");
-        categorias.add("tacos");
-        categorias.add("bebidas con alcohol");
-        categorias.add("bebidas sin alcohol");
-        categorias.add("bebidas gaseosas");
-
-        try {
-            int codigo = Integer.parseInt(mcodigo);
-            if (codigo<1) {
-                JOptionPane.showMessageDialog(this, "Error el codigo no puede ser menor a uno", "Error de tipo codigo", JOptionPane.ERROR_MESSAGE);
-                return;
-            }else
-            if (pdata.buscar(codigo)==null) {
-                p.setCodigo(codigo);
-            }else{
-                JOptionPane.showMessageDialog(this, "Error el codigo ingresado ya existe en la base de datos", "Error codigo existente", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }catch(NumberFormatException | SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error el codigo ingresado no es un numero entero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (!mnombre.trim().equalsIgnoreCase("")) {
-            p.setNombre(mnombre);
-        }else{
-            JOptionPane.showMessageDialog(this, "Error el nombre esta vacio", "Error nombre vacio", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        try {
-            double precio = Double.parseDouble(mprecio);
-            p.setPrecio(precio);
-        }catch(NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Error el precio ingresado no es un numero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        try {
-            int stock = Integer.parseInt(mstock);
-            p.setStock(stock);
-        }catch(NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Error el stock ingresado no es un numero entero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (categorias.contains(mcategoria)) {
-            switch (mcategoria.toLowerCase()) {
-                case ("1") : case ("pizzas") : {
-                    p.setCategoria("pizzas");break;
-                }
-                case ("2") : case ("lomos") : {
-                    p.setCategoria("lomos");break;
-                }
-                case ("3") : case ("hamburguesas") : {
-                    p.setCategoria("hamburguesas");break;
-                }
-                case ("4") : case ("tacos") : {
-                    p.setCategoria("tacos");break;
-                }
-                case ("5") : case ("bebidas con alcohol") : {
-                    p.setCategoria("bebidas con alcohol");break;
-                }
-                case ("6") : case ("bebidas sin alcohol") : {
-                    p.setCategoria("bebidas sin alcohol");break;
-                }
-                case ("7") : case ("bebidas gaseosas") : {
-                    p.setCategoria("bebidas gaseosas");break;
-                }
-            }
-        }else{
-            JOptionPane.showMessageDialog(this, "Error la categoria solo puede ser:(1:pizzas|2:lomos|3:hamburguesas|4:tacos|5:bebidas con alcohol|6:bebidas sin alcohol|7:bebidas gaseosas)", "Error nombre vacio", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (mestado.equalsIgnoreCase("true")|mestado.equalsIgnoreCase("false")) {
-            p.setEstado(mestado.equalsIgnoreCase("true"));
-        }else{
-            JOptionPane.showMessageDialog(this, "Errorn el estado debe ser True o False", "Error de tipos de datos", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        try {
-            pdata.guardarProducto(p);
-            cargando = false;
-            jbCargar.setEnabled(true);
-            jbGuardar.setEnabled(false);
-            jcCategoria.setSelectedIndex(0);
-            jtfBuscar.setText("");
-            jTable.setModel(modelo);
-            lista = pdata.listar();
-            cargarTabla();
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error de SQL al guardar el producto: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
-        }
     }//GEN-LAST:event_jbGuardarActionPerformed
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
@@ -671,42 +341,56 @@ public class VMeseros extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void jtfBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtfBuscarActionPerformed
+    String criterio = jtfBuscar.getText().trim(); 
+    if (criterio.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Por favor, ingresa un DNI o apellido para buscar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        return; 
+    }
+
+    try {
+        lista = msdata.buscarPorDniOApellido(criterio); 
+        actualizarTabla(lista); 
+    } catch (SQLException e) {
+        e.printStackTrace(); 
+        JOptionPane.showMessageDialog(this, "Error al buscar: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+     }
+    }//GEN-LAST:event_jtfBuscarActionPerformed
+
  public void limpiarAcciones() {
         jTable.setModel(modelo);
         Botones(false);
         jbCargar.setEnabled(true);
         jbGuardar.setEnabled(false);
         cambiando = false;
-        pcodigo = null;
-        pnombre = null;
-        pprecio = null;
-        pstock = null;
-        pcategoria = null;
-        pestado = null;
+        msdni = null;
+        msapellido = null;
+        msnombre = null;
+        msestado = null;
         rowSelected = -1;
         srowSelected = -1;
         prowSelected = -1;
     }
     
     public void cargarCabecera() {
-        modelo.addColumn("Código");
+        modelo.addColumn("DNI");
+        modelo.addColumn("Apellido");
         modelo.addColumn("Nombre");
-        modelo.addColumn("Precio");
-        modelo.addColumn("Stock");
-        modelo.addColumn("Categoria");
+        modelo.addColumn("Mesa Asignada");
+        modelo.addColumn("Reemplazando");
         modelo.addColumn("Estado");
         jTable.setModel(modelo);
-        modelo2.addColumn("Código");
+        modelo2.addColumn("DNI");
+        modelo2.addColumn("Apellido");
         modelo2.addColumn("Nombre");
-        modelo2.addColumn("Precio");
-        modelo2.addColumn("Stock");
-        modelo2.addColumn("Categoria");
+        modelo2.addColumn("Mesa Asignada");
+        modelo2.addColumn("Reemplazando");
         modelo2.addColumn("Estado");
-        modelo3.addColumn("Código");
+        modelo3.addColumn("DNI");
+        modelo3.addColumn("Apellido");     
         modelo3.addColumn("Nombre");
-        modelo3.addColumn("Precio");
-        modelo3.addColumn("Stock");
-        modelo3.addColumn("Categoria");
+        modelo3.addColumn("Mesa Asignada");
+        modelo3.addColumn("Reemplazando");
         modelo3.addColumn("Estado");
     }
     
@@ -716,35 +400,20 @@ public class VMeseros extends javax.swing.JInternalFrame {
         modelo.setRowCount(0);
         modelo2.setRowCount(0);
         modelo3.setRowCount(0);
-        for (Producto p: lista) {
-            agregarFila(p);
+        for (Mesero ms: lista) {
+            agregarFila(ms);
         }
     }
     
-    private void agregarFila(Producto p) {
+    private void agregarFila(Mesero ms) {
         modelo.addRow(new Object[] {
-            p.getCodigo(),
-            p.getNombre(),
-            p.getPrecio(),
-            p.getStock(),
-            p.getCategoria(),
-            p.isEstado()
+         
         });
         modelo2.addRow(new Object[] {
-            p.getCodigo(),
-            p.getNombre(),
-            p.getPrecio(),
-            p.getStock(),
-            p.getCategoria(),
-            p.isEstado()
+            
         });
         modelo3.addRow(new Object[] {
-            p.getCodigo(),
-            p.getNombre(),
-            p.getPrecio(),
-            p.getStock(),
-            p.getCategoria(),
-            p.isEstado()
+           
         });
     }
     
@@ -753,49 +422,8 @@ public class VMeseros extends javax.swing.JInternalFrame {
         jbEliminar.setEnabled(b);
     }
     
-    private int Enumerar() throws SQLException {
-        int size = pdata.listar().size();
-        int numero=0;
-        for (int i=1; i<size+10; i++) {
-            if (pdata.buscar(i)==null) {
-                numero = i;
-                break;
-            }
-        }
-        return numero;
-    }
-    
     private void cargarFiltro() {
-        String filtro;
-        String nombre = jtfBuscar.getText();
-        switch (jcCategoria.getSelectedItem().toString()) {
-            case ("0-todas") : {filtro="todas";break;}
-            case ("1-pizzas") : {filtro="pizzas";break;}
-            case ("2-hamburguesas") : {filtro="hamburguesas";break;}
-            case ("3-lomos") : {filtro="lomos";break;}
-            case ("4-tacos") : {filtro="tacos";break;}
-            case ("5-bebidas/a") : {filtro="bebidas sin alcohol";break;}
-            case ("6-bebidasc/a") : {filtro="bebidas con alcohol";break;}
-            case ("7-gaseosas") : {filtro="bebidas gaseosas";break;}
-            default : {filtro="ninguna";break;}
-        }
         
-        try {
-            if (nombre.trim().isEmpty()) {
-                if ("todas".equals(filtro)) {
-                    lista = pdata.listar();
-                }else
-                    lista = pdata.filtrarCategoria(filtro);
-            }else{
-                if ("todas".equals(filtro)) {
-                    lista = pdata.listar();
-                }else
-                    lista = pdata.filtrarCategoriaYNombre(filtro,nombre);
-            }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error de SQL al cargar la tabla con filtro: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
-        }
-        cargarTabla();
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
