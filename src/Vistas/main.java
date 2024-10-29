@@ -592,7 +592,6 @@ public class main {
                 }
                 case "4": {
                     MeseroData msdata = new MeseroData();
-                    MesaData mdata = new MesaData();
                     Mesero m = new Mesero(0,null,null,false);
                     boolean valido = true;
                     String opcions = null;
@@ -620,7 +619,7 @@ public class main {
                     } while (!valido);
                 try {
                     if (msdata.buscar(String.valueOf(m.getDniMesero()))!=null) {
-                        System.out.print("//// Ingrese que atributos del producto desea actualizar: (apellido, nombre, numero_mesa, remplazando, estado) puede ponerlo asi para todos o solo algunos\n//// : ");
+                        System.out.print("//// Ingrese que atributos del producto desea actualizar: (apellido, nombre, estado) puede ponerlo asi para todos o solo algunos\n//// : ");
                         String filtros = leerString.nextLine().toLowerCase();
                         
                         if (filtros.contains("apellido")) {
@@ -687,6 +686,7 @@ public class main {
     }
     private static void gestionarMesas(MesaData mesaData, Scanner leerInt, Scanner leerString) {
     Set<String> accionesMesa = new HashSet<>();
+    MeseroData msdata = new MeseroData();
     accionesMesa.add("1");
     accionesMesa.add("2");
     accionesMesa.add("3");
@@ -794,6 +794,24 @@ public class main {
                         }
                     }
                 } while (!valido);
+                System.out.print("//// Ingrese el dni del mesero asignado a la mesa, puede ser null\n//// : ");
+                do {
+                    valido = true;
+                    String dni = leerString.nextLine();
+                    try {
+                        if ("null".equals(dni)) {
+                            nuevaMesa.setMesero(null);
+                        }else
+                        if (msdata.buscar(dni)!=null) {
+                            nuevaMesa.setMesero(msdata.buscar(dni));
+                        }else {
+                            System.err.print("//// EL DNI del mesero ingresado no existe, intentelo nuevamente\n//// : ");
+                            valido = false;
+                        }
+                    } catch (SQLException e) {
+                        System.err.println("Error SQL");
+                    }
+                } while (!valido);
 
                 try {
                     mesaData.guardarMesa(nuevaMesa);
@@ -861,7 +879,25 @@ public class main {
                                 }
                             }
                         } while (!valido);
-
+                        System.out.print("//// Ingrese el dni del mesero asignado a la mesa, puede ser null\n//// : ");
+                        do {
+                            valido = true;
+                            String dni = leerString.nextLine();
+                            try {
+                                if ("null".equals(dni)) {
+                                    mesaActualizar.setMesero(null);
+                                }else
+                                if (msdata.buscar(dni)!=null) {
+                                    mesaActualizar.setMesero(msdata.buscar(dni));
+                                }else {
+                                    System.err.print("//// EL DNI del mesero ingresado no existe, intentelo nuevamente\n//// : ");
+                                    valido = false;
+                                }
+                            } catch (SQLException e) {
+                                System.err.println("Error SQL");
+                            }
+                        } while (!valido);
+                        
                         mesaData.Actualizar(mesaActualizar, mesaActualizar.getNumeroMesa());
                         System.out.println("Mesa actualizada exitosamente.");
                     } else {
