@@ -5,16 +5,17 @@ import java.sql.*;
 import Modelo.Conexion;
 import Modelo.Producto;
 import Modelo.Reserva;
+import Persistencia.MesaData;
 import Persistencia.ProductosData;
 import Persistencia.ReservaData;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -23,19 +24,24 @@ public class VReservas extends javax.swing.JInternalFrame {
     private ArrayList<Reserva> lista = new ArrayList<>();
     private ProductosData pdata = new ProductosData();
     private ReservaData rdata = new ReservaData();
+    private MesaData mdata = new MesaData();
     private Connection con = Conexion.cargaConexion();
     private int rowSelected = -1;
     private int srowSelected = -1;
     private int prowSelected = -1;
     private boolean cargando = false;
     private boolean cambiando = false;
+    private LocalTime hora = null;
+    private LocalDate fecha = null;
+    private String vigencia = "null";
     
-    private String pcodigo = null;
-    private String pnombre = null;
-    private String pprecio = null;
-    private String pstock = null;
-    private String pcategoria = null;
-    private String pestado = null;
+    private String pid = null;
+    private String pmesa = null;
+    private String pdni = null;
+    private String papellido = null;
+    private String pfecha = null;
+    private String phora = null;
+    private String pvigencia = null;
     
     private DefaultTableModel modelo = new DefaultTableModel() {
         public boolean isCellEditable(int fila, int col) { 
@@ -63,7 +69,8 @@ public class VReservas extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(this, "Error de SQL al cargar la tabla: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
         }
         
-        
+        jbBuscar.setEnabled(false);
+        jtfBuscar.setEnabled(false);
         jtfHora.setEnabled(false);
         jFecha.setEnabled(false);
         jbGuardar.setEnabled(false);
@@ -87,13 +94,13 @@ public class VReservas extends javax.swing.JInternalFrame {
         jbEliminar = new javax.swing.JButton();
         jtfBuscar = new javax.swing.JTextField();
         jbGuardar = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        jbSalir = new javax.swing.JButton();
         jLfondo = new javax.swing.JLabel();
         jcbFecha = new javax.swing.JCheckBox();
         jcbHora = new javax.swing.JCheckBox();
         jrVigencia = new javax.swing.JRadioButton();
         jrNoVigencia = new javax.swing.JRadioButton();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        jcbBuscar = new javax.swing.JCheckBox();
         jFecha = new com.toedter.calendar.JDateChooser();
         jtfHora = new javax.swing.JTextField();
 
@@ -204,19 +211,14 @@ public class VReservas extends javax.swing.JInternalFrame {
             }
         });
 
-        jButton1.setBackground(new java.awt.Color(204, 0, 0));
-        jButton1.setFont(new java.awt.Font("Monotype Corsiva", 1, 14)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 204));
-        jButton1.setText("Cerrar");
-        jButton1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
-            }
-        });
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jbSalir.setBackground(new java.awt.Color(204, 0, 0));
+        jbSalir.setFont(new java.awt.Font("Monotype Corsiva", 1, 14)); // NOI18N
+        jbSalir.setForeground(new java.awt.Color(255, 255, 204));
+        jbSalir.setText("Cerrar");
+        jbSalir.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jbSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jbSalirActionPerformed(evt);
             }
         });
 
@@ -261,9 +263,20 @@ public class VReservas extends javax.swing.JInternalFrame {
             }
         });
 
-        jCheckBox1.setBackground(new java.awt.Color(204, 187, 165));
-        jCheckBox1.setFont(new java.awt.Font("Monotype Corsiva", 0, 18)); // NOI18N
-        jCheckBox1.setText("ID / Apellido:");
+        jcbBuscar.setBackground(new java.awt.Color(204, 187, 165));
+        jcbBuscar.setFont(new java.awt.Font("Monotype Corsiva", 0, 18)); // NOI18N
+        jcbBuscar.setText("ID / Apellido:");
+        jcbBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jcbBuscarActionPerformed(evt);
+            }
+        });
+
+        jFecha.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                jFechaPropertyChange(evt);
+            }
+        });
 
         jtfHora.setText("00:00");
         jtfHora.setToolTipText("");
@@ -284,37 +297,36 @@ public class VReservas extends javax.swing.JInternalFrame {
                 .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jbCargar)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jbGuardar)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jbActualizar)
-                                .addGap(18, 18, 18)
-                                .addComponent(jbEliminar))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 517, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jcbHora, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addGap(51, 51, 51)
-                                            .addComponent(jCheckBox1))
-                                        .addComponent(jcbFecha, javax.swing.GroupLayout.Alignment.TRAILING)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(jFecha, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jtfBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
-                                    .addComponent(jtfHora))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(jbSalir, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jbCargar)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jbGuardar)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jbActualizar)
+                            .addGap(18, 18, 18)
+                            .addComponent(jbEliminar))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 517, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jcbHora, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(jrNoVigencia)
-                                        .addComponent(jrVigencia, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jbBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(51, 51, 51)
+                                        .addComponent(jcbBuscar))
+                                    .addComponent(jcbFecha, javax.swing.GroupLayout.Alignment.TRAILING)))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(jFecha, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jtfBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+                                .addComponent(jtfHora))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jrNoVigencia)
+                                    .addComponent(jrVigencia, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jbBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -323,11 +335,11 @@ public class VReservas extends javax.swing.JInternalFrame {
                 .addComponent(jLfondo, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jbSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jCheckBox1)
+                    .addComponent(jcbBuscar)
                     .addComponent(jtfBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jbBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, Short.MAX_VALUE)
@@ -355,24 +367,175 @@ public class VReservas extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbBuscarActionPerformed
-        
+        String texto = jtfBuscar.getText();
+        try {
+            if (!"".equals(texto)) {
+                try {
+                    int id = Integer.parseInt(texto);
+                    if (rdata.buscarInt(id)!=null) {
+                        lista.clear();
+                        lista.add(rdata.buscarInt(id));
+                    }else {
+                        JOptionPane.showMessageDialog(this, "La ID ingresada no existe","ID inexistente",JOptionPane.WARNING_MESSAGE);
+                        lista = rdata.listarReservas();
+                        cargarTabla();
+                    }
+                } catch(NumberFormatException e) {
+                    lista = rdata.buscarString(texto);
+                }
+                cargarTabla();
+            }else{
+                lista = rdata.listarReservas();
+                cargarTabla();
+            }
+        } catch(SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error SQL: "+e,"Error SQL",JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jbBuscarActionPerformed
 
     private void jbCargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCargarActionPerformed
-        
+        if (!cargando) {
+            cargando = true;
+            jbCargar.setEnabled(false);
+            jbGuardar.setEnabled(true);
+            try {
+                modelo2.addRow(new Object[] {
+                    Enumerar(),
+                    "",
+                    "",
+                    "",
+                    fecha,
+                    hora,
+                    (!"null".equals(vigencia))? vigencia:"",
+                });
+                jTable.setModel(modelo2);
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error de SQL al cargar el producto: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }//GEN-LAST:event_jbCargarActionPerformed
     
     private void jbGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbGuardarActionPerformed
+        int row = modelo2.getRowCount()-1;
+        System.out.println(row);
+        String mid = modelo2.getValueAt(row, 0).toString();
+        String mmesa = modelo2.getValueAt(row, 1).toString();
+        String mdni = modelo2.getValueAt(row, 2).toString();
+        String mapellido = modelo2.getValueAt(row, 3).toString();
+        String mfecha = "";
+        if (modelo2.getValueAt(row, 4)!=null) {
+            mfecha = modelo2.getValueAt(row, 4).toString();
+        }
+        String mhora = "";
+        if (modelo2.getValueAt(row, 5)!=null) {
+            mhora = modelo2.getValueAt(row, 5).toString();
+        }
+        String mvigencia = modelo2.getValueAt(row, 6).toString();
+        Reserva r = new Reserva();
         
+        try {
+            int id = Integer.parseInt(mid);
+            if (id<1) {
+                JOptionPane.showMessageDialog(this, "Error el ID no puede ser menor a uno", "Error de tipo ID", JOptionPane.WARNING_MESSAGE);
+                return;
+            }else
+            if (rdata.buscarInt(id)==null) {
+                r.setIdReserva(id);
+            }else{
+                JOptionPane.showMessageDialog(this, "Error el ID ingresado ya existe en la base de datos", "Error ID existente", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        }catch(NumberFormatException | SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error el ID ingresado no es un número entero: "+ex, "Error por tipo de datos", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        try {
+            int mesa = Integer.parseInt(mmesa);
+            if (mesa<1) {
+                JOptionPane.showMessageDialog(this, "Error el Numero de mesa no puede ser menor a uno", "Error de numero de mesa", JOptionPane.WARNING_MESSAGE);
+                return;
+            }else
+            if (mdata.buscar(mesa)!=null) {
+                r.setMesa(mdata.buscar(mesa));
+            }else{
+                JOptionPane.showMessageDialog(this, "Error el numero de mesa ingresado no existe", "Error mesa inexistente", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        }catch(NumberFormatException | SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error el numero de mesa ingresado no es un número entero: "+ex, "Error por tipo de datos", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        if (!mdni.trim().equalsIgnoreCase("")) {
+            if (mdni.length()>8) {
+                JOptionPane.showMessageDialog(this, "Error el DNI ha superado el maximo de 8 caracteres", "Error DNI supero 8 caracteres", JOptionPane.WARNING_MESSAGE);
+                return;
+            }else
+                r.setDni_cliente(mdni);
+        }else{
+            JOptionPane.showMessageDialog(this, "Error el DNI del cliente esta vacío", "Error DNI vacío", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        if (!mapellido.trim().equalsIgnoreCase("")) {
+            r.setNombre(mapellido);
+        }else{
+            JOptionPane.showMessageDialog(this, "Error el Apellido del cliente esta vacío", "Error Apellido vacío", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        try {
+            LocalDate fech = LocalDate.parse(mfecha);
+            r.setFecha(fech);
+        } catch(Exception e) {
+            JOptionPane.showMessageDialog(this, "Error formato de fecha incorrecto, el formato es el siguiente (yyyy-MM-dd)", "Error Fecha incorrecta", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm");
+        try {
+            r.setHora(LocalTime.parse(mhora, formato));
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Error formato de la hora incorrecto, el formato es el siguiente (HH:mm)", "Error Hora incorrecta", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        switch (mvigencia) {
+            case ("vigente") : {
+                r.setVigencia(mvigencia);
+                r.setEstado(true);
+                break;
+            }
+            case ("no_vigente") : {
+                r.setVigencia(mvigencia);
+                r.setEstado(false);
+                break;
+            }
+            default : {
+                JOptionPane.showMessageDialog(this, "Error vigencia invalida, debe ser (vigente o no_vigente)", "Error vigencia incorrecta", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        }
+        
+        try {
+            rdata.guardarReserva(r);
+            cargando = false;
+            jbCargar.setEnabled(true);
+            jbGuardar.setEnabled(false);
+            jtfBuscar.setText("");
+            quitarFiltros();
+            jTable.setModel(modelo);
+            lista = rdata.listarReservas();
+            cargarTabla();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error de SQL al guardar la reserva: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jbGuardarActionPerformed
 
-    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+    private void jbSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbSalirActionPerformed
         dispose();
-    }//GEN-LAST:event_jButton1MouseClicked
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_jbSalirActionPerformed
 
     private void jTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableMouseClicked
         rowSelected = jTable.getSelectedRow();
@@ -397,10 +560,12 @@ public class VReservas extends javax.swing.JInternalFrame {
                 cargarFiltro();
             }else{
                 int codigo = Integer.parseInt(jTable.getValueAt(rowSelected, 0).toString());
-                pdata.CambiarEstado(false, codigo);
+                rdata.cambiarVigencia("no_vigente", codigo);
                 cargarFiltro();
             }
-        } catch (NumberFormatException | SQLException ex) {
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Error de numeracion: "+ex, "Error entero", JOptionPane.ERROR_MESSAGE);
+        } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error de SQL al cambiar el estado: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jbEliminarActionPerformed
@@ -418,16 +583,18 @@ public class VReservas extends javax.swing.JInternalFrame {
             
             if (srowSelected == prowSelected) {
                 if (prowSelected!=-1) {
-                    String mcodigo = modelo3.getValueAt(prowSelected, 0).toString();
-                    String mnombre = modelo3.getValueAt(prowSelected, 1).toString();
-                    String mprecio = modelo3.getValueAt(prowSelected, 2).toString();
-                    String mstock = modelo3.getValueAt(prowSelected, 3).toString();
-                    String mcategoria = modelo3.getValueAt(prowSelected, 4).toString();
-                    String mestado = modelo3.getValueAt(prowSelected, 5).toString();
+                    String mid = modelo3.getValueAt(prowSelected, 0).toString();
+                    String mmesa = modelo3.getValueAt(prowSelected, 1).toString();
+                    String mdni = modelo3.getValueAt(prowSelected, 2).toString();
+                    String mapellido = modelo3.getValueAt(prowSelected, 3).toString();
+                    String mfecha = modelo3.getValueAt(prowSelected, 4).toString();
+                    String mhora = modelo3.getValueAt(prowSelected, 5).toString();
+                    String mvigencia = modelo3.getValueAt(prowSelected, 6).toString();
                     
-                    if (mcodigo.equals(pcodigo)&mnombre.equals(pnombre)&
-                        mprecio.equals(pprecio)&mstock.equals(pstock)&
-                        mcategoria.equals(pcategoria)&mestado.equals(pestado)) {
+                    if (mid.equals(pid)&mmesa.equals(pmesa)&
+                        mdni.equals(pdni)&mapellido.equals(papellido)&
+                        mfecha.equals(pfecha)&mhora.equals(phora)&
+                        mvigencia.equals(pvigencia)) {
                         cambiovalido = false;
                     }
                 }
@@ -438,20 +605,22 @@ public class VReservas extends javax.swing.JInternalFrame {
                 }
             } else {
                 if (prowSelected!=-1) {
-                    modelo3.setValueAt(pcodigo, prowSelected, 0);
-                    modelo3.setValueAt(pnombre, prowSelected, 1);
-                    modelo3.setValueAt(pprecio, prowSelected, 2);
-                    modelo3.setValueAt(pstock, prowSelected, 3);
-                    modelo3.setValueAt(pcategoria, prowSelected, 4);
-                    modelo3.setValueAt(pestado, prowSelected, 5);
+                    modelo3.setValueAt(pid, prowSelected, 0);
+                    modelo3.setValueAt(pmesa, prowSelected, 1);
+                    modelo3.setValueAt(pdni, prowSelected, 2);
+                    modelo3.setValueAt(papellido, prowSelected, 3);
+                    modelo3.setValueAt(pfecha, prowSelected, 4);
+                    modelo3.setValueAt(phora, prowSelected, 5);
+                    modelo3.setValueAt(pvigencia, prowSelected, 6);
                 }
                 prowSelected = srowSelected;
-                pcodigo = modelo.getValueAt(prowSelected, 0).toString();
-                pnombre = modelo.getValueAt(prowSelected, 1).toString();
-                pprecio = modelo.getValueAt(prowSelected, 2).toString();
-                pstock = modelo.getValueAt(prowSelected, 3).toString();
-                pcategoria = modelo.getValueAt(prowSelected, 4).toString();
-                pestado = modelo.getValueAt(prowSelected, 5).toString();
+                pid = modelo.getValueAt(prowSelected, 0).toString();
+                pmesa = modelo.getValueAt(prowSelected, 1).toString();
+                pdni = modelo.getValueAt(prowSelected, 2).toString();
+                papellido = modelo.getValueAt(prowSelected, 3).toString();
+                pfecha = modelo.getValueAt(prowSelected, 4).toString();
+                phora = modelo.getValueAt(prowSelected, 5).toString();
+                pvigencia = modelo.getValueAt(prowSelected, 6).toString();
                 if (srowSelected!=-1) {
                     cambiando = false;
                     jbActualizar.setEnabled(false);
@@ -462,150 +631,152 @@ public class VReservas extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jTablePropertyChange
 
     private void jbActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbActualizarActionPerformed
-        String mcodigo = modelo3.getValueAt(srowSelected, 0).toString();
-        String mnombre = modelo3.getValueAt(srowSelected, 1).toString();
-        String mprecio = modelo3.getValueAt(srowSelected, 2).toString();
-        String mstock = modelo3.getValueAt(srowSelected, 3).toString();
-        String mcategoria = modelo3.getValueAt(srowSelected, 4).toString();
-        String mestado = modelo3.getValueAt(srowSelected, 5).toString();
-        Producto p = new Producto();
-        
-        Set<String> categorias = new HashSet<>();
-        categorias.add("1");
-        categorias.add("2");
-        categorias.add("3");
-        categorias.add("4");
-        categorias.add("5");
-        categorias.add("6");
-        categorias.add("7");
-        categorias.add("pizzas");
-        categorias.add("lomos");
-        categorias.add("hamburguesas");
-        categorias.add("tacos");
-        categorias.add("bebidas con alcohol");
-        categorias.add("bebidas sin alcohol");
-        categorias.add("bebidas gaseosas");
-        String cambios = "";
+        String mid = modelo3.getValueAt(srowSelected, 0).toString();
+        String mmesa = modelo3.getValueAt(srowSelected, 1).toString();
+        String mdni = modelo3.getValueAt(srowSelected, 2).toString();
+        String mapellido = modelo3.getValueAt(srowSelected, 3).toString();
+        String mfecha = "";
+        if (modelo3.getValueAt(srowSelected, 4)!=null) {
+            mfecha = modelo3.getValueAt(srowSelected, 4).toString();
+        }
+        String mhora = "";
+        if (modelo3.getValueAt(srowSelected, 5)!=null) {
+            mhora = modelo3.getValueAt(srowSelected, 5).toString();
+        }
+        String mvigencia = modelo3.getValueAt(srowSelected, 6).toString();
+        Reserva r = new Reserva();
         
         try {
-            int codigo = Integer.parseInt(mcodigo);
-            if (codigo<1) {
-                JOptionPane.showMessageDialog(this, "Error el codigo no puede ser menor a uno", "Error de tipo codigo", JOptionPane.ERROR_MESSAGE);
+            int id = Integer.parseInt(mid);
+            if (id<1) {
+                JOptionPane.showMessageDialog(this, "Error el ID no puede ser menor a uno", "Error de tipo ID", JOptionPane.WARNING_MESSAGE);
                 return;
             }else
-            if (pdata.buscar(codigo)==null) {
-                p.setCodigo(codigo);
-                cambios += "codigo";
+            if (rdata.buscarInt(id)==null) {
+                r.setIdReserva(id);
             }else{
-                if (mcodigo.equals(pcodigo)) {
-                    p.setCodigo(codigo);
-                }else{
-                    JOptionPane.showMessageDialog(this, "Error el codigo ingresado ya existe en la base de datos", "Error codigo existente", JOptionPane.ERROR_MESSAGE);
+                if (mid.equals(pid)) {
+                    r.setIdReserva(id);
+                }else {
+                    JOptionPane.showMessageDialog(this, "Error el ID ingresado ya existe en la base de datos", "Error ID existente", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
             }
         }catch(NumberFormatException | SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error el codigo ingresado no es un numero entero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        if (!mnombre.trim().equalsIgnoreCase("")) {
-            p.setNombre(mnombre);
-            cambios += ",nombre";
-        }else{
-            JOptionPane.showMessageDialog(this, "Error el nombre esta vacio", "Error nombre vacio", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error el ID ingresado no es un número entero: "+ex, "Error por tipo de datos", JOptionPane.WARNING_MESSAGE);
             return;
         }
         
         try {
-            double precio = Double.parseDouble(mprecio);
-            p.setPrecio(precio);
-            cambios += ",precio";
-        }catch(NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Error el precio ingresado no es un numero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        try {
-            int stock = Integer.parseInt(mstock);
-            p.setStock(stock);
-            cambios += ",stock";
-        }catch(NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Error el stock ingresado no es un numero entero: "+ex, "Error por tipo de datos", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        if (categorias.contains(mcategoria)) {
-            switch (mcategoria.toLowerCase()) {
-                case ("1") : case ("pizzas") : {
-                    p.setCategoria("pizzas");break;
-                }
-                case ("2") : case ("lomos") : {
-                    p.setCategoria("lomos");break;
-                }
-                case ("3") : case ("hamburguesas") : {
-                    p.setCategoria("hamburguesas");break;
-                }
-                case ("4") : case ("tacos") : {
-                    p.setCategoria("tacos");break;
-                }
-                case ("5") : case ("bebidas con alcohol") : {
-                    p.setCategoria("bebidas con alcohol");break;
-                }
-                case ("6") : case ("bebidas sin alcohol") : {
-                    p.setCategoria("bebidas sin alcohol");break;
-                }
-                case ("7") : case ("bebidas gaseosas") : {
-                    p.setCategoria("bebidas gaseosas");break;
-                }
+            int mesa = Integer.parseInt(mmesa);
+            if (mesa<1) {
+                JOptionPane.showMessageDialog(this, "Error el Numero de mesa no puede ser menor a uno", "Error de numero de mesa", JOptionPane.WARNING_MESSAGE);
+                return;
+            }else
+            if (mdata.buscar(mesa)!=null) {
+                r.setMesa(mdata.buscar(mesa));
+            }else{
+                JOptionPane.showMessageDialog(this, "Error el numero de mesa ingresado no existe", "Error mesa inexistente", JOptionPane.WARNING_MESSAGE);
+                return;
             }
-            cambios += ",categoria";
-        }else{
-            JOptionPane.showMessageDialog(this, "Error la categoria solo puede ser:(1:pizzas|2:lomos|3:hamburguesas|4:tacos|5:bebidas con alcohol|6:bebidas sin alcohol|7:bebidas gaseosas)", "Error nombre vacio", JOptionPane.ERROR_MESSAGE);
+        }catch(NumberFormatException | SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error el numero de mesa ingresado no es un número entero: "+ex, "Error por tipo de datos", JOptionPane.WARNING_MESSAGE);
             return;
         }
         
-        if (mestado.equalsIgnoreCase("true")|mestado.equalsIgnoreCase("false")) {
-            p.setEstado(mestado.equalsIgnoreCase("true"));
-            cambios += ",estado";
+        if (!mdni.trim().equalsIgnoreCase("")) {
+            if (mdni.length()>8) {
+                JOptionPane.showMessageDialog(this, "Error el DNI ha superado el maximo de 8 caracteres", "Error DNI supero 8 caracteres", JOptionPane.WARNING_MESSAGE);
+                return;
+            }else
+                r.setDni_cliente(mdni);
         }else{
-            JOptionPane.showMessageDialog(this, "Errorn el estado debe ser True o False", "Error de tipos de datos", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error el DNI del cliente esta vacío", "Error DNI vacío", JOptionPane.WARNING_MESSAGE);
             return;
         }
         
-        pdata.actualizar(p,cambios,Integer.parseInt(pcodigo));
-        cargando = false;
-        jbCargar.setEnabled(true);
-        jbGuardar.setEnabled(false);
-        jTable.setModel(modelo);
-        cargarFiltro();
+        if (!mapellido.trim().equalsIgnoreCase("")) {
+            r.setNombre(mapellido);
+        }else{
+            JOptionPane.showMessageDialog(this, "Error el Apellido del cliente esta vacío", "Error Apellido vacío", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        try {
+            LocalDate fech = LocalDate.parse(mfecha);
+            r.setFecha(fech);
+        } catch(Exception e) {
+            JOptionPane.showMessageDialog(this, "Error formato de fecha incorrecto, el formato es el siguiente (yyyy-MM-dd)", "Error Fecha incorrecta", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm");
+        try {
+            r.setHora(LocalTime.parse(mhora, formato));
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Error formato de la hora incorrecto, el formato es el siguiente (HH:mm)", "Error Hora incorrecta", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        switch (mvigencia) {
+            case ("vigente") : {
+                r.setVigencia(mvigencia);
+                r.setEstado(true);
+                break;
+            }
+            case ("no_vigente") : {
+                r.setVigencia(mvigencia);
+                r.setEstado(false);
+                break;
+            }
+            default : {
+                JOptionPane.showMessageDialog(this, "Error vigencia invalida, debe ser (vigente o no_vigente)", "Error vigencia incorrecta", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        }
+        
+        try {
+            System.out.println(r);
+            rdata.actualizarReserva(r,Integer.parseInt(pid));
+            cargando = false;
+            jbCargar.setEnabled(true);
+            jbGuardar.setEnabled(false);
+            jTable.setModel(modelo);
+            cargarFiltro();
+        } catch(SQLException e) {
+            
+        }
     }//GEN-LAST:event_jbActualizarActionPerformed
 
     private void jcbFechaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbFechaActionPerformed
         jFecha.setEnabled(jcbFecha.isSelected());
         if (!jcbFecha.isSelected()) {
             jFecha.setDate(null);
+            fecha = null;
+            cargarFiltro();
         }
     }//GEN-LAST:event_jcbFechaActionPerformed
 
     private void jrVigenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jrVigenciaActionPerformed
-        
+        if (jrVigencia.isSelected()) {
+            vigencia = "vigente";
+            cargarFiltro();
+        }
     }//GEN-LAST:event_jrVigenciaActionPerformed
 
     private void jrNoVigenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jrNoVigenciaActionPerformed
-        
+        if (jrNoVigencia.isSelected()) {
+            vigencia = "no_vigente";
+            cargarFiltro();
+        }
     }//GEN-LAST:event_jrNoVigenciaActionPerformed
 
     private void jcbHoraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbHoraActionPerformed
         jtfHora.setEnabled(jcbHora.isSelected());
         if (!jcbHora.isSelected()) {
-            try {
-                jtfHora.setText("00:00");
-                lista = rdata.listarReservas();
-                cargarTabla();
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error de SQL","SQL Error",JOptionPane.ERROR_MESSAGE);
-            }
+            jtfHora.setText("00:00");
+            hora = null;
+            cargarFiltro();
         }
     }//GEN-LAST:event_jcbHoraActionPerformed
 
@@ -613,22 +784,45 @@ public class VReservas extends javax.swing.JInternalFrame {
         String texto = jtfHora.getText();
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm");
         try {
-            LocalTime hora = LocalTime.parse(texto, formato);
-            try {
-                lista = rdata.buscarReservasPorFechayHora(null, hora);
-                cargarTabla();
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error de SQL","SQL Error",JOptionPane.ERROR_MESSAGE);
-            }
+            hora = LocalTime.parse(texto, formato);
+            cargarFiltro();
         } catch (DateTimeParseException e) {
-            try {
-                lista = rdata.listarReservas();
-                cargarTabla();
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error de SQL","SQL Error",JOptionPane.ERROR_MESSAGE);
-            }
+            hora = null;
+            cargarFiltro();
         }
     }//GEN-LAST:event_jtfHoraKeyReleased
+
+    private void jFechaPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jFechaPropertyChange
+        if (jFecha.getDate()!=null) {
+            fecha = LocalDate.of((jFecha.getDate().getYear()+1900), jFecha.getDate().getMonth()+1, jFecha.getDate().getDate());
+            cargarFiltro();
+        }else {
+            fecha = null;
+            cargarFiltro();
+        }
+    }//GEN-LAST:event_jFechaPropertyChange
+
+    private void jcbBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbBuscarActionPerformed
+        jtfBuscar.setEnabled(jcbBuscar.isSelected());
+        jbBuscar.setEnabled(jcbBuscar.isSelected());
+        if (jcbBuscar.isSelected()==false) {
+            jtfBuscar.setText("");
+            cargarFiltro();
+        }
+    }//GEN-LAST:event_jcbBuscarActionPerformed
+    
+    public void quitarFiltros() {
+        jcbHora.setSelected(false);
+        jtfHora.setEnabled(false);
+        jtfHora.setText("00:00");
+        hora = null;
+        jcbFecha.setSelected(false);
+        jFecha.setDate(null);
+        fecha = null;
+        jrVigencia.setSelected(false);
+        jrNoVigencia.setSelected(false);
+        vigencia = "null";
+    }
     
     public void limpiarAcciones() {
         jTable.setModel(modelo);
@@ -636,39 +830,32 @@ public class VReservas extends javax.swing.JInternalFrame {
         jbCargar.setEnabled(true);
         jbGuardar.setEnabled(false);
         cambiando = false;
-        pcodigo = null;
-        pnombre = null;
-        pprecio = null;
-        pstock = null;
-        pcategoria = null;
-        pestado = null;
+        pid = null;
+        pmesa = null;
+        pdni = null;
+        papellido = null;
+        pfecha = null;
+        phora = null;
+        pvigencia = null;
         rowSelected = -1;
         srowSelected = -1;
         prowSelected = -1;
     }
     
+    public void agregarCabeceras(DefaultTableModel modelos) {
+        modelos.addColumn("ID");
+        modelos.addColumn("N° de Mesa");
+        modelos.addColumn("DNI Cliente");
+        modelos.addColumn("Apellido");
+        modelos.addColumn("Fecha Reserva");
+        modelos.addColumn("Hora Reserva");
+        modelos.addColumn("Vigencia");
+    }
+    
     public void cargarCabecera() {
-        modelo.addColumn("ID");
-        modelo.addColumn("N° de Mesa");
-        modelo.addColumn("DNI Cliente");
-        modelo.addColumn("Apellido");
-        modelo.addColumn("Fecha Reserva");
-        modelo.addColumn("Hora Reserva");
-        modelo.addColumn("Vigencia");
-        modelo2.addColumn("ID");
-        modelo2.addColumn("N° de Mesa");
-        modelo2.addColumn("DNI Cliente");
-        modelo2.addColumn("Apellido");
-        modelo2.addColumn("Fecha Reserva");
-        modelo2.addColumn("Hora Reserva");
-        modelo2.addColumn("Vigencia");
-        modelo3.addColumn("ID");
-        modelo3.addColumn("N° de Mesa");
-        modelo3.addColumn("DNI Cliente");
-        modelo3.addColumn("Apellido");
-        modelo3.addColumn("Fecha Reserva");
-        modelo3.addColumn("Hora Reserva");
-        modelo3.addColumn("Vigencia");
+        agregarCabeceras(modelo);
+        agregarCabeceras(modelo2);
+        agregarCabeceras(modelo3);
         jTable.setModel(modelo);
     }
     
@@ -719,10 +906,10 @@ public class VReservas extends javax.swing.JInternalFrame {
     }
     
     private int Enumerar() throws SQLException {
-        int size = pdata.listar().size();
+        int size = rdata.listarReservas().size();
         int numero=0;
         for (int i=1; i<size+10; i++) {
-            if (pdata.buscar(i)==null) {
+            if (rdata.buscarInt(i)==null) {
                 numero = i;
                 break;
             }
@@ -731,13 +918,20 @@ public class VReservas extends javax.swing.JInternalFrame {
     }
     
     private void cargarFiltro() {
-        
+        try {
+            if (hora!=null|fecha!=null|!"null".equals(vigencia)) {
+                lista = rdata.buscarReservasPorFechayHorayVigencia(fecha, hora, vigencia);
+            }else {
+                lista = rdata.listarReservas();
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error de SQL: "+e,"SQL Error",JOptionPane.ERROR_MESSAGE);
+        }
+        cargarTabla();
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup GrupoBotVigencia;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JDesktopPane jDesktopPane1;
     private com.toedter.calendar.JDateChooser jFecha;
     private javax.swing.JLabel jLabel1;
@@ -749,6 +943,8 @@ public class VReservas extends javax.swing.JInternalFrame {
     private javax.swing.JButton jbCargar;
     private javax.swing.JButton jbEliminar;
     private javax.swing.JButton jbGuardar;
+    private javax.swing.JButton jbSalir;
+    private javax.swing.JCheckBox jcbBuscar;
     private javax.swing.JCheckBox jcbFecha;
     private javax.swing.JCheckBox jcbHora;
     private javax.swing.JRadioButton jrNoVigencia;

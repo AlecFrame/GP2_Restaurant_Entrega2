@@ -208,9 +208,9 @@ public class VProducto extends javax.swing.JInternalFrame {
         jbSalir.setForeground(new java.awt.Color(255, 255, 204));
         jbSalir.setText("Cerrar");
         jbSalir.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jbSalir.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jbSalirMouseClicked(evt);
+        jbSalir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbSalirActionPerformed(evt);
             }
         });
 
@@ -472,10 +472,6 @@ public class VProducto extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_jbGuardarActionPerformed
 
-    private void jbSalirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jbSalirMouseClicked
-        dispose();
-    }//GEN-LAST:event_jbSalirMouseClicked
-
     private void jTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableMouseClicked
         rowSelected = jTable.getSelectedRow();
         if (jTable.getModel()==modelo3) {
@@ -682,6 +678,10 @@ public class VProducto extends javax.swing.JInternalFrame {
         jTable.setModel(modelo);
         cargarFiltro();
     }//GEN-LAST:event_jbActualizarActionPerformed
+
+    private void jbSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbSalirActionPerformed
+        dispose();
+    }//GEN-LAST:event_jbSalirActionPerformed
     
     public void limpiarAcciones() {
         jTable.setModel(modelo);

@@ -101,4 +101,9 @@ public class Reserva {
     public void setEstado(boolean estado) {
         this.estado = estado;
     }
+
+    @Override
+    public String toString() {
+        return "Reserva{" + "idReserva=" + idReserva + ", mesa=" + mesa + ", dni_cliente=" + dni_cliente + ", nombre=" + nombre + ", fecha=" + fecha + ", hora=" + hora + ", vigencia=" + vigencia + ", estado=" + estado + '}';
+    }
 }
