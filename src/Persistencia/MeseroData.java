@@ -9,30 +9,30 @@ public class MeseroData {
     private Connection con = Conexion.cargaConexion();
     
     public MeseroData() {}
+    
     public ArrayList<Mesero> listarMeseros() throws SQLException {
-    ArrayList<Mesero> lista = new ArrayList<>();
-    
-    String sql = "SELECT * FROM mesero"; 
-    
-    Statement s = con.createStatement();
-    ResultSet r = s.executeQuery(sql);
-    
-    while (r.next()) {
-       
-        Mesero mesero = new Mesero();
-        mesero.setDniMesero(r.getInt("dni_mesero"));
-        mesero.setApellido(r.getString("apellido"));
-        mesero.setNombre(r.getString("nombre"));
-        mesero.setEstado(r.getBoolean("estado"));
+        ArrayList<Mesero> lista = new ArrayList<>();
 
-        lista.add(mesero);
+        String sql = "SELECT * FROM mesero"; 
+
+        Statement s = con.createStatement();
+        ResultSet r = s.executeQuery(sql);
+
+        while (r.next()) {
+            Mesero mesero = new Mesero();
+            mesero.setDniMesero(r.getInt("dni_mesero"));
+            mesero.setApellido(r.getString("apellido"));
+            mesero.setNombre(r.getString("nombre"));
+            mesero.setEstado(r.getBoolean("estado"));
+
+            lista.add(mesero);
+        }
+
+        r.close();
+        s.close();
+
+        return lista;
     }
-
-    r.close();
-    s.close();
-    
-    return lista;
-}
 
     public void guardar(Mesero mesero) throws SQLException {
         if (mesero.getDniMesero()==0) {
@@ -88,8 +88,8 @@ public class MeseroData {
         while (rs.next()) {
             mesero = new Mesero(
                 rs.getInt("dni_mesero"), 
-                rs.getString("apellido"), 
-                rs.getString("nombre"),
+                rs.getString("nombre"), 
+                rs.getString("apellido"),
                 rs.getBoolean("estado"));
         }
         
@@ -139,14 +139,13 @@ public class MeseroData {
     while (rs.next()) {
         lista.add(new Mesero(
             rs.getInt("dni_mesero"), 
-            rs.getString("apellido"), 
-            rs.getString("nombre"),
+            rs.getString("nombre"), 
+            rs.getString("apellido"),
             rs.getBoolean("estado")));
     }
     
     return lista;
 }
-
 
     public double listarIngresosPorFecha(Date fecha) throws SQLException {
         double totalIngresos = 0;
@@ -175,11 +174,16 @@ public class MeseroData {
         }
     }
 
-    public void actualizarMesero(Mesero mesero) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    public void eliminarMesero(int dniMesero) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void cambiarEstado(int dniMesero) throws SQLException {
+        String sql = "UPDATE mesero SET estado=? WHERE dni_mesero=?";
+        
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setBoolean(1, false);
+        ps.setInt(2, dniMesero);
+            
+        int filas = ps.executeUpdate();
+        if (filas > 0) {
+            System.out.println("Mesero actualizado con éxito.");
+        }
     }
 }

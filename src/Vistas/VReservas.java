@@ -464,11 +464,18 @@ public class VReservas extends javax.swing.JInternalFrame {
         }
         
         if (!mdni.trim().equalsIgnoreCase("")) {
-            if (mdni.length()>8) {
-                JOptionPane.showMessageDialog(this, "Error el DNI ha superado el maximo de 8 caracteres", "Error DNI supero 8 caracteres", JOptionPane.WARNING_MESSAGE);
+            try {
+                int dni = Integer.parseInt(mdni);
+
+                if (mdni.length()>8) {
+                    JOptionPane.showMessageDialog(this, "Error el DNI ha superado el maximo de 8 caracteres", "Error DNI supero 8 caracteres", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }else
+                    r.setDni_cliente(mdni);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Error el DNI ingresado no es un número entero: "+e, "Error por tipo de datos", JOptionPane.WARNING_MESSAGE);
                 return;
-            }else
-                r.setDni_cliente(mdni);
+            }
         }else{
             JOptionPane.showMessageDialog(this, "Error el DNI del cliente esta vacío", "Error DNI vacío", JOptionPane.WARNING_MESSAGE);
             return;
@@ -515,7 +522,6 @@ public class VReservas extends javax.swing.JInternalFrame {
         }
         
         try {
-            rdata.guardarReserva(r);
             cargando = false;
             jbCargar.setEnabled(true);
             jbGuardar.setEnabled(false);
@@ -732,7 +738,6 @@ public class VReservas extends javax.swing.JInternalFrame {
         }
         
         try {
-            System.out.println(r);
             rdata.actualizarReserva(r,Integer.parseInt(pid));
             cargando = false;
             jbCargar.setEnabled(true);
@@ -740,7 +745,7 @@ public class VReservas extends javax.swing.JInternalFrame {
             jTable.setModel(modelo);
             cargarFiltro();
         } catch(SQLException e) {
-            
+            JOptionPane.showMessageDialog(this, "Error de SQL al cambiar el estado: "+e, "Error SQL", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jbActualizarActionPerformed
 

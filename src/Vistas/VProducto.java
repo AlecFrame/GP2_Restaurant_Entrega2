@@ -122,11 +122,6 @@ public class VProducto extends javax.swing.JInternalFrame {
                 jcCategoriaItemStateChanged(evt);
             }
         });
-        jcCategoria.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jcCategoriaActionPerformed(evt);
-            }
-        });
 
         jLabel2.setFont(new java.awt.Font("Monotype Corsiva", 1, 18)); // NOI18N
         jLabel2.setText("Categorias:");
@@ -291,10 +286,6 @@ public class VProducto extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jcCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcCategoriaActionPerformed
-        
-    }//GEN-LAST:event_jcCategoriaActionPerformed
-
     private void jcCategoriaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jcCategoriaItemStateChanged
         cargarFiltro();
     }//GEN-LAST:event_jcCategoriaItemStateChanged
@@ -453,7 +444,7 @@ public class VProducto extends javax.swing.JInternalFrame {
         if (mestado.equalsIgnoreCase("true")|mestado.equalsIgnoreCase("false")) {
             p.setEstado(mestado.equalsIgnoreCase("true"));
         }else{
-            JOptionPane.showMessageDialog(this, "Errorn el estado debe ser True o False", "Error de tipos de datos", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error el estado debe ser True o False", "Error de tipos de datos", JOptionPane.ERROR_MESSAGE);
             return;
         }
         

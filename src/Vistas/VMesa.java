@@ -23,7 +23,7 @@ public class VMesa extends javax.swing.JInternalFrame {
     private Connection con = Conexion.cargaConexion();
     private String buscar = "ninguno";
     private int scapacidad = 0;
-    private String scondicion = "";
+    private String scondicion = "todas";
     private int rowSelected = -1;
     private int srowSelected = -1;
     private int prowSelected = -1;

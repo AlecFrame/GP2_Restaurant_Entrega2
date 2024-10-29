@@ -4,11 +4,7 @@ import java.sql.*;
 import Modelo.Conexion;
 import Modelo.Mesero;
 import Persistencia.MeseroData;
-import Persistencia.MesaData;
-import Persistencia.PedidoData;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -23,12 +19,10 @@ public class VMeseros extends javax.swing.JInternalFrame {
     private boolean cargando = false;
     private boolean cambiando = false;
     
-    private String msdni = null;
-    private String msapellido = null;
-    private String msnombre = null;
-    private String msmesaasignada = null;
-    private String msreemplazando = null;
-    private String msestado = null;
+    private String pdni = null;
+    private String papellido = null;
+    private String pnombre = null;
+    private String pestado = null;
     
     private DefaultTableModel modelo = new DefaultTableModel() {
         public boolean isCellEditable(int fila, int col) { 
@@ -49,42 +43,25 @@ public class VMeseros extends javax.swing.JInternalFrame {
     };
     
     public VMeseros() {
-          initComponents();
-     try {
-        lista = msdata.listarMeseros(); 
-        actualizarTabla(lista);
-    } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Error de SQL al cargar la tabla: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
+        initComponents();
+        
+        try { 
+            lista = msdata.listarMeseros();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error de tipo SQL: "+ex,"Error SQL",JOptionPane.ERROR_MESSAGE);
         }
         
-        jbBuscar.setEnabled(false);
-        jtfBuscar.setEnabled(false);
         jbGuardar.setEnabled(false);
         Botones(false);
         cargarCabecera();
         cargarTabla();
     }
-    private void actualizarTabla(ArrayList<Mesero> lista) {
-    DefaultTableModel modelo = (DefaultTableModel) jTable.getModel();
-    modelo.setRowCount(0); 
-
-    for (Mesero mesero : lista) {
-        modelo.addRow(new Object[]{
-            mesero.getDniMesero(),
-            mesero.getApellido(),
-            mesero.getNombre(),
-            mesero.isEstado()
-        });
-    }
-}
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jbBuscar = new javax.swing.JButton();
-        jcCategoria = new javax.swing.JComboBox<>();
-        jbMesasig = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable = new javax.swing.JTable();
         jbCargar = new javax.swing.JButton();
@@ -92,7 +69,7 @@ public class VMeseros extends javax.swing.JInternalFrame {
         jbEliminar = new javax.swing.JButton();
         jtfBuscar = new javax.swing.JTextField();
         jbGuardar = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        jSalir = new javax.swing.JButton();
         jLfondo = new javax.swing.JLabel();
         jbBuscaPor = new javax.swing.JLabel();
 
@@ -115,21 +92,6 @@ public class VMeseros extends javax.swing.JInternalFrame {
                 jbBuscarActionPerformed(evt);
             }
         });
-
-        jcCategoria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "0-todas", "1-pizzas", "2-hamburguesas", "3-lomos", "4-tacos", "5-bebidas/a", "6-bebidasc/a", "7-gaseosas" }));
-        jcCategoria.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                jcCategoriaItemStateChanged(evt);
-            }
-        });
-        jcCategoria.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jcCategoriaActionPerformed(evt);
-            }
-        });
-
-        jbMesasig.setFont(new java.awt.Font("Monotype Corsiva", 1, 18)); // NOI18N
-        jbMesasig.setText("Mesas asignadas:");
 
         jTable.setBackground(new java.awt.Color(255, 255, 204));
         jTable.setBorder(new javax.swing.border.MatteBorder(null));
@@ -193,12 +155,6 @@ public class VMeseros extends javax.swing.JInternalFrame {
             }
         });
 
-        jtfBuscar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jtfBuscarActionPerformed(evt);
-            }
-        });
-
         jbGuardar.setBackground(new java.awt.Color(153, 102, 0));
         jbGuardar.setFont(new java.awt.Font("Monotype Corsiva", 1, 14)); // NOI18N
         jbGuardar.setForeground(new java.awt.Color(255, 255, 204));
@@ -209,19 +165,14 @@ public class VMeseros extends javax.swing.JInternalFrame {
             }
         });
 
-        jButton1.setBackground(new java.awt.Color(204, 0, 0));
-        jButton1.setFont(new java.awt.Font("Monotype Corsiva", 1, 14)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 204));
-        jButton1.setText("Cerrar");
-        jButton1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
-            }
-        });
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jSalir.setBackground(new java.awt.Color(204, 0, 0));
+        jSalir.setFont(new java.awt.Font("Monotype Corsiva", 1, 14)); // NOI18N
+        jSalir.setForeground(new java.awt.Color(255, 255, 204));
+        jSalir.setText("Cerrar");
+        jSalir.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jSalir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jSalirActionPerformed(evt);
             }
         });
 
@@ -240,29 +191,22 @@ public class VMeseros extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jbMesasig, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jbBuscaPor, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addComponent(jbBuscaPor)
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jcCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(37, 37, 37))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jtfBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jbBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(jtfBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jbBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addComponent(jbCargar, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jbGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jbActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jbActualizar)
+                        .addGap(18, 18, 18)
                         .addComponent(jbEliminar)
                         .addGap(26, 26, 26))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -277,14 +221,10 @@ public class VMeseros extends javax.swing.JInternalFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jtfBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jbBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jbBuscaPor))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jcCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jbMesasig))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
+                .addGap(43, 43, 43)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
                 .addGap(36, 36, 36)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jbGuardar)
@@ -298,100 +238,304 @@ public class VMeseros extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbBuscarActionPerformed
-
+        String texto = jtfBuscar.getText();
+        try {
+            if (!"".equals(texto)) {
+                try {
+                    int dni = Integer.parseInt(texto);
+                    
+                    if (msdata.buscar(texto)!=null) {
+                        lista.clear();
+                        lista.add(msdata.buscar(texto));
+                    }else {
+                        JOptionPane.showMessageDialog(this, "El DNI ingresado no existe","DNI inexistente",JOptionPane.WARNING_MESSAGE);
+                        lista = msdata.listarMeseros();
+                        cargarTabla();
+                    }
+                } catch(NumberFormatException e) {
+                    lista = msdata.buscarPorDniOApellido(texto);
+                }
+                cargarTabla();
+            }else{
+                lista = msdata.listarMeseros();
+                cargarTabla();
+            }
+        } catch(SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error SQL: "+e,"Error SQL",JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jbBuscarActionPerformed
 
-    private void jcCategoriaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jcCategoriaItemStateChanged
-
-    }//GEN-LAST:event_jcCategoriaItemStateChanged
-
-    private void jcCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcCategoriaActionPerformed
-
-    }//GEN-LAST:event_jcCategoriaActionPerformed
-
     private void jTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableMouseClicked
-       
+        rowSelected = jTable.getSelectedRow();
+        if (jTable.getModel()==modelo3) {
+            if (jTable.isEditing()) {
+                jTable.getCellEditor().stopCellEditing();
+            }
+            srowSelected = jTable.getSelectedRow();
+            //System.out.println("srow:"+srowSelected);
+        }
+        if (!cambiando) {
+            jbEliminar.setEnabled(true);
+            if (cargando==false) {
+                jTable.setModel(modelo3);
+            }
+        }
     }//GEN-LAST:event_jTableMouseClicked
 
     private void jTablePropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jTablePropertyChange
-       
+       boolean cambiovalido = true;
+        
+        if (jTable.isEditing()) {
+            jTable.getCellEditor().stopCellEditing();
+        }
+        
+        if (jTable.getModel() == modelo3) {
+            
+            srowSelected = rowSelected;
+            
+            if (srowSelected == prowSelected) {
+                if (prowSelected!=-1) {
+                    String mdni = modelo3.getValueAt(prowSelected, 0).toString();
+                    String mapellido = modelo3.getValueAt(prowSelected, 1).toString();
+                    String mnombre = modelo3.getValueAt(prowSelected, 2).toString();
+                    String mestado = modelo3.getValueAt(prowSelected, 3).toString();
+                    
+                    if (mdni.equals(pdni)&mapellido.equals(papellido)&
+                        mnombre.equals(pnombre)&mestado.equals(pestado)) {
+                        cambiovalido = false;
+                    }
+                }
+                if (srowSelected!=-1&cambiovalido) {
+                    cambiando = true;
+                    jbActualizar.setEnabled(true);
+                    //System.out.println("("+srowSelected+") cambiando: "+cambiando);
+                }
+            } else {
+                if (prowSelected!=-1) {
+                    modelo3.setValueAt(pdni, prowSelected, 0);
+                    modelo3.setValueAt(papellido, prowSelected, 1);
+                    modelo3.setValueAt(pnombre, prowSelected, 2);
+                    modelo3.setValueAt(pestado, prowSelected, 3);
+                }
+                prowSelected = srowSelected;
+                pdni = modelo.getValueAt(prowSelected, 0).toString();
+                papellido = modelo.getValueAt(prowSelected, 1).toString();
+                pnombre = modelo.getValueAt(prowSelected, 2).toString();
+                pestado = modelo.getValueAt(prowSelected, 3).toString();
+                if (srowSelected!=-1) {
+                    cambiando = false;
+                    jbActualizar.setEnabled(false);
+                    //System.out.println("("+srowSelected+") cambiando: "+cambiando);
+                }
+            }
+        }
     }//GEN-LAST:event_jTablePropertyChange
 
     private void jbCargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCargarActionPerformed
-   
+        if (!cargando) {
+            cargando = true;
+            jbCargar.setEnabled(false);
+            jbGuardar.setEnabled(true);
+            modelo2.addRow(new Object[] {
+                "",
+                "",
+                "",
+                ""
+            });
+            jTable.setModel(modelo2);
+        }
     }//GEN-LAST:event_jbCargarActionPerformed
 
     private void jbActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbActualizarActionPerformed
-  
+        String mdni = modelo3.getValueAt(srowSelected, 0).toString();
+        String mapellido = modelo3.getValueAt(srowSelected, 1).toString();
+        String mnombre = modelo3.getValueAt(srowSelected, 2).toString();
+        String mestado = modelo3.getValueAt(srowSelected, 3).toString();
+        Mesero ms = new Mesero();
+        
+        if (!mdni.trim().equalsIgnoreCase("")) {
+            try {
+                int dni = Integer.parseInt(mdni);
+                if (dni<1) {
+                    JOptionPane.showMessageDialog(this, "Invalido el DNI no puede ser menor a uno", "Error de tipo DNI", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }else
+                if (mdni.length()>8) {
+                    JOptionPane.showMessageDialog(this, "Invalido el numero de caracteres del DNI es mayor a 8", "Error de tipo DNI", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }else
+                if (msdata.buscar(mdni)==null) {
+                    ms.setDniMesero(dni);
+                }else{
+                    if (mdni.equals(pdni)) {
+                        ms.setDniMesero(dni);
+                    }else {
+                        JOptionPane.showMessageDialog(this, "Error el ID ingresado ya existe en la base de datos", "Error ID existente", JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                }
+            }catch(NumberFormatException | SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error el DNI ingresado no es un número entero: "+ex, "Error por tipo de datos", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        }else{
+            JOptionPane.showMessageDialog(this, "Error el DNI del mesero esta vacío", "Error DNI vacío", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        if (!mapellido.trim().equalsIgnoreCase("")) {
+            ms.setApellido(mapellido);
+        }else{
+            JOptionPane.showMessageDialog(this, "Error el Apellido del mesero esta vacío", "Error Apellido vacío", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        if (!mnombre.trim().equalsIgnoreCase("")) {
+            ms.setNombre(mnombre);
+        }else{
+            JOptionPane.showMessageDialog(this, "Error el Nombre del mesero esta vacío", "Error Apellido vacío", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        if (mestado.equalsIgnoreCase("true")|mestado.equalsIgnoreCase("false")) {
+            ms.setEstado(mestado.equalsIgnoreCase("true"));
+        }else{
+            JOptionPane.showMessageDialog(this, "Error el estado debe ser True o False", "Error de tipos de datos", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        try {
+            msdata.actualizar(ms, Integer.parseInt(pdni));
+            cargando = false;
+            jbCargar.setEnabled(true);
+            jbGuardar.setEnabled(false);
+            jTable.setModel(modelo);
+            lista = msdata.listarMeseros();
+            cargarTabla();
+        } catch(SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error de SQL al cambiar el estado: "+e, "Error SQL", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jbActualizarActionPerformed
 
     private void jbEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbEliminarActionPerformed
- 
+        try {
+            if (cargando) {
+                lista = msdata.listarMeseros();
+                cargarTabla();
+            }else{
+                int dni = Integer.parseInt(jTable.getValueAt(rowSelected, 0).toString());
+                msdata.cambiarEstado(dni);
+                lista = msdata.listarMeseros();
+                cargarTabla();
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Error de numeracion: "+ex, "Error entero", JOptionPane.ERROR_MESSAGE);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error de SQL al cambiar el estado: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jbEliminarActionPerformed
 
     private void jbGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbGuardarActionPerformed
-
+        int row = modelo2.getRowCount()-1;
+        System.out.println(row);
+        String mdni = modelo2.getValueAt(row, 0).toString();
+        String mapellido = modelo2.getValueAt(row, 1).toString();
+        String mnombre = modelo2.getValueAt(row, 2).toString();
+        String mestado = modelo2.getValueAt(row, 3).toString();
+        Mesero ms = new Mesero();
+        
+        if (!mdni.trim().equalsIgnoreCase("")) {
+            try {
+                int dni = Integer.parseInt(mdni);
+                if (dni<1) {
+                    JOptionPane.showMessageDialog(this, "Invalido el DNI no puede ser menor a uno", "Error de tipo DNI", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }else
+                if (mdni.length()>8) {
+                    JOptionPane.showMessageDialog(this, "Invalido el numero de caracteres del DNI es mayor a 8", "Error de tipo DNI", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }else
+                if (msdata.buscar(mdni)==null) {
+                    ms.setDniMesero(dni);
+                }else{
+                    JOptionPane.showMessageDialog(this, "Error el ID ingresado ya existe en la base de datos", "Error ID existente", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            }catch(NumberFormatException | SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error el DNI ingresado no es un número entero: "+ex, "Error por tipo de datos", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        }else{
+            JOptionPane.showMessageDialog(this, "Error el DNI del mesero esta vacío", "Error DNI vacío", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        if (!mapellido.trim().equalsIgnoreCase("")) {
+            ms.setApellido(mapellido);
+        }else{
+            JOptionPane.showMessageDialog(this, "Error el Apellido del mesero esta vacío", "Error Apellido vacío", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        if (!mnombre.trim().equalsIgnoreCase("")) {
+            ms.setNombre(mnombre);
+        }else{
+            JOptionPane.showMessageDialog(this, "Error el Nombre del mesero esta vacío", "Error Apellido vacío", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        if (mestado.equalsIgnoreCase("true")|mestado.equalsIgnoreCase("false")) {
+            ms.setEstado(mestado.equalsIgnoreCase("true"));
+        }else{
+            JOptionPane.showMessageDialog(this, "Error el estado debe ser True o False", "Error de tipos de datos", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        try {
+            msdata.guardar(ms);
+            cargando = false;
+            jbCargar.setEnabled(true);
+            jbGuardar.setEnabled(false);
+            jtfBuscar.setText("");
+            jTable.setModel(modelo);
+            lista = msdata.listarMeseros();
+            cargarTabla();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error de SQL al guardar el mesero: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jbGuardarActionPerformed
 
-    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+    private void jSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jSalirActionPerformed
         dispose();
-    }//GEN-LAST:event_jButton1MouseClicked
+    }//GEN-LAST:event_jSalirActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jtfBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtfBuscarActionPerformed
-    String criterio = jtfBuscar.getText().trim(); 
-    if (criterio.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Por favor, ingresa un DNI o apellido para buscar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-        return; 
-    }
-
-    try {
-        lista = msdata.buscarPorDniOApellido(criterio); 
-        actualizarTabla(lista); 
-    } catch (SQLException e) {
-        e.printStackTrace(); 
-        JOptionPane.showMessageDialog(this, "Error al buscar: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-     }
-    }//GEN-LAST:event_jtfBuscarActionPerformed
-
- public void limpiarAcciones() {
+    public void limpiarAcciones() {
         jTable.setModel(modelo);
         Botones(false);
         jbCargar.setEnabled(true);
         jbGuardar.setEnabled(false);
         cambiando = false;
-        msdni = null;
-        msapellido = null;
-        msnombre = null;
-        msestado = null;
+        pdni = null;
+        papellido = null;
+        pnombre = null;
+        pestado = null;
         rowSelected = -1;
         srowSelected = -1;
         prowSelected = -1;
     }
     
+    public void cargarModelo(DefaultTableModel modelos) {
+        modelos.addColumn("DNI");
+        modelos.addColumn("Apellido");
+        modelos.addColumn("Nombre");
+        modelos.addColumn("Estado");
+    }
+ 
     public void cargarCabecera() {
-        modelo.addColumn("DNI");
-        modelo.addColumn("Apellido");
-        modelo.addColumn("Nombre");
-        modelo.addColumn("Mesa Asignada");
-        modelo.addColumn("Reemplazando");
-        modelo.addColumn("Estado");
+        cargarModelo(modelo);
+        cargarModelo(modelo2);
+        cargarModelo(modelo3);
         jTable.setModel(modelo);
-        modelo2.addColumn("DNI");
-        modelo2.addColumn("Apellido");
-        modelo2.addColumn("Nombre");
-        modelo2.addColumn("Mesa Asignada");
-        modelo2.addColumn("Reemplazando");
-        modelo2.addColumn("Estado");
-        modelo3.addColumn("DNI");
-        modelo3.addColumn("Apellido");     
-        modelo3.addColumn("Nombre");
-        modelo3.addColumn("Mesa Asignada");
-        modelo3.addColumn("Reemplazando");
-        modelo3.addColumn("Estado");
     }
     
     private void cargarTabla() {
@@ -407,13 +551,22 @@ public class VMeseros extends javax.swing.JInternalFrame {
     
     private void agregarFila(Mesero ms) {
         modelo.addRow(new Object[] {
-         
+            ms.getDniMesero(),
+            ms.getApellido(),
+            ms.getNombre(),
+            ms.isEstado()
         });
         modelo2.addRow(new Object[] {
-            
+            ms.getDniMesero(),
+            ms.getApellido(),
+            ms.getNombre(),
+            ms.isEstado()
         });
         modelo3.addRow(new Object[] {
-           
+            ms.getDniMesero(),
+            ms.getApellido(),
+            ms.getNombre(),
+            ms.isEstado()
         });
     }
     
@@ -422,12 +575,9 @@ public class VMeseros extends javax.swing.JInternalFrame {
         jbEliminar.setEnabled(b);
     }
     
-    private void cargarFiltro() {
-        
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLfondo;
+    private javax.swing.JButton jSalir;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable;
     private javax.swing.JButton jbActualizar;
@@ -436,8 +586,6 @@ public class VMeseros extends javax.swing.JInternalFrame {
     private javax.swing.JButton jbCargar;
     private javax.swing.JButton jbEliminar;
     private javax.swing.JButton jbGuardar;
-    private javax.swing.JLabel jbMesasig;
-    private javax.swing.JComboBox<String> jcCategoria;
     private javax.swing.JTextField jtfBuscar;
     // End of variables declaration//GEN-END:variables
 }
