@@ -8,34 +8,37 @@ public class Reserva {
     private int idReserva;
     private Mesa mesa;
     private String dni_cliente;
-    private String nombre;
+    private String apellido;
     private LocalDate fecha;
-    private LocalTime hora;
+    private LocalTime hora_desde;
+    private LocalTime hora_hasta;
     private String vigencia;
     private boolean estado;
 
-    public Reserva() {
-    }
-
-    public Reserva(Mesa mesa, String dni_cliente, String nombre, LocalDate fecha, LocalTime hora, String vigencia, boolean estado) {
-        this.mesa = mesa;
-        this.dni_cliente = dni_cliente;
-        this.nombre = nombre;
-        this.fecha = fecha;
-        this.hora = hora;
-        this.vigencia = vigencia;
-        this.estado = estado;
-    }
-
-    public Reserva(int idReserva, Mesa mesa, String dni_cliente, String nombre, LocalDate fecha, LocalTime hora, String vigencia, boolean estado) {
+    public Reserva(int idReserva, Mesa mesa, String dni_cliente, String apellido, LocalDate fecha, LocalTime hora_desde, LocalTime hora_hasta, String vigencia, boolean estado) {
         this.idReserva = idReserva;
         this.mesa = mesa;
         this.dni_cliente = dni_cliente;
-        this.nombre = nombre;
+        this.apellido = apellido;
         this.fecha = fecha;
-        this.hora = hora;
+        this.hora_desde = hora_desde;
+        this.hora_hasta = hora_hasta;
         this.vigencia = vigencia;
         this.estado = estado;
+    }
+
+    public Reserva(Mesa mesa, String dni_cliente, String apellido, LocalDate fecha, LocalTime hora_desde, LocalTime hora_hasta, String vigencia, boolean estado) {
+        this.mesa = mesa;
+        this.dni_cliente = dni_cliente;
+        this.apellido = apellido;
+        this.fecha = fecha;
+        this.hora_desde = hora_desde;
+        this.hora_hasta = hora_hasta;
+        this.vigencia = vigencia;
+        this.estado = estado;
+    }
+
+    public Reserva() {
     }
 
     public int getIdReserva() {
@@ -62,12 +65,12 @@ public class Reserva {
         this.dni_cliente = dni_cliente;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getApellido() {
+        return apellido;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
     }
 
     public LocalDate getFecha() {
@@ -78,12 +81,20 @@ public class Reserva {
         this.fecha = fecha;
     }
 
-    public LocalTime getHora() {
-        return hora;
+    public LocalTime getHora_desde() {
+        return hora_desde;
     }
 
-    public void setHora(LocalTime hora) {
-        this.hora = hora;
+    public void setHora_desde(LocalTime hora_desde) {
+        this.hora_desde = hora_desde;
+    }
+
+    public LocalTime getHora_hasta() {
+        return hora_hasta;
+    }
+
+    public void setHora_hasta(LocalTime hora_hasta) {
+        this.hora_hasta = hora_hasta;
     }
 
     public String getVigencia() {
@@ -104,6 +115,6 @@ public class Reserva {
 
     @Override
     public String toString() {
-        return "Reserva{" + "idReserva=" + idReserva + ", mesa=" + mesa + ", dni_cliente=" + dni_cliente + ", nombre=" + nombre + ", fecha=" + fecha + ", hora=" + hora + ", vigencia=" + vigencia + ", estado=" + estado + '}';
+        return "Reserva{" + "idReserva=" + idReserva + ", mesa=" + mesa + ", dni_cliente=" + dni_cliente + ", apellido=" + apellido + ", fecha=" + fecha + ", hora_desde=" + hora_desde + ", hora_hasta=" + hora_hasta + ", vigencia=" + vigencia + ", estado=" + estado + '}';
     }
 }

@@ -32,7 +32,8 @@ public class VReservas extends javax.swing.JInternalFrame {
     private String dnig = null;
     private String apellidog = null;
     private String fechag = null;
-    private String horag = null;
+    private String hora_desdeg = null;
+    private String hora_hastag = null;
     private String vigenciag = null;
     
     private DefaultTableModel modelo = new DefaultTableModel() {
@@ -399,6 +400,7 @@ public class VReservas extends javax.swing.JInternalFrame {
                     "",
                     fecha,
                     hora,
+                    "",
                     (!"null".equals(vigencia))? vigencia:"",
                 });
                 jTable.setModel(modelo_cargar);
@@ -418,11 +420,12 @@ public class VReservas extends javax.swing.JInternalFrame {
         if (modelo_cargar.getValueAt(row, 4)!=null) {
             mfecha = modelo_cargar.getValueAt(row, 4).toString();
         }
-        String mhora = "";
+        String mhora_desde = "";
         if (modelo_cargar.getValueAt(row, 5)!=null) {
-            mhora = modelo_cargar.getValueAt(row, 5).toString();
+            mhora_desde = modelo_cargar.getValueAt(row, 5).toString();
         }
-        String mvigencia = modelo_cargar.getValueAt(row, 6).toString();
+        String mhora_hasta = modelo_cargar.getValueAt(row, 6).toString();
+        String mvigencia = modelo_cargar.getValueAt(row, 7).toString();
         Reserva r = new Reserva();
         
         try {
@@ -478,7 +481,7 @@ public class VReservas extends javax.swing.JInternalFrame {
         }
         
         if (!mapellido.trim().equalsIgnoreCase("")) {
-            r.setNombre(mapellido);
+            r.setApellido(mapellido);
         }else{
             JOptionPane.showMessageDialog(this, "Error el Apellido del cliente esta vacío", "Error Apellido vacío", JOptionPane.WARNING_MESSAGE);
             return;
@@ -494,7 +497,19 @@ public class VReservas extends javax.swing.JInternalFrame {
         
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm");
         try {
-            r.setHora(LocalTime.parse(mhora, formato));
+            r.setHora_desde(LocalTime.parse(mhora_desde, formato));
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Error formato de la hora incorrecto, el formato es el siguiente (HH:mm)", "Error Hora incorrecta", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        try {
+            if (LocalTime.parse(mhora_hasta, formato).isAfter(LocalTime.parse(mhora_desde, formato))) {
+                r.setHora_hasta(LocalTime.parse(mhora_hasta, formato));
+            }else {
+                JOptionPane.showMessageDialog(this, "Hora hasta no puede ser anterior a hora desde", "Error Hora incorrecta", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
         } catch (DateTimeParseException e) {
             JOptionPane.showMessageDialog(this, "Error formato de la hora incorrecto, el formato es el siguiente (HH:mm)", "Error Hora incorrecta", JOptionPane.WARNING_MESSAGE);
             return;
@@ -518,15 +533,25 @@ public class VReservas extends javax.swing.JInternalFrame {
         }
         
         try {
-            rdata.guardarReserva(r);
-            cargando = false;
-            jbCargar.setEnabled(true);
-            jbGuardar.setEnabled(false);
-            jtfBuscar.setText("");
-            quitarFiltros();
-            jTable.setModel(modelo);
-            lista = rdata.listarReservas();
-            cargarTabla();
+            LocalDate vfecha = LocalDate.parse(mfecha);
+            LocalTime vhora_desde = LocalTime.parse(mhora_desde);
+            LocalTime vhora_hasta = LocalTime.parse(mhora_hasta);
+            int vnumero = Integer.parseInt(mmesa);
+            int vidReserva = Integer.parseInt(mid);
+            
+            if (rdata.validarReservaConflicto( vfecha, vhora_desde, vhora_hasta, vnumero, vidReserva)) {
+                JOptionPane.showMessageDialog(this, "La reserva entra en conflicto con las horas de otra reserva que fue hecha para el mismo dia y misma mesa", "Error de conflicto de reservas", JOptionPane.WARNING_MESSAGE);
+            }else{
+                rdata.guardarReserva(r);
+                cargando = false;
+                jbCargar.setEnabled(true);
+                jbGuardar.setEnabled(false);
+                jtfBuscar.setText("");
+                quitarFiltros();
+                jTable.setModel(modelo);
+                lista = rdata.listarReservas();
+                cargarTabla();
+            }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error de SQL al guardar la reserva: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
         }
@@ -587,12 +612,13 @@ public class VReservas extends javax.swing.JInternalFrame {
                     String mdni = modelo_editable.getValueAt(rowSelectedg, 2).toString();
                     String mapellido = modelo_editable.getValueAt(rowSelectedg, 3).toString();
                     String mfecha = modelo_editable.getValueAt(rowSelectedg, 4).toString();
-                    String mhora = modelo_editable.getValueAt(rowSelectedg, 5).toString();
-                    String mvigencia = modelo_editable.getValueAt(rowSelectedg, 6).toString();
+                    String mhora_desde = modelo_editable.getValueAt(rowSelectedg, 5).toString();
+                    String mhora_hasta = modelo_editable.getValueAt(rowSelectedg, 6).toString();
+                    String mvigencia = modelo_editable.getValueAt(rowSelectedg, 7).toString();
                     
                     if (mid.equals(idg)&mmesa.equals(mesag)&
                         mdni.equals(dnig)&mapellido.equals(apellidog)&
-                        mfecha.equals(fechag)&mhora.equals(horag)&
+                        mfecha.equals(fechag)&mhora_desde.equals(hora_desdeg)&mhora_hasta.equals(hora_hastag)&
                         mvigencia.equals(vigenciag)) {
                         cambiovalido = false;
                     }
@@ -609,8 +635,9 @@ public class VReservas extends javax.swing.JInternalFrame {
                     modelo_editable.setValueAt(dnig, rowSelectedg, 2);
                     modelo_editable.setValueAt(apellidog, rowSelectedg, 3);
                     modelo_editable.setValueAt(fechag, rowSelectedg, 4);
-                    modelo_editable.setValueAt(horag, rowSelectedg, 5);
-                    modelo_editable.setValueAt(vigenciag, rowSelectedg, 6);
+                    modelo_editable.setValueAt(hora_desdeg, rowSelectedg, 5);
+                    modelo_editable.setValueAt(hora_hastag, rowSelectedg, 6);
+                    modelo_editable.setValueAt(vigenciag, rowSelectedg, 7);
                 }
                 rowSelectedg = rowSelecteda;
                 idg = modelo.getValueAt(rowSelectedg, 0).toString();
@@ -618,8 +645,9 @@ public class VReservas extends javax.swing.JInternalFrame {
                 dnig = modelo.getValueAt(rowSelectedg, 2).toString();
                 apellidog = modelo.getValueAt(rowSelectedg, 3).toString();
                 fechag = modelo.getValueAt(rowSelectedg, 4).toString();
-                horag = modelo.getValueAt(rowSelectedg, 5).toString();
-                vigenciag = modelo.getValueAt(rowSelectedg, 6).toString();
+                hora_desdeg = modelo.getValueAt(rowSelectedg, 5).toString();
+                hora_hastag = modelo.getValueAt(rowSelectedg, 6).toString();
+                vigenciag = modelo.getValueAt(rowSelectedg, 7).toString();
                 if (rowSelecteda!=-1) {
                     cambiando = false;
                     jbActualizar.setEnabled(false);
@@ -638,11 +666,12 @@ public class VReservas extends javax.swing.JInternalFrame {
         if (modelo_editable.getValueAt(rowSelecteda, 4)!=null) {
             mfecha = modelo_editable.getValueAt(rowSelecteda, 4).toString();
         }
-        String mhora = "";
+        String mhora_desde = "";
         if (modelo_editable.getValueAt(rowSelecteda, 5)!=null) {
-            mhora = modelo_editable.getValueAt(rowSelecteda, 5).toString();
+            mhora_desde = modelo_editable.getValueAt(rowSelecteda, 5).toString();
         }
-        String mvigencia = modelo_editable.getValueAt(rowSelecteda, 6).toString();
+        String mhora_hasta = modelo_editable.getValueAt(rowSelecteda, 6).toString();
+        String mvigencia = modelo_editable.getValueAt(rowSelecteda, 7).toString();
         Reserva r = new Reserva();
         
         try {
@@ -695,7 +724,7 @@ public class VReservas extends javax.swing.JInternalFrame {
         }
         
         if (!mapellido.trim().equalsIgnoreCase("")) {
-            r.setNombre(mapellido);
+            r.setApellido(mapellido);
         }else{
             JOptionPane.showMessageDialog(this, "Error el Apellido del cliente esta vacío", "Error Apellido vacío", JOptionPane.WARNING_MESSAGE);
             return;
@@ -711,7 +740,19 @@ public class VReservas extends javax.swing.JInternalFrame {
         
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm");
         try {
-            r.setHora(LocalTime.parse(mhora, formato));
+            r.setHora_desde(LocalTime.parse(mhora_desde, formato));
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Error formato de la hora incorrecto, el formato es el siguiente (HH:mm)", "Error Hora incorrecta", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        try {
+            if (LocalTime.parse(mhora_hasta, formato).isAfter(LocalTime.parse(mhora_desde, formato))) {
+                r.setHora_hasta(LocalTime.parse(mhora_hasta, formato));
+            }else {
+                JOptionPane.showMessageDialog(this, "Hora hasta no puede ser anterior a hora desde", "Error Hora incorrecta", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
         } catch (DateTimeParseException e) {
             JOptionPane.showMessageDialog(this, "Error formato de la hora incorrecto, el formato es el siguiente (HH:mm)", "Error Hora incorrecta", JOptionPane.WARNING_MESSAGE);
             return;
@@ -735,12 +776,22 @@ public class VReservas extends javax.swing.JInternalFrame {
         }
         
         try {
-            rdata.actualizarReserva(r,Integer.parseInt(idg));
-            cargando = false;
-            jbCargar.setEnabled(true);
-            jbGuardar.setEnabled(false);
-            jTable.setModel(modelo);
-            cargarFiltro();
+            LocalDate vfecha = LocalDate.parse(mfecha);
+            LocalTime vhora_desde = LocalTime.parse(mhora_desde);
+            LocalTime vhora_hasta = LocalTime.parse(mhora_hasta);
+            int vnumero = Integer.parseInt(mmesa);
+            int vidReserva = Integer.parseInt(mid);
+            
+            if (rdata.validarReservaConflicto( vfecha, vhora_desde, vhora_hasta, vnumero, vidReserva)) {
+                JOptionPane.showMessageDialog(this, "La reserva entra en conflicto con las horas de otra reserva que fue hecha para el mismo dia y misma mesa", "Error de conflicto de reservas", JOptionPane.WARNING_MESSAGE);
+            }else{
+                rdata.actualizarReserva(r,Integer.parseInt(idg));
+                cargando = false;
+                jbCargar.setEnabled(true);
+                jbGuardar.setEnabled(false);
+                jTable.setModel(modelo);
+                cargarFiltro();
+            }
         } catch(SQLException e) {
             JOptionPane.showMessageDialog(this, "Error de SQL al cambiar el estado: "+e, "Error SQL", JOptionPane.ERROR_MESSAGE);
         }
@@ -833,7 +884,8 @@ public class VReservas extends javax.swing.JInternalFrame {
         dnig = null;
         apellidog = null;
         fechag = null;
-        horag = null;
+        hora_desdeg = null;
+        hora_hastag = null;
         vigenciag = null;
         rowSelected = -1;
         rowSelecteda = -1;
@@ -846,7 +898,8 @@ public class VReservas extends javax.swing.JInternalFrame {
         modelos.addColumn("DNI Cliente");
         modelos.addColumn("Apellido");
         modelos.addColumn("Fecha Reserva");
-        modelos.addColumn("Hora Reserva");
+        modelos.addColumn("Desde Hora");
+        modelos.addColumn("Hasta Hora");
         modelos.addColumn("Vigencia");
     }
     
@@ -873,27 +926,30 @@ public class VReservas extends javax.swing.JInternalFrame {
             r.getIdReserva(),
             r.getMesa().getNumeroMesa(),
             r.getDni_cliente(),
-            r.getNombre(),
+            r.getApellido(),
             r.getFecha(),
-            r.getHora(),
+            r.getHora_desde(),
+            r.getHora_hasta(),
             r.getVigencia()
         });
         modelo_cargar.addRow(new Object[] {
             r.getIdReserva(),
             r.getMesa().getNumeroMesa(),
             r.getDni_cliente(),
-            r.getNombre(),
+            r.getApellido(),
             r.getFecha(),
-            r.getHora(),
+            r.getHora_desde(),
+            r.getHora_hasta(),
             r.getVigencia()
         });
         modelo_editable.addRow(new Object[] {
             r.getIdReserva(),
             r.getMesa().getNumeroMesa(),
             r.getDni_cliente(),
-            r.getNombre(),
+            r.getApellido(),
             r.getFecha(),
-            r.getHora(),
+            r.getHora_desde(),
+            r.getHora_hasta(),
             r.getVigencia()
         });
     }
