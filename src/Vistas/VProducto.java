@@ -2,7 +2,6 @@
 package Vistas;
 
 import java.sql.*;
-import Modelo.Conexion;
 import Modelo.Producto;
 import Persistencia.ProductosData;
 import java.util.ArrayList;
@@ -15,19 +14,18 @@ public class VProducto extends javax.swing.JInternalFrame {
     
     private ArrayList<Producto> lista = new ArrayList<>();
     private ProductosData pdata = new ProductosData();
-    private Connection con = Conexion.cargaConexion();
     private int rowSelected = -1;
-    private int srowSelected = -1;
-    private int prowSelected = -1;
+    private int rowSelecteda = -1;
+    private int rowSelectedg = -1;
     private boolean cargando = false;
     private boolean cambiando = false;
     
-    private String pcodigo = null;
-    private String pnombre = null;
-    private String pprecio = null;
-    private String pstock = null;
-    private String pcategoria = null;
-    private String pestado = null;
+    private String codigog = null;
+    private String nombreg = null;
+    private String preciog = null;
+    private String stockg = null;
+    private String categoriag = null;
+    private String estadog = null;
     
     private DefaultTableModel modelo = new DefaultTableModel() {
         public boolean isCellEditable(int fila, int col) { 
@@ -35,13 +33,13 @@ public class VProducto extends javax.swing.JInternalFrame {
         }
     };
     
-    private DefaultTableModel modelo2 = new DefaultTableModel() {
+    private DefaultTableModel modelo_cargar = new DefaultTableModel() {
         public boolean isCellEditable(int fila, int col) { 
-            return fila == modelo2.getRowCount() - 1;
+            return fila == modelo_cargar.getRowCount() - 1;
         }
     };
     
-    private DefaultTableModel modelo3 = new DefaultTableModel() {
+    private DefaultTableModel modelo_editable = new DefaultTableModel() {
         public boolean isCellEditable(int fila, int col) { 
             return true;
         }
@@ -328,10 +326,11 @@ public class VProducto extends javax.swing.JInternalFrame {
         
         if (!cargando) {
             cargando = true;
+            jbActualizar.setEnabled(false);
             jbCargar.setEnabled(false);
             jbGuardar.setEnabled(true);
             try {
-                modelo2.addRow(new Object[] {
+                modelo_cargar.addRow(new Object[] {
                     Enumerar(),
                     "",
                     "",
@@ -339,7 +338,7 @@ public class VProducto extends javax.swing.JInternalFrame {
                     filtro,
                     ""
                 });
-                jTable.setModel(modelo2);
+                jTable.setModel(modelo_cargar);
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Error de SQL al cargar el producto: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
             }
@@ -347,13 +346,13 @@ public class VProducto extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jbCargarActionPerformed
     
     private void jbGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbGuardarActionPerformed
-        int row = modelo2.getRowCount()-1;
-        String mcodigo = modelo2.getValueAt(row, 0).toString();
-        String mnombre = modelo2.getValueAt(row, 1).toString();
-        String mprecio = modelo2.getValueAt(row, 2).toString();
-        String mstock = modelo2.getValueAt(row, 3).toString();
-        String mcategoria = modelo2.getValueAt(row, 4).toString();
-        String mestado = modelo2.getValueAt(row, 5).toString();
+        int row = modelo_cargar.getRowCount()-1;
+        String mcodigo = modelo_cargar.getValueAt(row, 0).toString();
+        String mnombre = modelo_cargar.getValueAt(row, 1).toString();
+        String mprecio = modelo_cargar.getValueAt(row, 2).toString();
+        String mstock = modelo_cargar.getValueAt(row, 3).toString();
+        String mcategoria = modelo_cargar.getValueAt(row, 4).toString();
+        String mestado = modelo_cargar.getValueAt(row, 5).toString();
         Producto p = new Producto();
         
         Set<String> categorias = new HashSet<>();
@@ -465,17 +464,17 @@ public class VProducto extends javax.swing.JInternalFrame {
 
     private void jTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableMouseClicked
         rowSelected = jTable.getSelectedRow();
-        if (jTable.getModel()==modelo3) {
+        if (jTable.getModel()==modelo_editable) {
             if (jTable.isEditing()) {
                 jTable.getCellEditor().stopCellEditing();
             }
-            srowSelected = jTable.getSelectedRow();
-            //System.out.println("srow:"+srowSelected);
+            rowSelecteda = jTable.getSelectedRow();
+            //System.out.println("srow:"+rowSelecteda);
         }
         if (!cambiando) {
             jbEliminar.setEnabled(true);
             if (cargando==false) {
-                jTable.setModel(modelo3);
+                jTable.setModel(modelo_editable);
             }
         }
     }//GEN-LAST:event_jTableMouseClicked
@@ -501,62 +500,62 @@ public class VProducto extends javax.swing.JInternalFrame {
             jTable.getCellEditor().stopCellEditing();
         }
         
-        if (jTable.getModel() == modelo3) {
+        if (jTable.getModel() == modelo_editable) {
             
-            srowSelected = rowSelected;
+            rowSelecteda = rowSelected;
             
-            if (srowSelected == prowSelected) {
-                if (prowSelected!=-1) {
-                    String mcodigo = modelo3.getValueAt(prowSelected, 0).toString();
-                    String mnombre = modelo3.getValueAt(prowSelected, 1).toString();
-                    String mprecio = modelo3.getValueAt(prowSelected, 2).toString();
-                    String mstock = modelo3.getValueAt(prowSelected, 3).toString();
-                    String mcategoria = modelo3.getValueAt(prowSelected, 4).toString();
-                    String mestado = modelo3.getValueAt(prowSelected, 5).toString();
+            if (rowSelecteda == rowSelectedg) {
+                if (rowSelectedg!=-1) {
+                    String mcodigo = modelo_editable.getValueAt(rowSelectedg, 0).toString();
+                    String mnombre = modelo_editable.getValueAt(rowSelectedg, 1).toString();
+                    String mprecio = modelo_editable.getValueAt(rowSelectedg, 2).toString();
+                    String mstock = modelo_editable.getValueAt(rowSelectedg, 3).toString();
+                    String mcategoria = modelo_editable.getValueAt(rowSelectedg, 4).toString();
+                    String mestado = modelo_editable.getValueAt(rowSelectedg, 5).toString();
                     
-                    if (mcodigo.equals(pcodigo)&mnombre.equals(pnombre)&
-                        mprecio.equals(pprecio)&mstock.equals(pstock)&
-                        mcategoria.equals(pcategoria)&mestado.equals(pestado)) {
+                    if (mcodigo.equals(codigog)&mnombre.equals(nombreg)&
+                        mprecio.equals(preciog)&mstock.equals(stockg)&
+                        mcategoria.equals(categoriag)&mestado.equals(estadog)) {
                         cambiovalido = false;
                     }
                 }
-                if (srowSelected!=-1&cambiovalido) {
+                if (rowSelecteda!=-1&cambiovalido) {
                     cambiando = true;
                     jbActualizar.setEnabled(true);
-                    //System.out.println("("+srowSelected+") cambiando: "+cambiando);
+                    //System.out.println("("+rowSelecteda+") cambiando: "+cambiando);
                 }
             } else {
-                if (prowSelected!=-1) {
-                    modelo3.setValueAt(pcodigo, prowSelected, 0);
-                    modelo3.setValueAt(pnombre, prowSelected, 1);
-                    modelo3.setValueAt(pprecio, prowSelected, 2);
-                    modelo3.setValueAt(pstock, prowSelected, 3);
-                    modelo3.setValueAt(pcategoria, prowSelected, 4);
-                    modelo3.setValueAt(pestado, prowSelected, 5);
+                if (rowSelectedg!=-1) {
+                    modelo_editable.setValueAt(codigog, rowSelectedg, 0);
+                    modelo_editable.setValueAt(nombreg, rowSelectedg, 1);
+                    modelo_editable.setValueAt(preciog, rowSelectedg, 2);
+                    modelo_editable.setValueAt(stockg, rowSelectedg, 3);
+                    modelo_editable.setValueAt(categoriag, rowSelectedg, 4);
+                    modelo_editable.setValueAt(estadog, rowSelectedg, 5);
                 }
-                prowSelected = srowSelected;
-                pcodigo = modelo.getValueAt(prowSelected, 0).toString();
-                pnombre = modelo.getValueAt(prowSelected, 1).toString();
-                pprecio = modelo.getValueAt(prowSelected, 2).toString();
-                pstock = modelo.getValueAt(prowSelected, 3).toString();
-                pcategoria = modelo.getValueAt(prowSelected, 4).toString();
-                pestado = modelo.getValueAt(prowSelected, 5).toString();
-                if (srowSelected!=-1) {
+                rowSelectedg = rowSelecteda;
+                codigog = modelo.getValueAt(rowSelectedg, 0).toString();
+                nombreg = modelo.getValueAt(rowSelectedg, 1).toString();
+                preciog = modelo.getValueAt(rowSelectedg, 2).toString();
+                stockg = modelo.getValueAt(rowSelectedg, 3).toString();
+                categoriag = modelo.getValueAt(rowSelectedg, 4).toString();
+                estadog = modelo.getValueAt(rowSelectedg, 5).toString();
+                if (rowSelecteda!=-1) {
                     cambiando = false;
                     jbActualizar.setEnabled(false);
-                    //System.out.println("("+srowSelected+") cambiando: "+cambiando);
+                    //System.out.println("("+rowSelecteda+") cambiando: "+cambiando);
                 }
             }
         }
     }//GEN-LAST:event_jTablePropertyChange
 
     private void jbActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbActualizarActionPerformed
-        String mcodigo = modelo3.getValueAt(srowSelected, 0).toString();
-        String mnombre = modelo3.getValueAt(srowSelected, 1).toString();
-        String mprecio = modelo3.getValueAt(srowSelected, 2).toString();
-        String mstock = modelo3.getValueAt(srowSelected, 3).toString();
-        String mcategoria = modelo3.getValueAt(srowSelected, 4).toString();
-        String mestado = modelo3.getValueAt(srowSelected, 5).toString();
+        String mcodigo = modelo_editable.getValueAt(rowSelecteda, 0).toString();
+        String mnombre = modelo_editable.getValueAt(rowSelecteda, 1).toString();
+        String mprecio = modelo_editable.getValueAt(rowSelecteda, 2).toString();
+        String mstock = modelo_editable.getValueAt(rowSelecteda, 3).toString();
+        String mcategoria = modelo_editable.getValueAt(rowSelecteda, 4).toString();
+        String mestado = modelo_editable.getValueAt(rowSelecteda, 5).toString();
         Producto p = new Producto();
         
         Set<String> categorias = new HashSet<>();
@@ -586,7 +585,7 @@ public class VProducto extends javax.swing.JInternalFrame {
                 p.setCodigo(codigo);
                 cambios += "codigo";
             }else{
-                if (mcodigo.equals(pcodigo)) {
+                if (mcodigo.equals(codigog)) {
                     p.setCodigo(codigo);
                 }else{
                     JOptionPane.showMessageDialog(this, "Error el código ingresado ya existe en la base de datos", "Error código existente", JOptionPane.ERROR_MESSAGE);
@@ -662,7 +661,7 @@ public class VProducto extends javax.swing.JInternalFrame {
             return;
         }
         
-        pdata.actualizar(p,cambios,Integer.parseInt(pcodigo));
+        pdata.actualizar(p,cambios,Integer.parseInt(codigog));
         cargando = false;
         jbCargar.setEnabled(true);
         jbGuardar.setEnabled(false);
@@ -680,45 +679,39 @@ public class VProducto extends javax.swing.JInternalFrame {
         jbCargar.setEnabled(true);
         jbGuardar.setEnabled(false);
         cambiando = false;
-        pcodigo = null;
-        pnombre = null;
-        pprecio = null;
-        pstock = null;
-        pcategoria = null;
-        pestado = null;
+        codigog = null;
+        nombreg = null;
+        preciog = null;
+        stockg = null;
+        categoriag = null;
+        estadog = null;
         rowSelected = -1;
-        srowSelected = -1;
-        prowSelected = -1;
+        rowSelecteda = -1;
+        rowSelectedg = -1;
+    }
+    
+    public void cargarModelo(DefaultTableModel modelos) {
+        modelos.addColumn("Código");
+        modelos.addColumn("Nombre");
+        modelos.addColumn("Precio");
+        modelos.addColumn("Stock");
+        modelos.addColumn("Categoría");
+        modelos.addColumn("Estado");
     }
     
     public void cargarCabecera() {
-        modelo.addColumn("Código");
-        modelo.addColumn("Nombre");
-        modelo.addColumn("Precio");
-        modelo.addColumn("Stock");
-        modelo.addColumn("Categoría");
-        modelo.addColumn("Estado");
+        cargarModelo(modelo);
+        cargarModelo(modelo_cargar);
+        cargarModelo(modelo_editable);
         jTable.setModel(modelo);
-        modelo2.addColumn("Código");
-        modelo2.addColumn("Nombre");
-        modelo2.addColumn("Precio");
-        modelo2.addColumn("Stock");
-        modelo2.addColumn("Categoría");
-        modelo2.addColumn("Estado");
-        modelo3.addColumn("Código");
-        modelo3.addColumn("Nombre");
-        modelo3.addColumn("Precio");
-        modelo3.addColumn("Stock");
-        modelo3.addColumn("Categoría");
-        modelo3.addColumn("Estado");
     }
     
     private void cargarTabla() {
         limpiarAcciones();
         cargando = false;
         modelo.setRowCount(0);
-        modelo2.setRowCount(0);
-        modelo3.setRowCount(0);
+        modelo_cargar.setRowCount(0);
+        modelo_editable.setRowCount(0);
         for (Producto p: lista) {
             agregarFila(p);
         }
@@ -733,7 +726,7 @@ public class VProducto extends javax.swing.JInternalFrame {
             p.getCategoria(),
             p.isEstado()
         });
-        modelo2.addRow(new Object[] {
+        modelo_cargar.addRow(new Object[] {
             p.getCodigo(),
             p.getNombre(),
             p.getPrecio(),
@@ -741,7 +734,7 @@ public class VProducto extends javax.swing.JInternalFrame {
             p.getCategoria(),
             p.isEstado()
         });
-        modelo3.addRow(new Object[] {
+        modelo_editable.addRow(new Object[] {
             p.getCodigo(),
             p.getNombre(),
             p.getPrecio(),

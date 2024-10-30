@@ -2,12 +2,10 @@
 package Vistas;
 
 import java.sql.*;
-import Modelo.Conexion;
 import Modelo.Mesa;
 import Modelo.Mesero;
 import Persistencia.MesaData;
 import Persistencia.MeseroData;
-import Persistencia.ProductosData;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,24 +15,22 @@ import javax.swing.table.DefaultTableModel;
 public class VMesa extends javax.swing.JInternalFrame {
     
     private ArrayList<Mesa> lista = new ArrayList<>();
-    private ProductosData pdata = new ProductosData();
     private MesaData mdata = new MesaData();
     private MeseroData msdata = new MeseroData();
-    private Connection con = Conexion.cargaConexion();
-    private String buscar = "ninguno";
-    private int scapacidad = 0;
-    private String scondicion = "todas";
+    private String boton_buscar = "ninguno";
+    private int capacidad_filtro = 0;
+    private String condicion_filtro = "todas";
     private int rowSelected = -1;
-    private int srowSelected = -1;
-    private int prowSelected = -1;
+    private int rowSelecteda = -1;
+    private int rowSelectedg = -1;
     private boolean cargando = false;
     private boolean cambiando = false;
     
-    private String pnumero = null;
-    private String pcapacidad = null;
-    private String pcondicion = null;
-    private String pestado = null;
-    private String pmesero = null;
+    private String numerog = null;
+    private String capacidadg = null;
+    private String condiciong = null;
+    private String estadog = null;
+    private String meserog = null;
     
     private DefaultTableModel modelo = new DefaultTableModel() {
         public boolean isCellEditable(int fila, int col) { 
@@ -42,13 +38,13 @@ public class VMesa extends javax.swing.JInternalFrame {
         }
     };
     
-    private DefaultTableModel modelo2 = new DefaultTableModel() {
+    private DefaultTableModel modelo_cargar = new DefaultTableModel() {
         public boolean isCellEditable(int fila, int col) { 
-            return fila == modelo2.getRowCount() - 1;
+            return fila == modelo_cargar.getRowCount() - 1;
         }
     };
     
-    private DefaultTableModel modelo3 = new DefaultTableModel() {
+    private DefaultTableModel modelo_editable = new DefaultTableModel() {
         public boolean isCellEditable(int fila, int col) { 
             return true;
         }
@@ -318,7 +314,7 @@ public class VMesa extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jcCategoriaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jcCategoriaItemStateChanged
-        if (!"numero".equals(buscar)) {
+        if (!"numero".equals(boton_buscar)) {
             cargarFiltro();
         }
     }//GEN-LAST:event_jcCategoriaItemStateChanged
@@ -329,21 +325,21 @@ public class VMesa extends javax.swing.JInternalFrame {
         try {
             int numero = Integer.parseInt(mbuscar);
             try {
-                switch (buscar) {
+                switch (boton_buscar) {
                     case "numero":
                         lista.clear();
                         lista.add(mdata.buscar(numero));
                         jcCategoria.setSelectedIndex(0);
-                        scondicion = "todas";
-                        scapacidad = 0;
+                        condicion_filtro = "todas";
+                        capacidad_filtro = 0;
                         break;
                     case "capacidad":
-                        scapacidad = numero;
+                        capacidad_filtro = numero;
                         cargarFiltro();
                         break;
                     default:
                         JOptionPane.showMessageDialog(this, "No se encontro a ninguno", "numero inexistente", JOptionPane.INFORMATION_MESSAGE);
-                        scapacidad = 0;
+                        capacidad_filtro = 0;
                         break;
                 }
             } catch (SQLException ex) {
@@ -369,17 +365,18 @@ public class VMesa extends javax.swing.JInternalFrame {
         
         if (!cargando) {
             cargando = true;
+            jbActualizar.setEnabled(false);
             jbCargar.setEnabled(false);
             jbGuardar.setEnabled(true);
             try {
-                modelo2.addRow(new Object[] {
+                modelo_cargar.addRow(new Object[] {
                     Enumerar(),
                     capacidad,
-                    scondicion,
+                    condicion_filtro,
                     "",
                     "ninguno",
                 });
-                jTable.setModel(modelo2);
+                jTable.setModel(modelo_cargar);
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Error de SQL al cargar el producto: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
             }
@@ -387,12 +384,12 @@ public class VMesa extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jbCargarActionPerformed
     
     private void jbGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbGuardarActionPerformed
-        int row = modelo2.getRowCount()-1;
-        String mnumero = modelo2.getValueAt(row, 0).toString();
-        String mcapacidad = modelo2.getValueAt(row, 1).toString();
-        String mcondicion = modelo2.getValueAt(row, 2).toString();
-        String mestado = modelo2.getValueAt(row, 3).toString();
-        String mmesero = modelo2.getValueAt(row, 4).toString();
+        int row = modelo_cargar.getRowCount()-1;
+        String mnumero = modelo_cargar.getValueAt(row, 0).toString();
+        String mcapacidad = modelo_cargar.getValueAt(row, 1).toString();
+        String mcondicion = modelo_cargar.getValueAt(row, 2).toString();
+        String mestado = modelo_cargar.getValueAt(row, 3).toString();
+        String mmesero = modelo_cargar.getValueAt(row, 4).toString();
         Mesa m = new Mesa();
         
         Set<String> ocupaciones = new HashSet<>();
@@ -485,7 +482,7 @@ public class VMesa extends javax.swing.JInternalFrame {
             jbCargar.setEnabled(true);
             jbGuardar.setEnabled(false);
             jcCategoria.setSelectedIndex(0);
-            scondicion = "todas";
+            condicion_filtro = "todas";
             jtfBuscar.setText("");
             jTable.setModel(modelo);
             lista = mdata.listarMesas();
@@ -501,17 +498,17 @@ public class VMesa extends javax.swing.JInternalFrame {
 
     private void jTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableMouseClicked
         rowSelected = jTable.getSelectedRow();
-        if (jTable.getModel()==modelo3) {
+        if (jTable.getModel()==modelo_editable) {
             if (jTable.isEditing()) {
                 jTable.getCellEditor().stopCellEditing();
             }
-            srowSelected = jTable.getSelectedRow();
-            //System.out.println("srow:"+srowSelected);
+            rowSelecteda = jTable.getSelectedRow();
+            //System.out.println("srow:"+rowSelecteda);
         }
         if (!cambiando) {
             jbEliminar.setEnabled(true);
             if (cargando==false) {
-                jTable.setModel(modelo3);
+                jTable.setModel(modelo_editable);
             }
         }
     }//GEN-LAST:event_jTableMouseClicked
@@ -537,60 +534,60 @@ public class VMesa extends javax.swing.JInternalFrame {
             jTable.getCellEditor().stopCellEditing();
         }
         
-        if (jTable.getModel() == modelo3) {
+        if (jTable.getModel() == modelo_editable) {
             
-            srowSelected = rowSelected;
+            rowSelecteda = rowSelected;
             
-            if (srowSelected == prowSelected) {
-                if (prowSelected!=-1) {
-                    String mnumero = modelo3.getValueAt(prowSelected, 0).toString();
-                    String mcapacidad = modelo3.getValueAt(prowSelected, 1).toString();
-                    String mcondicion = modelo3.getValueAt(prowSelected, 2).toString();
-                    String mestado = modelo3.getValueAt(prowSelected, 3).toString();
-                    String mmesero = modelo3.getValueAt(prowSelected, 4).toString();
+            if (rowSelecteda == rowSelectedg) {
+                if (rowSelectedg!=-1) {
+                    String mnumero = modelo_editable.getValueAt(rowSelectedg, 0).toString();
+                    String mcapacidad = modelo_editable.getValueAt(rowSelectedg, 1).toString();
+                    String mcondicion = modelo_editable.getValueAt(rowSelectedg, 2).toString();
+                    String mestado = modelo_editable.getValueAt(rowSelectedg, 3).toString();
+                    String mmesero = modelo_editable.getValueAt(rowSelectedg, 4).toString();
                     
-                    if (mnumero.equals(pnumero)&mcapacidad.equals(pcapacidad)&
-                        mcondicion.equals(pcondicion)&mmesero.equals(pmesero)&
-                        mestado.equals(pestado)) {
+                    if (mnumero.equals(numerog)&mcapacidad.equals(capacidadg)&
+                        mcondicion.equals(condiciong)&mmesero.equals(meserog)&
+                        mestado.equals(estadog)) {
                         cambiovalido = false;
                     }
                 }
-                if (srowSelected!=-1&cambiovalido) {
+                if (rowSelecteda!=-1&cambiovalido) {
                     cambiando = true;
                     jbActualizar.setEnabled(true);
-                    //System.out.println("("+srowSelected+") cambiando: "+cambiando);
+                    //System.out.println("("+rowSelecteda+") cambiando: "+cambiando);
                 }
             } else {
-                if (prowSelected!=-1) {
-                    modelo3.setValueAt(pnumero, prowSelected, 0);
-                    modelo3.setValueAt(pcapacidad, prowSelected, 1);
-                    modelo3.setValueAt(pcondicion, prowSelected, 2);
-                    modelo3.setValueAt(pestado, prowSelected, 3);
-                    modelo3.setValueAt(pmesero, prowSelected, 4);
+                if (rowSelectedg!=-1) {
+                    modelo_editable.setValueAt(numerog, rowSelectedg, 0);
+                    modelo_editable.setValueAt(capacidadg, rowSelectedg, 1);
+                    modelo_editable.setValueAt(condiciong, rowSelectedg, 2);
+                    modelo_editable.setValueAt(estadog, rowSelectedg, 3);
+                    modelo_editable.setValueAt(meserog, rowSelectedg, 4);
                 }
-                prowSelected = srowSelected;
-                pnumero = modelo.getValueAt(prowSelected, 0).toString();
-                pcapacidad = modelo.getValueAt(prowSelected, 1).toString();
-                pcondicion = modelo.getValueAt(prowSelected, 2).toString();
-                pestado = modelo.getValueAt(prowSelected, 3).toString();
-                pmesero = modelo.getValueAt(prowSelected, 4).toString();
-                if (srowSelected!=-1) {
+                rowSelectedg = rowSelecteda;
+                numerog = modelo.getValueAt(rowSelectedg, 0).toString();
+                capacidadg = modelo.getValueAt(rowSelectedg, 1).toString();
+                condiciong = modelo.getValueAt(rowSelectedg, 2).toString();
+                estadog = modelo.getValueAt(rowSelectedg, 3).toString();
+                meserog = modelo.getValueAt(rowSelectedg, 4).toString();
+                if (rowSelecteda!=-1) {
                     cambiando = false;
                     jbActualizar.setEnabled(false);
-                    //System.out.println("("+srowSelected+") cambiando: "+cambiando);
+                    //System.out.println("("+rowSelecteda+") cambiando: "+cambiando);
                 }
             }
         }
     }//GEN-LAST:event_jTablePropertyChange
 
     private void jbActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbActualizarActionPerformed
-        String mnumero = modelo3.getValueAt(srowSelected, 0).toString();
-        String mcapacidad = modelo3.getValueAt(srowSelected, 1).toString();
-        String mcondicion = modelo3.getValueAt(srowSelected, 2).toString();
-        String mestado = modelo3.getValueAt(srowSelected, 3).toString();
+        String mnumero = modelo_editable.getValueAt(rowSelecteda, 0).toString();
+        String mcapacidad = modelo_editable.getValueAt(rowSelecteda, 1).toString();
+        String mcondicion = modelo_editable.getValueAt(rowSelecteda, 2).toString();
+        String mestado = modelo_editable.getValueAt(rowSelecteda, 3).toString();
         String mmesero = "ninguno";
-        if (modelo3.getValueAt(srowSelected, 4)!="ninguno") {
-            mmesero = modelo3.getValueAt(srowSelected, 4).toString();
+        if (modelo_editable.getValueAt(rowSelecteda, 4)!="ninguno") {
+            mmesero = modelo_editable.getValueAt(rowSelecteda, 4).toString();
         }
         Mesa m = new Mesa();
         
@@ -611,7 +608,7 @@ public class VMesa extends javax.swing.JInternalFrame {
             if (mdata.buscar(numero)==null) {
                 m.setNumeroMesa(numero);
             }else{
-                if (mnumero.equals(pnumero)) {
+                if (mnumero.equals(numerog)) {
                     m.setNumeroMesa(numero);
                 }else {
                     JOptionPane.showMessageDialog(this, "Error el numero ingresado ya existe en la base de datos", "Error numero existente", JOptionPane.ERROR_MESSAGE);
@@ -683,7 +680,7 @@ public class VMesa extends javax.swing.JInternalFrame {
         }
         
         try {
-            mdata.Actualizar(m, Integer.parseInt(pnumero));
+            mdata.Actualizar(m, Integer.parseInt(numerog));
             cargando = false;
             jbCargar.setEnabled(true);
             jbGuardar.setEnabled(false);
@@ -698,7 +695,7 @@ public class VMesa extends javax.swing.JInternalFrame {
         if (jBotonMesa.isSelected()) {
             jtfBuscar.setEnabled(true);
             jbBuscar.setEnabled(true);
-            buscar = "numero";
+            boton_buscar = "numero";
             jcCategoria.setEnabled(false);
         }
     }//GEN-LAST:event_jBotonMesaActionPerformed
@@ -707,7 +704,7 @@ public class VMesa extends javax.swing.JInternalFrame {
         if (jBotonCapacidad.isSelected()) {
             jtfBuscar.setEnabled(true);
             jbBuscar.setEnabled(true);
-            buscar = "capacidad";
+            boton_buscar = "capacidad";
             jcCategoria.setEnabled(true);
         }
     }//GEN-LAST:event_jBotonCapacidadActionPerformed
@@ -718,14 +715,14 @@ public class VMesa extends javax.swing.JInternalFrame {
         jbCargar.setEnabled(true);
         jbGuardar.setEnabled(false);
         cambiando = false;
-        pnumero = null;
-        pcapacidad = null;
-        pcondicion = null;
-        pestado = null;
-        pmesero = null;
+        numerog = null;
+        capacidadg = null;
+        condiciong = null;
+        estadog = null;
+        meserog = null;
         rowSelected = -1;
-        srowSelected = -1;
-        prowSelected = -1;
+        rowSelecteda = -1;
+        rowSelectedg = -1;
     }
     
     public void cargarModelo(DefaultTableModel modelos) {
@@ -738,8 +735,8 @@ public class VMesa extends javax.swing.JInternalFrame {
     
     public void cargarCabecera() {
         cargarModelo(modelo);
-        cargarModelo(modelo2);
-        cargarModelo(modelo3);
+        cargarModelo(modelo_cargar);
+        cargarModelo(modelo_editable);
         jTable.setModel(modelo);
     }
     
@@ -747,8 +744,8 @@ public class VMesa extends javax.swing.JInternalFrame {
         limpiarAcciones();
         cargando = false;
         modelo.setRowCount(0);
-        modelo2.setRowCount(0);
-        modelo3.setRowCount(0);
+        modelo_cargar.setRowCount(0);
+        modelo_editable.setRowCount(0);
         for (Mesa m: lista) {
             agregarFila(m);
         }
@@ -763,14 +760,14 @@ public class VMesa extends javax.swing.JInternalFrame {
                 m.isEstado(),
                 (m.getMesero()!=null)? m.getMesero().getDniMesero():"ninguno",
             });
-            modelo2.addRow(new Object[] {
+            modelo_cargar.addRow(new Object[] {
                 m.getNumeroMesa(),
                 m.getCapacidad(),
                 m.getOcupada(),
                 m.isEstado(),
                 (m.getMesero()!=null)? m.getMesero().getDniMesero():"ninguno",
             });
-            modelo3.addRow(new Object[] {
+            modelo_editable.addRow(new Object[] {
                 m.getNumeroMesa(),
                 m.getCapacidad(),
                 m.getOcupada(),
@@ -800,35 +797,35 @@ public class VMesa extends javax.swing.JInternalFrame {
     private void cargarFiltro() {
         switch (jcCategoria.getSelectedIndex()) {
             case (0) : {
-                scondicion="todas";
+                condicion_filtro="todas";
                 break;
             }
             case (1) : {
-                scondicion="libre";
+                condicion_filtro="libre";
                 break;
             }
             case (2) : {
-                scondicion="ocupada";
+                condicion_filtro="ocupada";
                 break;
             }
             case (3) : {
-                scondicion="atendida";
+                condicion_filtro="atendida";
                 break;
             }
             default : {
-                scondicion="";
+                condicion_filtro="";
                 break;
             }
         }
         
         try {
             if (!jBotonCapacidad.isSelected()) {
-                scapacidad=0;
+                capacidad_filtro=0;
             }
             if ("".equals(jtfBuscar.getText())) {
-                scapacidad=0;
+                capacidad_filtro=0;
             }
-            lista = mdata.filtrarMesasCondicionCapacidad(scondicion,scapacidad);
+            lista = mdata.filtrarMesasCondicionCapacidad(condicion_filtro,capacidad_filtro);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error de SQL al cargar la tabla con filtro: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
         }

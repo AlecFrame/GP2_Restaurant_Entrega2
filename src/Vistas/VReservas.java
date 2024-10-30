@@ -2,10 +2,8 @@
 package Vistas;
 
 import java.sql.*;
-import Modelo.Conexion;
 import Modelo.Reserva;
 import Persistencia.MesaData;
-import Persistencia.ProductosData;
 import Persistencia.ReservaData;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -18,26 +16,24 @@ import javax.swing.table.DefaultTableModel;
 public class VReservas extends javax.swing.JInternalFrame {
     
     private ArrayList<Reserva> lista = new ArrayList<>();
-    private ProductosData pdata = new ProductosData();
     private ReservaData rdata = new ReservaData();
     private MesaData mdata = new MesaData();
-    private Connection con = Conexion.cargaConexion();
     private int rowSelected = -1;
-    private int srowSelected = -1;
-    private int prowSelected = -1;
+    private int rowSelecteda = -1;
+    private int rowSelectedg = -1;
     private boolean cargando = false;
     private boolean cambiando = false;
     private LocalTime hora = null;
     private LocalDate fecha = null;
     private String vigencia = "null";
     
-    private String pid = null;
-    private String pmesa = null;
-    private String pdni = null;
-    private String papellido = null;
-    private String pfecha = null;
-    private String phora = null;
-    private String pvigencia = null;
+    private String idg = null;
+    private String mesag = null;
+    private String dnig = null;
+    private String apellidog = null;
+    private String fechag = null;
+    private String horag = null;
+    private String vigenciag = null;
     
     private DefaultTableModel modelo = new DefaultTableModel() {
         public boolean isCellEditable(int fila, int col) { 
@@ -45,13 +41,13 @@ public class VReservas extends javax.swing.JInternalFrame {
         }
     };
     
-    private DefaultTableModel modelo2 = new DefaultTableModel() {
+    private DefaultTableModel modelo_cargar = new DefaultTableModel() {
         public boolean isCellEditable(int fila, int col) { 
-            return fila == modelo2.getRowCount() - 1;
+            return fila == modelo_cargar.getRowCount() - 1;
         }
     };
     
-    private DefaultTableModel modelo3 = new DefaultTableModel() {
+    private DefaultTableModel modelo_editable = new DefaultTableModel() {
         public boolean isCellEditable(int fila, int col) { 
             return true;
         }
@@ -392,10 +388,11 @@ public class VReservas extends javax.swing.JInternalFrame {
     private void jbCargarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCargarActionPerformed
         if (!cargando) {
             cargando = true;
+            jbActualizar.setEnabled(false);
             jbCargar.setEnabled(false);
             jbGuardar.setEnabled(true);
             try {
-                modelo2.addRow(new Object[] {
+                modelo_cargar.addRow(new Object[] {
                     Enumerar(),
                     "",
                     "",
@@ -404,7 +401,7 @@ public class VReservas extends javax.swing.JInternalFrame {
                     hora,
                     (!"null".equals(vigencia))? vigencia:"",
                 });
-                jTable.setModel(modelo2);
+                jTable.setModel(modelo_cargar);
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Error de SQL al cargar el producto: "+ex, "Error SQL", JOptionPane.ERROR_MESSAGE);
             }
@@ -412,21 +409,20 @@ public class VReservas extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jbCargarActionPerformed
     
     private void jbGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbGuardarActionPerformed
-        int row = modelo2.getRowCount()-1;
-        System.out.println(row);
-        String mid = modelo2.getValueAt(row, 0).toString();
-        String mmesa = modelo2.getValueAt(row, 1).toString();
-        String mdni = modelo2.getValueAt(row, 2).toString();
-        String mapellido = modelo2.getValueAt(row, 3).toString();
+        int row = modelo_cargar.getRowCount()-1;
+        String mid = modelo_cargar.getValueAt(row, 0).toString();
+        String mmesa = modelo_cargar.getValueAt(row, 1).toString();
+        String mdni = modelo_cargar.getValueAt(row, 2).toString();
+        String mapellido = modelo_cargar.getValueAt(row, 3).toString();
         String mfecha = "";
-        if (modelo2.getValueAt(row, 4)!=null) {
-            mfecha = modelo2.getValueAt(row, 4).toString();
+        if (modelo_cargar.getValueAt(row, 4)!=null) {
+            mfecha = modelo_cargar.getValueAt(row, 4).toString();
         }
         String mhora = "";
-        if (modelo2.getValueAt(row, 5)!=null) {
-            mhora = modelo2.getValueAt(row, 5).toString();
+        if (modelo_cargar.getValueAt(row, 5)!=null) {
+            mhora = modelo_cargar.getValueAt(row, 5).toString();
         }
-        String mvigencia = modelo2.getValueAt(row, 6).toString();
+        String mvigencia = modelo_cargar.getValueAt(row, 6).toString();
         Reserva r = new Reserva();
         
         try {
@@ -522,6 +518,7 @@ public class VReservas extends javax.swing.JInternalFrame {
         }
         
         try {
+            rdata.guardarReserva(r);
             cargando = false;
             jbCargar.setEnabled(true);
             jbGuardar.setEnabled(false);
@@ -541,17 +538,17 @@ public class VReservas extends javax.swing.JInternalFrame {
 
     private void jTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableMouseClicked
         rowSelected = jTable.getSelectedRow();
-        if (jTable.getModel()==modelo3) {
+        if (jTable.getModel()==modelo_editable) {
             if (jTable.isEditing()) {
                 jTable.getCellEditor().stopCellEditing();
             }
-            srowSelected = jTable.getSelectedRow();
-            //System.out.println("srow:"+srowSelected);
+            rowSelecteda = jTable.getSelectedRow();
+            //System.out.println("srow:"+rowSelecteda);
         }
         if (!cambiando) {
             jbEliminar.setEnabled(true);
             if (cargando==false) {
-                jTable.setModel(modelo3);
+                jTable.setModel(modelo_editable);
             }
         }
     }//GEN-LAST:event_jTableMouseClicked
@@ -579,73 +576,73 @@ public class VReservas extends javax.swing.JInternalFrame {
             jTable.getCellEditor().stopCellEditing();
         }
         
-        if (jTable.getModel() == modelo3) {
+        if (jTable.getModel() == modelo_editable) {
             
-            srowSelected = rowSelected;
+            rowSelecteda = rowSelected;
             
-            if (srowSelected == prowSelected) {
-                if (prowSelected!=-1) {
-                    String mid = modelo3.getValueAt(prowSelected, 0).toString();
-                    String mmesa = modelo3.getValueAt(prowSelected, 1).toString();
-                    String mdni = modelo3.getValueAt(prowSelected, 2).toString();
-                    String mapellido = modelo3.getValueAt(prowSelected, 3).toString();
-                    String mfecha = modelo3.getValueAt(prowSelected, 4).toString();
-                    String mhora = modelo3.getValueAt(prowSelected, 5).toString();
-                    String mvigencia = modelo3.getValueAt(prowSelected, 6).toString();
+            if (rowSelecteda == rowSelectedg) {
+                if (rowSelectedg!=-1) {
+                    String mid = modelo_editable.getValueAt(rowSelectedg, 0).toString();
+                    String mmesa = modelo_editable.getValueAt(rowSelectedg, 1).toString();
+                    String mdni = modelo_editable.getValueAt(rowSelectedg, 2).toString();
+                    String mapellido = modelo_editable.getValueAt(rowSelectedg, 3).toString();
+                    String mfecha = modelo_editable.getValueAt(rowSelectedg, 4).toString();
+                    String mhora = modelo_editable.getValueAt(rowSelectedg, 5).toString();
+                    String mvigencia = modelo_editable.getValueAt(rowSelectedg, 6).toString();
                     
-                    if (mid.equals(pid)&mmesa.equals(pmesa)&
-                        mdni.equals(pdni)&mapellido.equals(papellido)&
-                        mfecha.equals(pfecha)&mhora.equals(phora)&
-                        mvigencia.equals(pvigencia)) {
+                    if (mid.equals(idg)&mmesa.equals(mesag)&
+                        mdni.equals(dnig)&mapellido.equals(apellidog)&
+                        mfecha.equals(fechag)&mhora.equals(horag)&
+                        mvigencia.equals(vigenciag)) {
                         cambiovalido = false;
                     }
                 }
-                if (srowSelected!=-1&cambiovalido) {
+                if (rowSelecteda!=-1&cambiovalido) {
                     cambiando = true;
                     jbActualizar.setEnabled(true);
-                    //System.out.println("("+srowSelected+") cambiando: "+cambiando);
+                    //System.out.println("("+rowSelecteda+") cambiando: "+cambiando);
                 }
             } else {
-                if (prowSelected!=-1) {
-                    modelo3.setValueAt(pid, prowSelected, 0);
-                    modelo3.setValueAt(pmesa, prowSelected, 1);
-                    modelo3.setValueAt(pdni, prowSelected, 2);
-                    modelo3.setValueAt(papellido, prowSelected, 3);
-                    modelo3.setValueAt(pfecha, prowSelected, 4);
-                    modelo3.setValueAt(phora, prowSelected, 5);
-                    modelo3.setValueAt(pvigencia, prowSelected, 6);
+                if (rowSelectedg!=-1) {
+                    modelo_editable.setValueAt(idg, rowSelectedg, 0);
+                    modelo_editable.setValueAt(mesag, rowSelectedg, 1);
+                    modelo_editable.setValueAt(dnig, rowSelectedg, 2);
+                    modelo_editable.setValueAt(apellidog, rowSelectedg, 3);
+                    modelo_editable.setValueAt(fechag, rowSelectedg, 4);
+                    modelo_editable.setValueAt(horag, rowSelectedg, 5);
+                    modelo_editable.setValueAt(vigenciag, rowSelectedg, 6);
                 }
-                prowSelected = srowSelected;
-                pid = modelo.getValueAt(prowSelected, 0).toString();
-                pmesa = modelo.getValueAt(prowSelected, 1).toString();
-                pdni = modelo.getValueAt(prowSelected, 2).toString();
-                papellido = modelo.getValueAt(prowSelected, 3).toString();
-                pfecha = modelo.getValueAt(prowSelected, 4).toString();
-                phora = modelo.getValueAt(prowSelected, 5).toString();
-                pvigencia = modelo.getValueAt(prowSelected, 6).toString();
-                if (srowSelected!=-1) {
+                rowSelectedg = rowSelecteda;
+                idg = modelo.getValueAt(rowSelectedg, 0).toString();
+                mesag = modelo.getValueAt(rowSelectedg, 1).toString();
+                dnig = modelo.getValueAt(rowSelectedg, 2).toString();
+                apellidog = modelo.getValueAt(rowSelectedg, 3).toString();
+                fechag = modelo.getValueAt(rowSelectedg, 4).toString();
+                horag = modelo.getValueAt(rowSelectedg, 5).toString();
+                vigenciag = modelo.getValueAt(rowSelectedg, 6).toString();
+                if (rowSelecteda!=-1) {
                     cambiando = false;
                     jbActualizar.setEnabled(false);
-                    //System.out.println("("+srowSelected+") cambiando: "+cambiando);
+                    //System.out.println("("+rowSelecteda+") cambiando: "+cambiando);
                 }
             }
         }
     }//GEN-LAST:event_jTablePropertyChange
 
     private void jbActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbActualizarActionPerformed
-        String mid = modelo3.getValueAt(srowSelected, 0).toString();
-        String mmesa = modelo3.getValueAt(srowSelected, 1).toString();
-        String mdni = modelo3.getValueAt(srowSelected, 2).toString();
-        String mapellido = modelo3.getValueAt(srowSelected, 3).toString();
+        String mid = modelo_editable.getValueAt(rowSelecteda, 0).toString();
+        String mmesa = modelo_editable.getValueAt(rowSelecteda, 1).toString();
+        String mdni = modelo_editable.getValueAt(rowSelecteda, 2).toString();
+        String mapellido = modelo_editable.getValueAt(rowSelecteda, 3).toString();
         String mfecha = "";
-        if (modelo3.getValueAt(srowSelected, 4)!=null) {
-            mfecha = modelo3.getValueAt(srowSelected, 4).toString();
+        if (modelo_editable.getValueAt(rowSelecteda, 4)!=null) {
+            mfecha = modelo_editable.getValueAt(rowSelecteda, 4).toString();
         }
         String mhora = "";
-        if (modelo3.getValueAt(srowSelected, 5)!=null) {
-            mhora = modelo3.getValueAt(srowSelected, 5).toString();
+        if (modelo_editable.getValueAt(rowSelecteda, 5)!=null) {
+            mhora = modelo_editable.getValueAt(rowSelecteda, 5).toString();
         }
-        String mvigencia = modelo3.getValueAt(srowSelected, 6).toString();
+        String mvigencia = modelo_editable.getValueAt(rowSelecteda, 6).toString();
         Reserva r = new Reserva();
         
         try {
@@ -657,7 +654,7 @@ public class VReservas extends javax.swing.JInternalFrame {
             if (rdata.buscarInt(id)==null) {
                 r.setIdReserva(id);
             }else{
-                if (mid.equals(pid)) {
+                if (mid.equals(idg)) {
                     r.setIdReserva(id);
                 }else {
                     JOptionPane.showMessageDialog(this, "Error el ID ingresado ya existe en la base de datos", "Error ID existente", JOptionPane.WARNING_MESSAGE);
@@ -738,7 +735,7 @@ public class VReservas extends javax.swing.JInternalFrame {
         }
         
         try {
-            rdata.actualizarReserva(r,Integer.parseInt(pid));
+            rdata.actualizarReserva(r,Integer.parseInt(idg));
             cargando = false;
             jbCargar.setEnabled(true);
             jbGuardar.setEnabled(false);
@@ -831,19 +828,19 @@ public class VReservas extends javax.swing.JInternalFrame {
         jbCargar.setEnabled(true);
         jbGuardar.setEnabled(false);
         cambiando = false;
-        pid = null;
-        pmesa = null;
-        pdni = null;
-        papellido = null;
-        pfecha = null;
-        phora = null;
-        pvigencia = null;
+        idg = null;
+        mesag = null;
+        dnig = null;
+        apellidog = null;
+        fechag = null;
+        horag = null;
+        vigenciag = null;
         rowSelected = -1;
-        srowSelected = -1;
-        prowSelected = -1;
+        rowSelecteda = -1;
+        rowSelectedg = -1;
     }
     
-    public void agregarCabeceras(DefaultTableModel modelos) {
+    public void cargarModelo(DefaultTableModel modelos) {
         modelos.addColumn("ID");
         modelos.addColumn("N° de Mesa");
         modelos.addColumn("DNI Cliente");
@@ -854,9 +851,9 @@ public class VReservas extends javax.swing.JInternalFrame {
     }
     
     public void cargarCabecera() {
-        agregarCabeceras(modelo);
-        agregarCabeceras(modelo2);
-        agregarCabeceras(modelo3);
+        cargarModelo(modelo);
+        cargarModelo(modelo_cargar);
+        cargarModelo(modelo_editable);
         jTable.setModel(modelo);
     }
     
@@ -864,8 +861,8 @@ public class VReservas extends javax.swing.JInternalFrame {
         limpiarAcciones();
         cargando = false;
         modelo.setRowCount(0);
-        modelo2.setRowCount(0);
-        modelo3.setRowCount(0);
+        modelo_cargar.setRowCount(0);
+        modelo_editable.setRowCount(0);
         for (Reserva r: lista) {
             agregarFila(r);
         }
@@ -881,7 +878,7 @@ public class VReservas extends javax.swing.JInternalFrame {
             r.getHora(),
             r.getVigencia()
         });
-        modelo2.addRow(new Object[] {
+        modelo_cargar.addRow(new Object[] {
             r.getIdReserva(),
             r.getMesa().getNumeroMesa(),
             r.getDni_cliente(),
@@ -890,7 +887,7 @@ public class VReservas extends javax.swing.JInternalFrame {
             r.getHora(),
             r.getVigencia()
         });
-        modelo3.addRow(new Object[] {
+        modelo_editable.addRow(new Object[] {
             r.getIdReserva(),
             r.getMesa().getNumeroMesa(),
             r.getDni_cliente(),
